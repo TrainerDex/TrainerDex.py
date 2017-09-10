@@ -65,6 +65,15 @@ Update = namedtuple('Update', [
 	'pkmn_dragon',
 ])
 
+User = namedtuple('User', [
+	'id',
+	'username',
+	'first_name',
+	'last_name',
+	'dob',
+	'profiles',
+])
+
 class Requests:
 	def __init__(self, token):
 		self.url = 'http://127.0.0.1:8000/api/trainer/'
@@ -104,7 +113,7 @@ class Requests:
 				xp_time = updates['datetime']
 			)
 		else:
-			trainer = Trainer(
+			t = Trainer(
 				username = r['username'],
 				start_date = r['start_date'],
 				has_cheated = r['has_cheated'],
@@ -119,7 +128,7 @@ class Requests:
 				xp_time = updates['datetime']
 			)
 			
-		return trainer, r['statistics']
+		return t, r['statistics']
 	
 	def getTeams(self):
 		r = requests.get(self.url+'factions/').json()
@@ -191,4 +200,34 @@ class Requests:
 			
 		return None if updates==[] else updates
 					
+	def getUser(self, id):
+		id = str(id)
+		r = requests.get(self.url+'users/'+id+'/').json()
+		extra = r['extended_profile']
+		if extra:
+			birthday = extra['dob']
+		else: birthday = None
 		
+		profiles=[]
+		for profile in r['profiles']:
+			profiles.append(profile['username'])
+		
+		t = User(
+			id=r['id'],
+			username=r['username'],
+			first_name=r['first_name'],
+			last_name=r['last_name'],
+			dob=birthday,
+			profiles=profiles
+		)
+		
+		return t
+		
+	def getUserByDiscord(self, discord):
+		discord = str(discord)
+		r = requests.get(self.url+'discord/users/'+discord+'/').json()
+		try:
+			return self.getUser(r['account']) if r['account'] else None
+		except KeyError:
+			return None
+	
