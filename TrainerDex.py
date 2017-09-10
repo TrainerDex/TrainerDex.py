@@ -18,11 +18,11 @@ Trainer = namedtuple('Trainer', [
 
 class Requests:
 	def __init__(self, token):
-		self.url = "http://127.0.0.1:8000/api/trainer"
+		self.url = 'http://127.0.0.1:8000/api/trainer/'
 		self.token = token
 	
-	def getTrainer(name, force=False):
-		r = requests.get(self.url+'/'+'trainers/'+name+'/').json()
+	def getTrainer(self, name, force=False):
+		r = requests.get(self.url+'trainers/'+name+'/').json()
 		updates = r['update']
 		if r['statistics'] is False and force is False:
 			trainer = Trainer(
