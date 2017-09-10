@@ -21,22 +21,53 @@ class Requests:
 		self.url = "http://127.0.0.1:8000/api/trainer"
 		self.token = token
 	
-	def getTrainer(name):
+	def getTrainer(name, force=False):
 		r = requests.get(self.url+'/'+'trainers/'+name+'/').json()
 		updates = r['update']
-		trainer = Trainer(
-			username = r['username'],
-			start_date = r['start_date'],
-			has_cheated = r['has_cheated'],
-			last_cheated = r['last_cheated'],
-			cheater = r['currently_cheats'],
-			goal_daily = r['daily_goal'],
-			goal_total = r['total_goal'],
-			prefered = r['prefered'],
-			account_ID = r['account'],	
-			team = r['faction'],
-			xp = updates['xp'],
-			xp_time = updates['datetime']
-		)
+		if r['statistics'] is False and force is False:
+			trainer = Trainer(
+				username = r['username'],
+				start_date = None,
+				has_cheated = r['has_cheated'],
+				last_cheated = r['last_cheated'],
+				cheater = r['currently_cheats'],
+				goal_daily = None,
+				goal_total = None,
+				prefered = None,
+				account_ID = None,	
+				team = r['faction'],
+				xp = None,
+				xp_time = None
+			)
+		elif r['statistics'] is False and force is True:
+			trainer = Trainer(
+				username = r['username'],
+				start_date = r['start_date'],
+				has_cheated = r['has_cheated'],
+				last_cheated = r['last_cheated'],
+				cheater = r['currently_cheats'],
+				goal_daily = r['daily_goal'],
+				goal_total = r['total_goal'],
+				prefered = None,
+				account_ID = None,	
+				team = r['faction'],
+				xp = updates['xp'],
+				xp_time = updates['datetime']
+			)
+		else:
+			trainer = Trainer(
+				username = r['username'],
+				start_date = r['start_date'],
+				has_cheated = r['has_cheated'],
+				last_cheated = r['last_cheated'],
+				cheater = r['currently_cheats'],
+				goal_daily = r['daily_goal'],
+				goal_total = r['total_goal'],
+				prefered = r['prefered'],
+				account_ID = r['account'],	
+				team = r['faction'],
+				xp = updates['xp'],
+				xp_time = updates['datetime']
+			)
 			
-		return trainer
+		return trainer, r['statistics']
