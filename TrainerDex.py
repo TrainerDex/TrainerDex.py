@@ -16,6 +16,13 @@ Trainer = namedtuple('Trainer', [
 	'xp_time',
 ])
 
+Team = namedtuple('Team', [
+	'id',
+	'name',
+	'colour',
+	'leader'
+])
+
 class Requests:
 	def __init__(self, token):
 		self.url = 'http://127.0.0.1:8000/api/trainer/'
@@ -71,3 +78,22 @@ class Requests:
 			)
 			
 		return trainer, r['statistics']
+	
+	def getTeams(self):
+		r = requests.get(self.url+'factions/').json()
+		
+		teams = []
+		teams_list = r
+		for team in teams_list:
+			if team['leader_name']:
+				leader=team['leader_name']
+			else:
+				leader=None
+			teams.append(Team(
+				id=team['id'],
+				name=team['name'],
+				colour=team['colour'],
+				leader=leader
+			))
+		
+		return teams
