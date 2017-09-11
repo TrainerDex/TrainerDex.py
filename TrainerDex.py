@@ -301,4 +301,41 @@ class Requests:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		return r.raise_for_status()
 	
-		
+	def addDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+		url = self.url+'discord/users/'
+		payload = {
+			'account': user,
+			'name': name,
+			'discriminator': discriminator,
+			'id': id,
+			'avatar_url': avatar_url,
+			'creation': creation
+		}
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		return r.raise_for_status()
+	
+	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+		url = self.url+'discord/servers/'
+		payload = {
+			'name': name,
+			'region': region,
+			'id': id,
+			'icon': icon,
+			'owner': owner,
+			'bans_cheaters': bans_cheaters,
+			'seg_cheaters': seg_cheaters,
+			'bans_minors': bans_minors,
+			'seg_minors': seg_minors
+		}
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		return r.raise_for_status()
+	
+#	def addDiscordMember(self, user, server, join):
+#		url = self.url+'discord/users/'
+#		payload = {
+#			'user': user,
+#			'server': server,
+#			'join': join
+#		}
+#		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+#		return r.raise_for_status()
