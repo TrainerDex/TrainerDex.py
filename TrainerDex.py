@@ -1,4 +1,5 @@
 import requests
+import json
 from collections import namedtuple
 
 Trainer = namedtuple('Trainer', [
@@ -268,4 +269,26 @@ class Requests:
 	
 	def getReports(self):
 		return None #Under construction
+		
+	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True):
+		url = self.url+'trainers/'
+		payload = {
+			'username': username,
+			'faction': team,
+			'has_cheated': has_cheated,
+			'last_cheated': last_cheated,
+			'currently_cheats': currently_cheats,
+			'statistics': statistics,
+			'daily_goal': daily_goal,
+			'total_goal': total_goal,
+			'prefered': prefered
+		}
+		headers = {
+			'content-type': 'application/json',
+			'authorization': 'Token '+self.token
+		}
+		r = requests.post(url, data=json.dumps(payload), headers=headers)
+		return r.raise_for_status()
+			
+		
 		
