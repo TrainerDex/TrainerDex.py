@@ -339,3 +339,18 @@ class Requests:
 #		}
 #		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 #		return r.raise_for_status()
+	
+	def addUserAccount(self, username, first_name=None, last_name=None):
+		url = self.url+'users/'
+		payload = {
+			'username':username
+		}
+		if first_name:
+			payload['first_name'] = first_name
+		if last_name:
+			payload['last_name'] = last_name
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		if r.raise_for_status() is not None:
+			return r.raise_for_status()
+		else: 
+			return r.json()['id']
