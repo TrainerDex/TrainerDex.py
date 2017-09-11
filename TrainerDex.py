@@ -1,5 +1,6 @@
 import requests
 import json
+import datetime
 from collections import namedtuple
 
 Trainer = namedtuple('Trainer', [
@@ -271,7 +272,7 @@ class Requests:
 	def getReports(self):
 		return None #Under construction
 		
-	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True):
+	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=str(datetime.datetime.utcnow())):
 		url = self.url+'trainers/'
 		payload = {
 			'username': username,
@@ -282,11 +283,22 @@ class Requests:
 			'statistics': statistics,
 			'daily_goal': daily_goal,
 			'total_goal': total_goal,
-			'prefered': prefered
+			'prefered': prefered,
+			'last_modified': datetime
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		return r.raise_for_status()
-			
+	
+	def addUpdate(self, trainer, xp, datetime=str(datetime.datetime.utcnow())):
+		url = self.url+'update/'
+		payload = {
+			'trainer': trainer,
+			'xp': xp,
+			'datetime': datetime
+		}
 		
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		return r.raise_for_status()
+	
 		
