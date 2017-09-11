@@ -91,6 +91,7 @@ class Requests:
 	def __init__(self, token):
 		self.url = 'http://127.0.0.1:8000/api/trainer/'
 		self.token = token
+		self.headers = {'content-type':'application/json', 'authorization':'Token '+token}
 	
 	def getTrainer(self, name, force=False):
 		r = requests.get(self.url+'trainers/'+name+'/').json()
@@ -283,11 +284,8 @@ class Requests:
 			'total_goal': total_goal,
 			'prefered': prefered
 		}
-		headers = {
-			'content-type': 'application/json',
-			'authorization': 'Token '+self.token
-		}
-		r = requests.post(url, data=json.dumps(payload), headers=headers)
+		
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		return r.raise_for_status()
 			
 		
