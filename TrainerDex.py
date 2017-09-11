@@ -74,6 +74,18 @@ User = namedtuple('User', [
 	'profiles',
 ])
 
+Server = namedtuple('Server', [
+	'id',
+	'name',
+	'region',
+	'icon',
+	'bans_cheaters',
+	'seg_cheaters',
+	'bans_minors',
+	'seg_minors',
+	'owner',
+])
+
 class Requests:
 	def __init__(self, token):
 		self.url = 'http://127.0.0.1:8000/api/trainer/'
@@ -231,3 +243,21 @@ class Requests:
 		except KeyError:
 			return None
 	
+	def getServerInfo(self, server):
+		server = str(server)
+		r = requests.get(self.url+'discord/servers/'+server+'/').json()
+		
+		t = Server(
+			id=r['id'],
+			name=r['name'],
+			region=r['region'],
+			icon=r['icon'],
+			bans_cheaters=r['bans_cheaters'],
+			seg_cheaters=r['seg_cheaters'],
+			bans_minors=r['bans_minors'],
+			seg_minors=r['seg_minors'],
+			owner=r['owner']
+		)
+		return t
+		
+		
