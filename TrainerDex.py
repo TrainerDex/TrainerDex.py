@@ -260,4 +260,12 @@ class Requests:
 		)
 		return t
 		
+	def getNetwork(self, network):
+		return None #Networks are still under construction
+	
+	def getBanList(self, server=None, network=None):
+		return None #BanList functions as part of Networks
+	
+	def getReports(self):
+		return None #Under construction
 		
