@@ -213,14 +213,17 @@ class Requests:
 		teams_list = r
 		for team in teams_list:
 			if team['leader_name']:
-				leader=team['leader_name']
+				leader_name=team['leader_name']
+				leader_image=team['leader_image']
 			else:
 				leader=None
 			teams.append(Team(
 				id=team['id'],
 				name=team['name'],
 				colour=team['colour'],
-				leader=leader
+				image=team['logo'],
+				leader=leader_name,
+				leader_image=leader_image
 			))
 		
 		return teams
