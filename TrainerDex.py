@@ -21,6 +21,16 @@ Trainer = namedtuple('Trainer', [
 	'statistics',
 ])
 
+TrainerList = namedtuple('Trainer', [
+	'username',
+	'trainer_ID',
+	'account_ID',
+	'discord_ID',
+	'team',
+	'discord',
+	'prefered'
+])
+
 Team = namedtuple('Team', [
 	'id',
 	'name',
@@ -77,6 +87,16 @@ User = namedtuple('User', [
 	'last_name',
 	'dob',
 	'profiles',
+])
+
+DiscordMember = namedtuple('DiscordMember', [
+	'discord_id',
+	'account_id',
+	'name',
+	'unique',
+	'avatar',
+	'creation',
+	'joined'
 ])
 
 Server = namedtuple('Server', [
@@ -214,6 +234,58 @@ class Requests:
 			)
 			
 		return trainer
+	
+	def getDiscordUser(self, discord):
+		id = str(discord)
+		r = requests.get(self.url+'discord/users/'+id+'/').json()
+		user = DiscordMember(
+			discord_id = r['id'],
+			account_id = r['account'],
+			name = r['name'],
+			unique = r['discriminator'],
+			avatar = r['avatar_url'],
+			creation = iso8601.parse_date(r['creation']),
+			joined = None
+		)
+		
+		return user
+		
+	def listDiscordUsers(self):
+		id = str(discord)
+		r = requests.get(self.url+'discord/users/').json()
+		users = []
+		for user in r:
+			users.append(DiscordMember(
+			discord_id = user['id'],
+			account_id = user['account'],
+			name = user['name'],
+			unique = user['discriminator'],
+			avatar = user['avatar_url'],
+			creation = iso8601.parse_date(user['creation']),
+			joined = None
+		))
+						 
+		return users
+		
+	def listTrainers(self):
+		r = requests.get(self.url+'trainers/').json()
+		trainers = []
+		for trainer in r:
+			for user in self.listDiscord():
+				if user.account==trainer['account']:
+					discord_ID = user.discord_ID
+			
+			
+			trainers.append(Trainer(
+				username = trainer['username'],
+				trainer_ID = trainer['id'],
+				account_ID = trainer['account'],
+				discord_ID = discord_ID
+				team = trainer['faction'],
+				prefered = r['prefered'],
+			))
+			
+		return trainers
 	
 	def getTeams(self):
 		r = requests.get(self.url+'factions/').json()
