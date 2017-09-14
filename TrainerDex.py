@@ -457,7 +457,11 @@ class Requests:
 			'creation': creation
 		}
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		return r.raise_for_status()
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
 	
 	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		url = self.url+'discord/servers/'
@@ -495,7 +499,8 @@ class Requests:
 		if last_name:
 			payload['last_name'] = last_name
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		if r.raise_for_status() is not None:
-			return r.raise_for_status()
-		else: 
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
 			return r.json()['id']
