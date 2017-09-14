@@ -433,7 +433,11 @@ class Requests:
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		return r.raise_for_status()
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
 	
 	def addUpdate(self, trainer, xp, datetime=str(datetime.datetime.utcnow())):
 		url = self.url+'update/'
@@ -444,10 +448,14 @@ class Requests:
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		return r.raise_for_status()
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
 	
-	def addDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
-		url = self.url+'discord/users/'
+	def putDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+		url = self.url+'discord/users/'+id+'/'
 		payload = {
 			'account': user,
 			'name': name,
@@ -456,12 +464,14 @@ class Requests:
 			'avatar_url': avatar_url,
 			'creation': creation
 		}
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.put(url, data=json.dumps(payload), headers=self.headers)
 		status = r.raise_for_status()
 		if status is not None:
 			return status
 		else:
 			return r.json()['id']
+		
+	addDiscordUser = putDiscordUser
 	
 	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		url = self.url+'discord/servers/'
@@ -477,7 +487,11 @@ class Requests:
 			'seg_minors': seg_minors
 		}
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		return r.raise_for_status()
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
 	
 #	def addDiscordMember(self, user, server, join):
 #		url = self.url+'discord/users/'
