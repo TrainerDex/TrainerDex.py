@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import iso8601
 from collections import namedtuple
 
 Trainer = namedtuple('Trainer', [
@@ -186,7 +187,7 @@ class Requests:
 				account_ID = None,	
 				team = r['faction'],
 				xp = updates['xp'],
-				xp_time = updates['datetime']
+				xp_time = iso8601.parse_date(updates['datetime'])
 			)
 		else:
 			t = Trainer(
@@ -201,7 +202,7 @@ class Requests:
 				account_ID = r['account'],	
 				team = r['faction'],
 				xp = updates['xp'],
-				xp_time = updates['datetime']
+				xp_time = iso8601.parse_date(updates['datetime'])
 			)
 			
 		return t, r['statistics']
@@ -236,7 +237,7 @@ class Requests:
 		for update in update_list:
 			if update['trainer']==trainer:
 				updates.append(Update(
-					time_updated=update['datetime'],
+					time_updated=iso8601.parse_date(update['datetime']),
 					total_xp=update['xp'],
 					dex_caught=update['dex_caught'],
 					dex_seen=update['dex_seen'],
@@ -284,7 +285,8 @@ class Requests:
 		r = requests.get(self.url+'users/'+id+'/').json()
 		extra = r['extended_profile']
 		if extra:
-			birthday = extra['dob']
+			birthday = iso8601.parse_date(extra['dob'])
+			birthday = birthday.date()
 		else: birthday = None
 		
 		profiles=[]
