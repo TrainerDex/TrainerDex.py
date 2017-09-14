@@ -13,10 +13,12 @@ Trainer = namedtuple('Trainer', [
 	'goal_daily',
 	'goal_total',
 	'prefered',
+	'trainer_ID',
 	'account_ID',
 	'team',
 	'xp',
 	'xp_time',
+	'statistics',
 ])
 
 Team = namedtuple('Team', [
@@ -156,8 +158,8 @@ class Requests:
 		else:
 			return levels		
 	
-	def getTrainer(self, name, force=False):
-		r = requests.get(self.url+'trainers/'+name+'/').json()
+	def getTrainer(self, id, force=False):
+		r = requests.get(self.url+'trainers/'+id+'/').json()
 		updates = r['update']
 		if r['statistics'] is False and force is False:
 			trainer = Trainer(
@@ -169,10 +171,12 @@ class Requests:
 				goal_daily = None,
 				goal_total = None,
 				prefered = None,
+				trainer_ID = r['id'],
 				account_ID = None,	
 				team = r['faction'],
 				xp = None,
 				xp_time = None
+				statistics = r['statistics']
 			)
 		elif r['statistics'] is False and force is True:
 			trainer = Trainer(
@@ -184,13 +188,15 @@ class Requests:
 				goal_daily = r['daily_goal'],
 				goal_total = r['total_goal'],
 				prefered = None,
+				trainer_ID = r['id'],
 				account_ID = None,	
 				team = r['faction'],
 				xp = updates['xp'],
 				xp_time = iso8601.parse_date(updates['datetime'])
+				statistics = r['statistics']
 			)
 		else:
-			t = Trainer(
+			trainer = Trainer(
 				username = r['username'],
 				start_date = r['start_date'],
 				has_cheated = r['has_cheated'],
@@ -199,20 +205,21 @@ class Requests:
 				goal_daily = r['daily_goal'],
 				goal_total = r['total_goal'],
 				prefered = r['prefered'],
+				trainer_ID = r['id'],
 				account_ID = r['account'],	
 				team = r['faction'],
 				xp = updates['xp'],
 				xp_time = iso8601.parse_date(updates['datetime'])
+				statistics = r['statistics']
 			)
 			
-		return t, r['statistics']
+		return trainer
 	
 	def getTeams(self):
 		r = requests.get(self.url+'factions/').json()
 		
 		teams = []
-		teams_list = r
-		for team in teams_list:
+		for team in r:
 			if team['leader_name']:
 				leader_name=team['leader_name']
 				leader_image=team['leader_image']
