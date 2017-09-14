@@ -21,13 +21,12 @@ Trainer = namedtuple('Trainer', [
 	'statistics',
 ])
 
-TrainerList = namedtuple('Trainer', [
+TrainerList = namedtuple('TrainerList', [
 	'username',
 	'trainer_ID',
 	'account_ID',
 	'discord_ID',
 	'team',
-	'discord',
 	'prefered'
 ])
 
@@ -35,7 +34,9 @@ Team = namedtuple('Team', [
 	'id',
 	'name',
 	'colour',
-	'leader'
+	'image',
+	'leader',
+	'leader_image',
 ])
 
 Update = namedtuple('Update', [
@@ -120,7 +121,6 @@ Level = namedtuple('Level', [
 class Requests:
 	def __init__(self, token):
 		self.url = 'http://127.0.0.1:8000/api/trainer/'
-		self.token = token
 		self.headers = {'content-type':'application/json', 'authorization':'Token '+token}
 		
 	def trainerLevels(self, xp=None, level=None):
@@ -179,7 +179,7 @@ class Requests:
 			return levels		
 	
 	def getTrainer(self, id, force=False):
-		r = requests.get(self.url+'trainers/'+id+'/').json()
+		r = requests.get(self.url+'trainers/'+str(id)+'/').json()
 		updates = r['update']
 		if r['statistics'] is False and force is False:
 			trainer = Trainer(
@@ -195,7 +195,7 @@ class Requests:
 				account_ID = None,	
 				team = r['faction'],
 				xp = None,
-				xp_time = None
+				xp_time = None,
 				statistics = r['statistics']
 			)
 		elif r['statistics'] is False and force is True:
@@ -212,7 +212,7 @@ class Requests:
 				account_ID = None,	
 				team = r['faction'],
 				xp = updates['xp'],
-				xp_time = iso8601.parse_date(updates['datetime'])
+				xp_time = iso8601.parse_date(updates['datetime']),
 				statistics = r['statistics']
 			)
 		else:
@@ -229,7 +229,7 @@ class Requests:
 				account_ID = r['account'],	
 				team = r['faction'],
 				xp = updates['xp'],
-				xp_time = iso8601.parse_date(updates['datetime'])
+				xp_time = iso8601.parse_date(updates['datetime']),
 				statistics = r['statistics']
 			)
 			
@@ -237,7 +237,7 @@ class Requests:
 	
 	def getDiscordUser(self, discord):
 		id = str(discord)
-		r = requests.get(self.url+'discord/users/'+id+'/').json()
+		r = requests.get(self.url+'discord/users/'+str(id)+'/').json()
 		user = DiscordMember(
 			discord_id = r['id'],
 			account_id = r['account'],
@@ -251,7 +251,6 @@ class Requests:
 		return user
 		
 	def listDiscordUsers(self):
-		id = str(discord)
 		r = requests.get(self.url+'discord/users/').json()
 		users = []
 		for user in r:
@@ -271,18 +270,17 @@ class Requests:
 		r = requests.get(self.url+'trainers/').json()
 		trainers = []
 		for trainer in r:
-			for user in self.listDiscord():
-				if user.account==trainer['account']:
-					discord_ID = user.discord_ID
+			for user in self.listDiscordUsers():
+				if user.account_id==trainer['account']:
+					discord_ID = user.discord_id
 			
-			
-			trainers.append(Trainer(
+			trainers.append(TrainerList(
 				username = trainer['username'],
 				trainer_ID = trainer['id'],
 				account_ID = trainer['account'],
-				discord_ID = discord_ID
+				discord_ID = discord_ID,
 				team = trainer['faction'],
-				prefered = r['prefered'],
+				prefered = trainer['prefered']
 			))
 			
 		return trainers
@@ -296,12 +294,13 @@ class Requests:
 				leader_name=team['leader_name']
 				leader_image=team['leader_image']
 			else:
-				leader=None
+				leader_name=None
+				leader_image=None
 			teams.append(Team(
 				id=team['id'],
 				name=team['name'],
 				colour=team['colour'],
-				image=team['logo'],
+				image=team['image'],
 				leader=leader_name,
 				leader_image=leader_image
 			))
@@ -361,7 +360,7 @@ class Requests:
 					
 	def getUser(self, id):
 		id = str(id)
-		r = requests.get(self.url+'users/'+id+'/').json()
+		r = requests.get(self.url+'users/'+str(id)+'/').json()
 		extra = r['extended_profile']
 		if extra:
 			birthday = iso8601.parse_date(extra['dob'])
@@ -384,16 +383,14 @@ class Requests:
 		return t
 		
 	def getUserByDiscord(self, discord):
-		discord = str(discord)
-		r = requests.get(self.url+'discord/users/'+discord+'/').json()
+		r = requests.get(self.url+'discord/users/'+str(discord)+'/').json()
 		try:
 			return self.getUser(r['account']) if r['account'] else None
 		except KeyError:
 			return None
 	
 	def getServerInfo(self, server):
-		server = str(server)
-		r = requests.get(self.url+'discord/servers/'+server+'/').json()
+		r = requests.get(self.url+'discord/servers/'+str(server)+'/').json()
 		
 		t = Server(
 			id=r['id'],
@@ -455,7 +452,7 @@ class Requests:
 			return r.json()['id']
 	
 	def putDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
-		url = self.url+'discord/users/'+id+'/'
+		url = self.url+'discord/users/'+str(id)+'/'
 		payload = {
 			'account': user,
 			'name': name,
