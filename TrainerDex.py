@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 import iso8601
+import inspect
 from collections import namedtuple
 
 Trainer = namedtuple('Trainer', [
@@ -179,7 +180,9 @@ class Requests:
 			return levels		
 	
 	def getTrainer(self, id, force=False):
-		r = requests.get(self.url+'trainers/'+str(id)+'/').json()
+		r = requests.get(self.url+'trainers/'+str(id)+'/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		updates = r['update']
 		if r['statistics'] is False and force is False:
 			trainer = Trainer(
@@ -232,12 +235,14 @@ class Requests:
 				xp_time = iso8601.parse_date(updates['datetime']),
 				statistics = r['statistics']
 			)
-			
+
 		return trainer
 	
 	def getDiscordUser(self, discord):
 		id = str(discord)
-		r = requests.get(self.url+'discord/users/'+str(id)+'/').json()
+		r = requests.get(self.url+'discord/users/'+str(id)+'/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		user = DiscordMember(
 			discord_id = r['id'],
 			account_id = r['account'],
@@ -251,7 +256,9 @@ class Requests:
 		return user
 		
 	def listDiscordUsers(self):
-		r = requests.get(self.url+'discord/users/').json()
+		r = requests.get(self.url+'discord/users/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		users = []
 		for user in r:
 			users.append(DiscordMember(
@@ -263,11 +270,13 @@ class Requests:
 			creation = iso8601.parse_date(user['creation']),
 			joined = None
 		))
-						 
+		
 		return users
 		
 	def listTrainers(self):
-		r = requests.get(self.url+'trainers/').json()
+		r = requests.get(self.url+'trainers/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		trainers = []
 		for trainer in r:
 			for user in self.listDiscordUsers():
@@ -282,12 +291,13 @@ class Requests:
 				team = trainer['faction'],
 				prefered = trainer['prefered']
 			))
-			
+		
 		return trainers
 	
 	def getTeams(self):
-		r = requests.get(self.url+'factions/').json()
-		
+		r = requests.get(self.url+'factions/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name, r.status_code ,r.json()))
+		r = r.json()
 		teams = []
 		for team in r:
 			if team['leader_name']:
@@ -308,8 +318,9 @@ class Requests:
 		return teams
 	
 	def getUpdates(self, trainer):
-		r = requests.get(self.url+'update/').json()
-		
+		r = requests.get(self.url+'update/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		updates = []
 		update_list = r
 		for update in update_list:
@@ -355,12 +366,14 @@ class Requests:
 					pkmn_ice=update['pkmn_ice'],
 					pkmn_dragon=update['pkmn_dragon']
 				))
-			
+		
 		return None if updates==[] else updates
 					
 	def getUser(self, id):
 		id = str(id)
-		r = requests.get(self.url+'users/'+str(id)+'/').json()
+		r = requests.get(self.url+'users/'+str(id)+'/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		extra = r['extended_profile']
 		if extra:
 			birthday = iso8601.parse_date(extra['dob'])
@@ -383,15 +396,18 @@ class Requests:
 		return t
 		
 	def getUserByDiscord(self, discord):
-		r = requests.get(self.url+'discord/users/'+str(discord)+'/').json()
+		r = requests.get(self.url+'discord/users/'+str(discord)+'/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		try:
 			return self.getUser(r['account']) if r['account'] else None
 		except KeyError:
 			return None
 	
 	def getServerInfo(self, server):
-		r = requests.get(self.url+'discord/servers/'+str(server)+'/').json()
-		
+		r = requests.get(self.url+'discord/servers/'+str(server)+'/')
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
 		t = Server(
 			id=r['id'],
 			name=r['name'],
@@ -430,6 +446,7 @@ class Requests:
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
 			return status
@@ -445,6 +462,7 @@ class Requests:
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
 			return status
@@ -462,6 +480,7 @@ class Requests:
 			'creation': creation
 		}
 		r = requests.put(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
 			return status
@@ -484,6 +503,7 @@ class Requests:
 			'seg_minors': seg_minors
 		}
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
 			return status
@@ -498,6 +518,7 @@ class Requests:
 #			'join': join
 #		}
 #		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+#		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 #		return r.raise_for_status()
 	
 	def addUserAccount(self, username, first_name=None, last_name=None):
@@ -510,6 +531,7 @@ class Requests:
 		if last_name:
 			payload['last_name'] = last_name
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
 			return status
