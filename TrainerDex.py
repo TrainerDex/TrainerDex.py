@@ -433,7 +433,7 @@ class Requests:
 	def getReports(self):
 		return None #Under construction
 		
-	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow()):
+	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow(), account=None):
 		url = self.url+'trainers/'
 		payload = {
 			'username': username,
@@ -445,7 +445,8 @@ class Requests:
 			'daily_goal': daily_goal,
 			'total_goal': total_goal,
 			'prefered': prefered,
-			'last_modified': datetime.isoformat()
+			'last_modified': datetime.isoformat(),
+			'account': account
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
