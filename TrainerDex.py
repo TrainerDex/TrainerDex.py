@@ -5,6 +5,7 @@ import iso8601
 from collections import namedtuple
 
 Trainer = namedtuple('Trainer', [
+	'id',
 	'username',
 	'start_date',
 	'has_cheated',
@@ -13,8 +14,7 @@ Trainer = namedtuple('Trainer', [
 	'goal_daily',
 	'goal_total',
 	'prefered',
-	'trainer_ID',
-	'account_ID',
+	'account',
 	'team',
 	'xp',
 	'xp_time',
@@ -23,9 +23,9 @@ Trainer = namedtuple('Trainer', [
 
 TrainerList = namedtuple('TrainerList', [
 	'username',
-	'trainer_ID',
-	'account_ID',
-	'discord_ID',
+	'id',
+	'account',
+	'discord',
 	'team',
 	'prefered'
 ])
@@ -183,6 +183,7 @@ class Requests:
 		updates = r['update']
 		if r['statistics'] is False and force is False:
 			trainer = Trainer(
+				id = r['id'],
 				username = r['username'],
 				start_date = None,
 				has_cheated = r['has_cheated'],
@@ -191,8 +192,7 @@ class Requests:
 				goal_daily = None,
 				goal_total = None,
 				prefered = None,
-				trainer_ID = r['id'],
-				account_ID = None,	
+				account = None,	
 				team = r['faction'],
 				xp = None,
 				xp_time = None,
@@ -200,6 +200,7 @@ class Requests:
 			)
 		elif r['statistics'] is False and force is True:
 			trainer = Trainer(
+				id = r['id'],
 				username = r['username'],
 				start_date = r['start_date'],
 				has_cheated = r['has_cheated'],
@@ -208,8 +209,7 @@ class Requests:
 				goal_daily = r['daily_goal'],
 				goal_total = r['total_goal'],
 				prefered = None,
-				trainer_ID = r['id'],
-				account_ID = None,	
+				account = None,	
 				team = r['faction'],
 				xp = updates['xp'],
 				xp_time = iso8601.parse_date(updates['datetime']),
@@ -217,6 +217,7 @@ class Requests:
 			)
 		else:
 			trainer = Trainer(
+				id = r['id'],
 				username = r['username'],
 				start_date = r['start_date'],
 				has_cheated = r['has_cheated'],
@@ -225,8 +226,7 @@ class Requests:
 				goal_daily = r['daily_goal'],
 				goal_total = r['total_goal'],
 				prefered = r['prefered'],
-				trainer_ID = r['id'],
-				account_ID = r['account'],	
+				account = r['account'],	
 				team = r['faction'],
 				xp = updates['xp'],
 				xp_time = iso8601.parse_date(updates['datetime']),
@@ -272,13 +272,13 @@ class Requests:
 		for trainer in r:
 			for user in self.listDiscordUsers():
 				if user.account_id==trainer['account']:
-					discord_ID = user.discord_id
+					discord = user.discord_id
 			
 			trainers.append(TrainerList(
 				username = trainer['username'],
-				trainer_ID = trainer['id'],
-				account_ID = trainer['account'],
-				discord_ID = discord_ID,
+				id = trainer['id'],
+				account = trainer['account'],
+				discord = discord,
 				team = trainer['faction'],
 				prefered = trainer['prefered']
 			))
