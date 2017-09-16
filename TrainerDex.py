@@ -278,6 +278,7 @@ class Requests:
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		trainers = []
+		discord=None
 		listDiscordUsers=self.listDiscordUsers()
 		for trainer in r:
 			for user in listDiscordUsers:
