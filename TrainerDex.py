@@ -471,7 +471,7 @@ class Requests:
 		else:
 			return r.json()['id']
 	
-	def putDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+	def patchDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
 		url = self.url+'discord/users/'+str(id)+'/'
 		payload = {
 			'account': user,
@@ -481,7 +481,7 @@ class Requests:
 			'avatar_url': avatar_url,
 			'creation': creation.isoformat()
 		}
-		r = requests.put(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		status = r.raise_for_status()
 		if status is not None:
@@ -489,7 +489,23 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	addDiscordUser = putDiscordUser
+	def addDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+		url = self.url+'discord/users/'
+		payload = {
+			'account': user,
+			'name': name,
+			'discriminator': discriminator,
+			'id': id,
+			'avatar_url': avatar_url,
+			'creation': creation.isoformat()
+		}
+		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
 	
 	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		url = self.url+'discord/servers/'
