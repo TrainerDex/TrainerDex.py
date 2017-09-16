@@ -121,7 +121,7 @@ Level = namedtuple('Level', [
 
 class Requests:
 	def __init__(self, token):
-		self.url = 'http://127.0.0.1:8000/api/trainer/'
+		self.url = 'http://www.ekpogo.uk/api/trainer/'
 		self.headers = {'content-type':'application/json', 'authorization':'Token '+token}
 		
 	def trainerLevels(self, xp=None, level=None):
