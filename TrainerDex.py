@@ -376,7 +376,8 @@ class Requests:
 		r = requests.get(self.url+'users/'+str(id)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
-		extra = r['extended_profile']
+#		extra = r['extended_profile']
+		extra = None
 		if extra:
 			birthday = iso8601.parse_date(extra['dob'])
 			birthday = birthday.date()
