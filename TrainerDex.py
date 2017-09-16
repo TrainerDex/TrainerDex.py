@@ -556,3 +556,20 @@ class Requests:
 			return status
 		else:
 			return r.json()['id']
+		
+	def patchUserAccount(self, id, username=None, first_name=None, last_name=None):
+		url = self.url+'users/'+str(id)+'/'
+		payload = {}
+		if username:
+			payload['username'] = username
+		if first_name:
+			payload['first_name'] = first_name
+		if last_name:
+			payload['last_name'] = last_name
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return r.json()['id']
