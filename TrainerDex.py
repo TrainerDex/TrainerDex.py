@@ -257,7 +257,10 @@ class Requests:
 		
 	def listDiscordUsers(self):
 		r = requests.get(self.url+'discord/users/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		users = []
 		for user in r:
@@ -275,7 +278,10 @@ class Requests:
 		
 	def listTrainers(self):
 		r = requests.get(self.url+'trainers/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		trainers = []
 		discord=None
@@ -298,7 +304,10 @@ class Requests:
 	
 	def getTeams(self):
 		r = requests.get(self.url+'factions/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name, r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		teams = []
 		for team in r:
@@ -321,7 +330,10 @@ class Requests:
 	
 	def getUpdates(self, trainer):
 		r = requests.get(self.url+'update/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		updates = []
 		update_list = r
@@ -433,7 +445,7 @@ class Requests:
 	def getReports(self):
 		return None #Under construction
 		
-	def addTrainer(self, username, team, start_date=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow(), account=None):
+	def addTrainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow(), account=None):
 		url = self.url+'trainers/'
 		payload = {
 			'username': username,
@@ -456,6 +468,24 @@ class Requests:
 			return status
 		else:
 			return r.json()['id']
+		
+	def patchTrainer(self, id, username=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
+		args = locals()
+		url = self.url+'trainers/'+str(id)+'/'
+		updated=datetime.datetime.utcnow()
+		payload = {
+			'last_modified': updated.isoformat()
+		}
+		for i in args:
+			if args[i] is not None and args[i]!=' ':
+				payload[i] = args[i]
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		status = r.raise_for_status()
+		if status is not None:
+			return status
+		else:
+			return None
 	
 	def addUpdate(self, trainer, xp, datetime=datetime.datetime.utcnow()):
 		url = self.url+'update/'
