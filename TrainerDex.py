@@ -257,7 +257,10 @@ class Requests:
 		
 	def listDiscordUsers(self):
 		r = requests.get(self.url+'discord/users/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		users = []
 		for user in r:
@@ -275,7 +278,10 @@ class Requests:
 		
 	def listTrainers(self):
 		r = requests.get(self.url+'trainers/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		trainers = []
 		discord=None
@@ -298,7 +304,10 @@ class Requests:
 	
 	def getTeams(self):
 		r = requests.get(self.url+'factions/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name, r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		teams = []
 		for team in r:
@@ -321,7 +330,10 @@ class Requests:
 	
 	def getUpdates(self, trainer):
 		r = requests.get(self.url+'update/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		if r.status_code==200:
+			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		updates = []
 		update_list = r
