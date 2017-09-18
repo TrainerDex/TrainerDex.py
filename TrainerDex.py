@@ -499,25 +499,22 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	def patchTrainer(self, id, username=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
+	def patchTrainer(self, id, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
 		pass
-#		args = locals()
-#		url = self.url+'trainers/'+str(id)+'/'
-#		updated=datetime.datetime.utcnow()
-#		payload = {
-#			'last_modified': updated.isoformat()
-#		}
-#		for i in args:
-#			if args[i] is not None and args[i]!=' ':
-#				payload[i] = args[i]
-#		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
-#		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-#		status = r.raise_for_status()
-#		if status is not None:
-#			return status
-#		else:
-#			return None
+		args = locals()
+		url = self.url+'trainers/'+str(id)+'/'
+		updated=datetime.datetime.utcnow()
+		payload = {
+			'last_modified': updated.isoformat()
+		}
+		for i in args:
+			if args[i] is not None and i not in ['self','id']:
+				payload[i] = args[i]
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code, r.json()))
+		status = r.raise_for_status()
+		return status
 	
 	def addUpdate(self, trainer, xp, datetime=datetime.datetime.utcnow()):
 		"""Add a Update object to the database"""
