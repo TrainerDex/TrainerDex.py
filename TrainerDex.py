@@ -120,11 +120,27 @@ Level = namedtuple('Level', [
 ])
 
 class Requests:
-	def __init__(self, token):
+	"""Interact with the TrainerDex API
+	
+	Supply an api token when calling the class.
+	"""
+	
+	def __init__(self, token=None):
 		self.url = 'http://www.ekpogo.uk/api/trainer/'
-		self.headers = {'content-type':'application/json', 'authorization':'Token '+token}
+		self.headers = {'content-type':'application/json'}
+		if token:
+			self.headers['authorization'] = 'Token '+token
 		
 	def trainerLevels(self, xp=None, level=None):
+		"""Returns a singular or a list of trainerdex.Level objects.
+		
+		Keywork arguments:
+		xp -- get the Level object for the level a user would be if they had that xp value
+		level -- get the Level object for that level
+		
+		Each object has three attributes: level, total_xp and xp_required.
+		If you don't specify xp or level, it will return all Level objects.
+		"""
 		levels = [
 			Level(level=1,total_xp=0,xp_required=0),
 			Level(level=2,total_xp=1000,xp_required=1000),
@@ -180,6 +196,7 @@ class Requests:
 			return levels		
 	
 	def getTrainer(self, id, force=False):
+		"""Get information about a trainer by supplying their database ID"""
 		r = requests.get(self.url+'trainers/'+str(id)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
@@ -239,6 +256,7 @@ class Requests:
 		return trainer
 	
 	def getDiscordUser(self, discord):
+		"""Get the last seen information on a discord user - used like a cache"""
 		id = str(discord)
 		r = requests.get(self.url+'discord/users/'+str(id)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
@@ -256,6 +274,7 @@ class Requests:
 		return user
 		
 	def listDiscordUsers(self):
+		"""Get a list of all seen discord users"""
 		r = requests.get(self.url+'discord/users/')
 		if r.status_code==200:
 			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
@@ -277,6 +296,7 @@ class Requests:
 		return users
 		
 	def listTrainers(self):
+		"""Get a list of all trainers and their linked ekpogo account and discord account"""
 		r = requests.get(self.url+'trainers/')
 		if r.status_code==200:
 			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
@@ -303,6 +323,7 @@ class Requests:
 		return trainers
 	
 	def getTeams(self):
+		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
 		r = requests.get(self.url+'factions/')
 		if r.status_code==200:
 			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
@@ -329,6 +350,10 @@ class Requests:
 		return teams
 	
 	def getUpdates(self, trainer):
+		"""Get a list of all update objects - the server hosts over 500 of these so this will need to change soon.
+		
+		Expect lag!
+		"""
 		r = requests.get(self.url+'update/')
 		if r.status_code==200:
 			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
@@ -384,6 +409,7 @@ class Requests:
 		return None if updates==[] else updates
 					
 	def getUser(self, id):
+		"""Get information about a user, including a list of all trainers associated"""
 		id = str(id)
 		r = requests.get(self.url+'users/'+str(id)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
@@ -411,6 +437,7 @@ class Requests:
 		return t
 		
 	def getUserByDiscord(self, discord):
+		"""Get a user object via their discord ID instead of user ID"""
 		r = requests.get(self.url+'discord/users/'+str(discord)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
@@ -420,6 +447,7 @@ class Requests:
 			return None
 	
 	def getServerInfo(self, server):
+		"""Get cached information about a discord server"""
 		r = requests.get(self.url+'discord/servers/'+str(server)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
@@ -437,15 +465,19 @@ class Requests:
 		return t
 		
 	def getNetwork(self, network):
-		return None #Networks are still under construction
+		"""Networks are still under construction"""
+		pass
 	
 	def getBanList(self, server=None, network=None):
-		return None #BanList functions as part of Networks
+		"""BanList functions as part of Networks"""
+		pass
 	
 	def getReports(self):
-		return None #Under construction
+		"""Under construction"""
+		pass
 		
 	def addTrainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow(), account=None):
+		"""Add a trainer to the database"""
 		url = self.url+'trainers/'
 		payload = {
 			'username': username,
@@ -469,7 +501,9 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	def patchTrainer(self, id, username=None, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
+	def patchTrainer(self, id, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
+		"""Update parts of a trainer in a database"""
+		pass
 		args = locals()
 		url = self.url+'trainers/'+str(id)+'/'
 		updated=datetime.datetime.utcnow()
@@ -477,17 +511,15 @@ class Requests:
 			'last_modified': updated.isoformat()
 		}
 		for i in args:
-			if args[i] is not None and args[i]!=' ':
+			if args[i] is not None and i not in ['self','id']:
 				payload[i] = args[i]
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code, r.json()))
 		status = r.raise_for_status()
-		if status is not None:
-			return status
-		else:
-			return None
+		return status
 	
 	def addUpdate(self, trainer, xp, datetime=datetime.datetime.utcnow()):
+		"""Add a Update object to the database"""
 		url = self.url+'update/'
 		payload = {
 			'trainer': trainer,
@@ -504,6 +536,7 @@ class Requests:
 			return r.json()['id']
 	
 	def patchDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+		"""Update information about a discord user"""
 		url = self.url+'discord/users/'+str(id)+'/'
 		payload = {
 			'account': user,
@@ -522,6 +555,7 @@ class Requests:
 			return r.json()['id']
 		
 	def addDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+		"""Add a discord user"""
 		url = self.url+'discord/users/'
 		payload = {
 			'account': user,
@@ -540,6 +574,7 @@ class Requests:
 			return r.json()['id']
 	
 	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+		"""Add a discord server"""
 		url = self.url+'discord/servers/'
 		payload = {
 			'name': name,
@@ -560,7 +595,9 @@ class Requests:
 		else:
 			return r.json()['id']
 	
-#	def addDiscordMember(self, user, server, join):
+	def addDiscordMember(self, user, server, join):
+		"""Add a discord member - stub"""
+		pass
 #		url = self.url+'discord/users/'
 #		payload = {
 #			'user': user,
@@ -572,6 +609,7 @@ class Requests:
 #		return r.raise_for_status()
 	
 	def addUserAccount(self, username, first_name=None, last_name=None):
+		"""Create a user"""
 		url = self.url+'users/'
 		payload = {
 			'username':username
@@ -589,6 +627,7 @@ class Requests:
 			return r.json()['id']
 		
 	def patchUserAccount(self, id, username=None, first_name=None, last_name=None):
+		"""Update user info"""
 		url = self.url+'users/'+str(id)+'/'
 		payload = {}
 		if username:
