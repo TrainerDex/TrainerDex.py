@@ -125,9 +125,11 @@ class Requests:
 	Supply an api token when calling the class.
 	"""
 	
-	def __init__(self, token):
+	def __init__(self, token=None):
 		self.url = 'http://www.ekpogo.uk/api/trainer/'
-		self.headers = {'content-type':'application/json', 'authorization':'Token '+token}
+		self.headers = {'content-type':'application/json'}
+		if token:
+			self.headers['authorization'] = 'Token '+token
 		
 	def trainerLevels(self, xp=None, level=None):
 		"""Returns a singular or a list of trainerdex.Level objects.
