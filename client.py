@@ -94,6 +94,8 @@ Level = namedtuple('Level', [
 	'xp_required'
 ])
 
+http_url = 'http://www.ekpogo.uk/api/trainer/'
+
 class Requests:
 	"""Interact with the TrainerDex API
 	
@@ -101,7 +103,7 @@ class Requests:
 	"""
 	
 	def __init__(self, token=None):
-		self.url = 'http://www.ekpogo.uk/api/trainer/'
+		self.url = http_url
 		self.headers = {'content-type':'application/json'}
 		if token:
 			self.headers['authorization'] = 'Token '+token

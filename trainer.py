@@ -3,8 +3,7 @@ import requests
 import iso8601
 from collections import namedtuple
 from utils import Level
-
-api_url = 'http://www.ekpogo.uk/api/trainer/'
+from client import http_url as api_url
 
 Update = namedtuple('Update', [
 	'time_updated',
