@@ -14,20 +14,11 @@ Trainer = namedtuple('Trainer', [
 	'goal_daily',
 	'goal_total',
 	'prefered',
-	'account',
 	'team',
-	'xp',
-	'xp_time',
-	'statistics',
-])
-
-TrainerList = namedtuple('TrainerList', [
-	'username',
-	'id',
+	'latest_update',
 	'account',
 	'discord',
-	'team',
-	'prefered'
+	'statistics',
 ])
 
 Team = namedtuple('Team', [
@@ -131,19 +122,19 @@ class Trainer:
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
 		self.account = r['account']
-		#update = r['update']
-		#self.xp = update['xp']
-		#self.xp_time = iso8601.parse_date(update['datetime'])
+		self.update = r['update']
+		self.update.xp = update['xp']
+		self.update.time = iso8601.parse_date(update['datetime'])
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
-			self.prefered = Nine
+			self.prefered = None
 			if force is False:
-				self.start_date=None
-				self.goal_daily=None
-				self.goal_total=None
-				#self.xp=None
-				#self.xp_time=None
+				self.start_date = None
+				self.goal_daily = None
+				self.goal_total = None
+				self.update.xp = None
+				self.update.time = None
 		
 	@classmethod
 	def level(cls):

@@ -1,2 +1,2 @@
-from .api import Trainer
-from .useful import Level
+from .requests import Trainer
+from .utils import Level

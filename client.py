@@ -5,32 +5,6 @@ import iso8601
 import inspect
 from collections import namedtuple
 
-Trainer = namedtuple('Trainer', [
-	'id',
-	'username',
-	'start_date',
-	'has_cheated',
-	'last_cheated',
-	'cheater',
-	'goal_daily',
-	'goal_total',
-	'prefered',
-	'account',
-	'team',
-	'xp',
-	'xp_time',
-	'statistics',
-])
-
-TrainerList = namedtuple('TrainerList', [
-	'username',
-	'id',
-	'account',
-	'discord',
-	'team',
-	'prefered'
-])
-
 Team = namedtuple('Team', [
 	'id',
 	'name',
