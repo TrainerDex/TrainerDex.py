@@ -55,13 +55,13 @@ class Level:
 	]
 	
 	@classmethod
-	def from_level(cls, level):
+	def from_level(cls, level: int):
 		for i in Level().all:
 			if i.level==level:
 				return i
 	
 	@classmethod
-	def from_xp(cls, xp):
+	def from_xp(cls, xp: int):
 		for i in Level().all[::-1]:
 			if i.total_xp<=xp:
 					return i

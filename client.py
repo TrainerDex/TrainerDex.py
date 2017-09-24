@@ -5,6 +5,7 @@ import datetime
 import iso8601
 import inspect
 from collections import namedtuple
+from typing import Union
 
 Team = namedtuple('Team', [
 	'id',
@@ -102,13 +103,13 @@ class Requests:
 	Supply an api token when calling the class.
 	"""
 	
-	def __init__(self, token=None):
+	def __init__(self, token: str=None):
 		self.url = http_url
 		self.headers = {'content-type':'application/json'}
 		if token:
 			self.headers['authorization'] = 'Token '+token
 	
-	def getDiscordUser(self, discord):
+	def getDiscordUser(self, discord: Union[str,int]):
 		"""Get the last seen information on a discord user - used like a cache"""
 		id = str(discord)
 		r = requests.get(self.url+'discord/users/'+str(id)+'/')
@@ -202,7 +203,7 @@ class Requests:
 		
 		return teams
 	
-	def getUpdates(self, trainer):
+	def getUpdates(self, trainer: int):
 		"""Get a list of all update objects - the server hosts over 500 of these so this will need to change soon.
 		
 		Expect lag!
@@ -261,7 +262,7 @@ class Requests:
 		
 		return None if updates==[] else updates
 					
-	def getUser(self, id):
+	def getUser(self, id: Union[str,int]):
 		"""Get information about a user, including a list of all trainers associated"""
 		id = str(id)
 		r = requests.get(self.url+'users/'+str(id)+'/')
@@ -289,7 +290,7 @@ class Requests:
 		
 		return t
 		
-	def getUserByDiscord(self, discord):
+	def getUserByDiscord(self, discord: Union[str,int]):
 		"""Get a user object via their discord ID instead of user ID"""
 		r = requests.get(self.url+'discord/users/'+str(discord)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
@@ -299,7 +300,7 @@ class Requests:
 		except KeyError:
 			return None
 	
-	def getServerInfo(self, server):
+	def getServerInfo(self, server: Union[str,int]):
 		"""Get cached information about a discord server"""
 		r = requests.get(self.url+'discord/servers/'+str(server)+'/')
 		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
@@ -329,7 +330,7 @@ class Requests:
 		"""Under construction"""
 		pass
 		
-	def addTrainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, datetime=datetime.datetime.utcnow(), account=None):
+	def addTrainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, datetime=datetime.datetime.utcnow(), account: int=None):
 		"""Add a trainer to the database"""
 		url = self.url+'trainers/'
 		payload = {
@@ -354,7 +355,7 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	def patchTrainer(self, id, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
+	def patchTrainer(self, id: int, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
 		"""Update parts of a trainer in a database"""
 		pass
 		args = locals()
@@ -371,7 +372,7 @@ class Requests:
 		status = r.raise_for_status()
 		return status
 	
-	def addUpdate(self, trainer, xp, datetime=datetime.datetime.utcnow()):
+	def addUpdate(self, trainer: int, xp: int, datetime=:datetime.datetime = datetime.datetime.utcnow()):
 		"""Add a Update object to the database"""
 		url = self.url+'update/'
 		payload = {
@@ -388,7 +389,7 @@ class Requests:
 		else:
 			return r.json()['id']
 	
-	def patchDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+	def patchDiscordUser(self, name: str, discriminator: Union[str,int], id: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
 		"""Update information about a discord user"""
 		url = self.url+'discord/users/'+str(id)+'/'
 		payload = {
@@ -407,7 +408,7 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	def addDiscordUser(self, name, discriminator, id, avatar_url, creation, user=None):
+	def addDiscordUser(self, name: str, discriminator: Union[str,int], id: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
 		"""Add a discord user"""
 		url = self.url+'discord/users/'
 		payload = {
@@ -426,7 +427,7 @@ class Requests:
 		else:
 			return r.json()['id']
 	
-	def addDiscordServer(self, name, region, id, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+	def addDiscordServer(self, name: str, region: str, id: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
 		url = self.url+'discord/servers/'
 		payload = {
@@ -448,7 +449,7 @@ class Requests:
 		else:
 			return r.json()['id']
 	
-	def addDiscordMember(self, user, server, join):
+	def addDiscordMember(self, user: Union[str,int], server: Union[str,int], join: datetime.datetime):
 		"""Add a discord member - stub"""
 		pass
 #		url = self.url+'discord/users/'
@@ -461,7 +462,7 @@ class Requests:
 #		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 #		return r.raise_for_status()
 	
-	def addUserAccount(self, username, first_name=None, last_name=None):
+	def addUserAccount(self, username: str, first_name: str=None, last_name: str=None):
 		"""Create a user"""
 		url = self.url+'users/'
 		payload = {
@@ -479,7 +480,7 @@ class Requests:
 		else:
 			return r.json()['id']
 		
-	def patchUserAccount(self, id, username=None, first_name=None, last_name=None):
+	def patchUserAccount(self, id: int, username: str=None, first_name: str=None, last_name: str=None):
 		"""Update user info"""
 		url = self.url+'users/'+str(id)+'/'
 		payload = {}

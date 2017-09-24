@@ -50,7 +50,7 @@ Update = namedtuple('Update', [
 class Trainer:
 	"""Get information about a trainer"""
 	
-	def __init__(self, id, force=False):
+	def __init__(self, id: int, force=False):
 		r = requests.get(api_url+'trainers/'+str(id)+'/')
 		self.status = r.status_code
 		r = r.json()
