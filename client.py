@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import json
 import datetime
@@ -168,66 +169,6 @@ class Requests:
 			return level
 		else:
 			return levels		
-	
-	def getTrainer(self, id, force=False):
-		"""Get information about a trainer by supplying their database ID"""
-		r = requests.get(self.url+'trainers/'+str(id)+'/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		updates = r['update']
-		if r['statistics'] is False and force is False:
-			trainer = Trainer(
-				id = r['id'],
-				username = r['username'],
-				start_date = None,
-				has_cheated = r['has_cheated'],
-				last_cheated = r['last_cheated'],
-				cheater = r['currently_cheats'],
-				goal_daily = None,
-				goal_total = None,
-				prefered = None,
-				account = None,	
-				team = r['faction'],
-				xp = None,
-				xp_time = None,
-				statistics = r['statistics']
-			)
-		elif r['statistics'] is False and force is True:
-			trainer = Trainer(
-				id = r['id'],
-				username = r['username'],
-				start_date = r['start_date'],
-				has_cheated = r['has_cheated'],
-				last_cheated = r['last_cheated'],
-				cheater = r['currently_cheats'],
-				goal_daily = r['daily_goal'],
-				goal_total = r['total_goal'],
-				prefered = None,
-				account = None,	
-				team = r['faction'],
-				xp = updates['xp'],
-				xp_time = iso8601.parse_date(updates['datetime']),
-				statistics = r['statistics']
-			)
-		else:
-			trainer = Trainer(
-				id = r['id'],
-				username = r['username'],
-				start_date = r['start_date'],
-				has_cheated = r['has_cheated'],
-				last_cheated = r['last_cheated'],
-				cheater = r['currently_cheats'],
-				goal_daily = r['daily_goal'],
-				goal_total = r['total_goal'],
-				prefered = r['prefered'],
-				account = r['account'],	
-				team = r['faction'],
-				xp = updates['xp'],
-				xp_time = iso8601.parse_date(updates['datetime']),
-				statistics = r['statistics']
-			)
-
-		return trainer
 	
 	def getDiscordUser(self, discord):
 		"""Get the last seen information on a discord user - used like a cache"""
