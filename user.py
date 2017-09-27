@@ -32,4 +32,12 @@ class User:
 				if i.prefered==False:
 					list.append(Trainer(i))
 		return list
+		
+	@classmethod
+	def discord(cls):
+		r = requests.get(api_url+'discord/users/')
+		r = r.json()
+		for i in r:
+			if i['account']==cls.id:
+				return DiscordUser(i)
 			

@@ -6,70 +6,35 @@ import iso8601
 import inspect
 from collections import namedtuple
 from utils import Team
-
+from trainer import Trainer
+from cached import DiscordUser
 
 http_url = 'http://www.ekpogo.uk/api/trainer/'
 
-class Requests:
+class Client:
 	"""Interact with the TrainerDex API
 	
 	Supply an api token when calling the class.
 	"""
 	
 	def __init__(self, token: str=None):
-		self.url = http_url
-		self.headers = {'content-type':'application/json'}
-		if token:
-			self.headers['authorization'] = 'Token '+token
-		
-	def listDiscordUsers(self):
-		"""Get a list of all seen discord users"""
-		r = requests.get(self.url+'discord/users/')
-		if r.status_code==200:
-			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
-		else:
-			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		users = []
-		for user in r:
-			users.append(DiscordMember(
-			discord_id = user['id'],
-			account_id = user['account'],
-			name = user['name'],
-			unique = user['discriminator'],
-			avatar = user['avatar_url'],
-			creation = iso8601.parse_date(user['creation']),
-			joined = None
-		))
-		
-		return users
-		
-	def listTrainers(self):
-		"""Get a list of all trainers and their linked ekpogo account and discord account"""
+		api_url = http_url
+		headers = {'content-type':'application/json'}
+		if token!=None:
+			headers['authorization'] = 'Token '+token
+	
+	@classmethod
+	def find_user_from_username(self, username: str):
+		"""Returns a User object from a Trainers username"""
 		r = requests.get(self.url+'trainers/')
 		if r.status_code==200:
-			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
+			print("{}: OK".format(inspect.currentframe().f_code.co_name))
 		else:
 			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
-		trainers = []
-		discord=None
-		listDiscordUsers=self.listDiscordUsers()
-		for trainer in r:
-			for user in listDiscordUsers:
-				if user.account_id==trainer['account']:
-					discord = user.discord_id
-			
-			trainers.append(TrainerList(
-				username = trainer['username'],
-				id = trainer['id'],
-				account = trainer['account'],
-				discord = discord,
-				team = trainer['faction'],
-				prefered = trainer['prefered']
-			))
-		
-		return trainers
+		for i in r:
+			if i['username'].lower()==username.lower():
+				return User(i['account'])
 	
 	def get_teams(self):
 		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""

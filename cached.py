@@ -2,6 +2,7 @@
 import requests
 import iso8601
 from client import http_url as api_url
+from user import User
 
 class DiscordUser:
 	"""Represents a cached Discord user"""
@@ -16,7 +17,7 @@ class DiscordUser:
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
 		self.creation = iso8601.parse_date(r['creation'])
-		self.owner = r['account']
+		self.owner = User(int(r['account']))
 
 class DiscordMember(DiscordUser):
 	"""Represents a cached Discord member"""

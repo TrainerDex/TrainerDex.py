@@ -4,6 +4,7 @@ import iso8601
 from utils import Level
 from client import http_url as api_url
 from update import Update
+from user import User
 
 class Trainer:
 	"""Get information about a trainer"""
@@ -23,7 +24,7 @@ class Trainer:
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
-		self.account = r['account']
+		self.account = Trainer(int(r['account']))
 		update = r['update']
 		self.update = Update(update['id'])
 		self.statistics = r['statistics']
