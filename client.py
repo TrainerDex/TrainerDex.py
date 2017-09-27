@@ -123,18 +123,6 @@ class Requests:
 			return self.getUser(r['account']) if r['account'] else None
 		except KeyError:
 			return None
-	
-	def getNetwork(self, network):
-		"""Networks are still under construction"""
-		pass
-	
-	def getBanList(self, server=None, network=None):
-		"""BanList functions as part of Networks"""
-		pass
-	
-	def getReports(self):
-		"""Under construction"""
-		pass
 		
 	def addTrainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, datetime=datetime.datetime.utcnow(), account: int=None):
 		"""Add a trainer to the database"""
