@@ -73,7 +73,7 @@ class Level:
 class Team:
 	"""Represents a Pokemon Go team"""
 	
-	def __init__(self, id):
+	def __init__(self, id: int):
 		r = requests.get(api_url+'factions/')
 		if r.status_code==200:
 			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
