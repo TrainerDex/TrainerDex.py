@@ -55,6 +55,9 @@ class Level:
 		LevelTuple(level=40,total_xp=20000000,xp_required=5000000)
 	]
 	
+	def __str__(self):
+		return self.all
+	
 	@classmethod
 	def from_level(cls, level: int):
 		for i in Level().all:
