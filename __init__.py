@@ -19,3 +19,4 @@ __version__ = 1.2.0
 
 from .trainer import Trainer
 from .utils import Level
+from .update import Update
