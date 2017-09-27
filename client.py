@@ -7,14 +7,6 @@ import inspect
 from collections import namedtuple
 from utils import Team
 
-User = namedtuple('User', [
-	'id',
-	'username',
-	'first_name',
-	'last_name',
-	'dob',
-	'profiles',
-])
 
 http_url = 'http://www.ekpogo.uk/api/trainer/'
 
@@ -86,34 +78,6 @@ class Requests:
 			teams.append(Team(i))
 		return teams
 					
-	def getUser(self, id: Union[str,int]):
-		"""Get information about a user, including a list of all trainers associated"""
-		id = str(id)
-		r = requests.get(self.url+'users/'+str(id)+'/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-#		extra = r['extended_profile']
-		extra = None
-		if extra:
-			birthday = iso8601.parse_date(extra['dob'])
-			birthday = birthday.date()
-		else: birthday = None
-		
-		profiles=[]
-		for profile in r['profiles']:
-			profiles.append(profile['username'])
-		
-		t = User(
-			id=r['id'],
-			username=r['username'],
-			first_name=r['first_name'],
-			last_name=r['last_name'],
-			dob=birthday,
-			profiles=profiles
-		)
-		
-		return t
-		
 	def getUserByDiscord(self, discord: Union[str,int]):
 		"""Get a user object via their discord ID instead of user ID"""
 		r = requests.get(self.url+'discord/users/'+str(discord)+'/')
