@@ -5,16 +5,7 @@ import datetime
 import iso8601
 import inspect
 from collections import namedtuple
-from typing import Union
-
-Team = namedtuple('Team', [
-	'id',
-	'name',
-	'colour',
-	'image',
-	'leader',
-	'leader_image',
-])
+from utils import Team
 
 User = namedtuple('User', [
 	'id',
@@ -134,31 +125,11 @@ class Requests:
 		
 		return trainers
 	
-	def getTeams(self):
+	def get_teams(self):
 		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
-		r = requests.get(self.url+'factions/')
-		if r.status_code==200:
-			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
-		else:
-			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
 		teams = []
-		for team in r:
-			if team['leader_name']:
-				leader_name=team['leader_name']
-				leader_image=team['leader_image']
-			else:
-				leader_name=None
-				leader_image=None
-			teams.append(Team(
-				id=team['id'],
-				name=team['name'],
-				colour=team['colour'],
-				image=team['image'],
-				leader=leader_name,
-				leader_image=leader_image
-			))
-		
+		for i in 0..3: #Hard coded team IDs, will change if teams ever increase in number
+			teams.append(Team(i))
 		return teams
 					
 	def getUser(self, id: Union[str,int]):

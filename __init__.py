@@ -18,5 +18,5 @@ __copyright__ = 'Copyright 2017 JayTurnr'
 __version__ = 1.2.0
 
 from .trainer import Trainer
-from .utils import Level
+from .utils import Level, Team
 from .update import Update

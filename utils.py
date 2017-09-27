@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import namedtuple
+from client import http_url as api_url
 
 LevelTuple = namedtuple('LevelTuple', [
 	'level',
@@ -66,3 +67,27 @@ class Level:
 			if i.total_xp<=xp:
 					return i
 	
+class Team:
+	"""Represents a Pokemon Go team"""
+	
+	def __init__(self, id):
+		r = requests.get(api_url+'factions/')
+		if r.status_code==200:
+			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		self.status = r.status_code
+		r = r.json()
+		self.raw = r
+		self.id = r['id']
+		self.name = r['name']
+		self.colour = r['colour']
+		self.color = self.colour
+		self.image = r['image']
+		self.leader = r['leader_name']
+		self.leader_image = r['leader_image']
+		
+	@classmethod
+	def image_url(cls):
+		"""Returns a usable url for an image"""
+		return '{}media{}'.format(api_url, selfcls.r['image'])
