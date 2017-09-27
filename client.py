@@ -16,48 +16,6 @@ Team = namedtuple('Team', [
 	'leader_image',
 ])
 
-Update = namedtuple('Update', [
-	'time_updated',
-	'total_xp',
-	'dex_caught',
-	'dex_seen',
-	'walk_dist',
-	'gen_1_dex',
-	'pkmn_caught',
-	'pkmn_evolved',
-	'pkstops_spun',
-	'battles_won',
-	'gen_2_dex',
-	'berry_fed',
-	'gym_defended',
-	'eggs_hatched',
-	'big_magikarp',
-	'gyms_trained',
-	'tiny_rattata',
-	'pikachu_caught',
-	'unown_alphabet',
-	'raids_completed',
-	'gym_badges',
-	'pkmn_normal',
-	'pkmn_flying',
-	'pkmn_poison',
-	'pkmn_ground',
-	'pkmn_rock',
-	'pkmn_bug',
-	'pkmn_steel',
-	'pkmn_fire',
-	'pkmn_water',
-	'pkmn_grass',
-	'pkmn_electric',
-	'pkmn_psychic',
-	'pkmn_dark',
-	'pkmn_fairy',
-	'pkmn_fighting',
-	'pkmn_ghost',
-	'pkmn_ice',
-	'pkmn_dragon',
-])
-
 User = namedtuple('User', [
 	'id',
 	'username',
@@ -202,65 +160,6 @@ class Requests:
 			))
 		
 		return teams
-	
-	def getUpdates(self, trainer: int):
-		"""Get a list of all update objects - the server hosts over 500 of these so this will need to change soon.
-		
-		Expect lag!
-		"""
-		r = requests.get(self.url+'update/')
-		if r.status_code==200:
-			print("{}: {}".format(inspect.currentframe().f_code.co_name,r.status_code))
-		else:
-			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		updates = []
-		update_list = r
-		for update in update_list:
-			if update['trainer']==trainer:
-				updates.append(Update(
-					time_updated=iso8601.parse_date(update['datetime']),
-					total_xp=update['xp'],
-					dex_caught=update['dex_caught'],
-					dex_seen=update['dex_seen'],
-					walk_dist=update['walk_dist'],
-					gen_1_dex=update['gen_1_dex'],
-					pkmn_caught=update['pkmn_caught'],
-					pkmn_evolved=update['pkmn_evolved'],
-					pkstops_spun=update['pkstops_spun'],
-					battles_won=update['battles_won'],
-					gen_2_dex=update['gen_2_dex'],
-					berry_fed=update['berry_fed'],
-					gym_defended=update['gym_defended'],
-					eggs_hatched=update['eggs_hatched'],
-					big_magikarp=update['big_magikarp'],
-					gyms_trained=update['legacy_gym_trained'],
-					tiny_rattata=update['tiny_rattata'],
-					pikachu_caught=update['pikachu_caught'],
-					unown_alphabet=update['unown_alphabet'],
-					raids_completed=update['raids_completed'],
-					gym_badges=update['gym_badges'],
-					pkmn_normal=update['pkmn_normal'],
-					pkmn_flying=update['pkmn_flying'],
-					pkmn_poison=update['pkmn_poison'],
-					pkmn_ground=update['pkmn_ground'],
-					pkmn_rock=update['pkmn_rock'],
-					pkmn_bug=update['pkmn_bug'],
-					pkmn_steel=update['pkmn_steel'],
-					pkmn_fire=update['pkmn_fire'],
-					pkmn_water=update['pkmn_water'],
-					pkmn_grass=update['pkmn_grass'],
-					pkmn_electric=update['pkmn_electric'],
-					pkmn_psychic=update['pkmn_psychic'],
-					pkmn_dark=update['pkmn_dark'],
-					pkmn_fairy=update['pkmn_fairy'],
-					pkmn_fighting=update['pkmn_fighting'],
-					pkmn_ghost=update['pkmn_ghost'],
-					pkmn_ice=update['pkmn_ice'],
-					pkmn_dragon=update['pkmn_dragon']
-				))
-		
-		return None if updates==[] else updates
 					
 	def getUser(self, id: Union[str,int]):
 		"""Get information about a user, including a list of all trainers associated"""

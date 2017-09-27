@@ -42,4 +42,20 @@ class Trainer:
 	@classmethod
 	def level(cls):
 		return Level().get_by_xp(cls.update['xp'])
+		
+	@classmethod
+	def get_updates(cls):
+		"""Get a list of all update objects by trainer"""
+		r = requests.get(self.url+'update/')
+		if r.status_code==200:
+			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
+		else:
+			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		r = r.json()
+		updates = []
+		for update in r:
+			if update['trainer']==trainer:
+				updates.append(Update(update['id']))
+		
+		return updates
 	
