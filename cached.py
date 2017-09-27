@@ -7,7 +7,7 @@ class DiscordUser:
 	"""Represents a cached Discord user"""
 	
 	def __init__(self, id):
-		r = requests.get(api_url+'discord/users/'+str(discord.id)+'/')
+		r = requests.get(api_url+'discord/users/'+str(id)+'/')
 		self.status = r.status_code
 		r = r.json()
 		self.raw = r
@@ -23,7 +23,7 @@ class DiscordMember(DiscordUser):
 	
 	def __init__(self, id, server):
 		super().__init__(id)
-#		r = requests.get(api_url+'discord/members/'+str(discord.id)+'/')
+#		r = requests.get(api_url+'discord/members/'+str(id)+'/')
 #		self.status = [self.status, r.status_code]
 #		r = r.json()
 #		self.raw = [self.raw, r]
@@ -34,7 +34,7 @@ class DiscordServer:
 	"""Represents a cached Discord server"""
 	
 	def __init__(self, id):
-		r = requests.get(api_url+'discord/servers/'+str(discord.id)+'/')
+		r = requests.get(api_url+'discord/servers/'+str(id)+'/')
 		self.status = r.status_code
 		r = r.json()
 		self.raw = r
