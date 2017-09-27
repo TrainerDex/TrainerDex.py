@@ -38,12 +38,6 @@ Server = namedtuple('Server', [
 	'owner',
 ])
 
-Level = namedtuple('Level', [
-	'level',
-	'total_xp',
-	'xp_required'
-])
-
 http_url = 'http://www.ekpogo.uk/api/trainer/'
 
 class Requests:
