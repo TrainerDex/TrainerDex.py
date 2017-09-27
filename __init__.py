@@ -20,3 +20,4 @@ __version__ = 1.2.0
 from .trainer import Trainer
 from .utils import Level, Team
 from .update import Update
+from .cached import DiscordUser, DiscordServer, DiscordMember

@@ -16,28 +16,6 @@ User = namedtuple('User', [
 	'profiles',
 ])
 
-DiscordMember = namedtuple('DiscordMember', [
-	'discord_id',
-	'account_id',
-	'name',
-	'unique',
-	'avatar',
-	'creation',
-	'joined'
-])
-
-Server = namedtuple('Server', [
-	'id',
-	'name',
-	'region',
-	'icon',
-	'bans_cheaters',
-	'seg_cheaters',
-	'bans_minors',
-	'seg_minors',
-	'owner',
-])
-
 http_url = 'http://www.ekpogo.uk/api/trainer/'
 
 class Requests:
@@ -51,24 +29,6 @@ class Requests:
 		self.headers = {'content-type':'application/json'}
 		if token:
 			self.headers['authorization'] = 'Token '+token
-	
-	def getDiscordUser(self, discord: Union[str,int]):
-		"""Get the last seen information on a discord user - used like a cache"""
-		id = str(discord)
-		r = requests.get(self.url+'discord/users/'+str(id)+'/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		user = DiscordMember(
-			discord_id = r['id'],
-			account_id = r['account'],
-			name = r['name'],
-			unique = r['discriminator'],
-			avatar = r['avatar_url'],
-			creation = iso8601.parse_date(r['creation']),
-			joined = None
-		)
-		
-		return user
 		
 	def listDiscordUsers(self):
 		"""Get a list of all seen discord users"""
@@ -164,24 +124,6 @@ class Requests:
 		except KeyError:
 			return None
 	
-	def getServerInfo(self, server: Union[str,int]):
-		"""Get cached information about a discord server"""
-		r = requests.get(self.url+'discord/servers/'+str(server)+'/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		t = Server(
-			id=r['id'],
-			name=r['name'],
-			region=r['region'],
-			icon=r['icon'],
-			bans_cheaters=r['bans_cheaters'],
-			seg_cheaters=r['seg_cheaters'],
-			bans_minors=r['bans_minors'],
-			seg_minors=r['seg_minors'],
-			owner=r['owner']
-		)
-		return t
-		
 	def getNetwork(self, network):
 		"""Networks are still under construction"""
 		pass
