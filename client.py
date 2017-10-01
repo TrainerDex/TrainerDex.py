@@ -42,16 +42,6 @@ class Client:
 		for i in 0..3: #Hard coded team IDs, will change if teams ever increase in number
 			teams.append(Team(i))
 		return teams
-					
-	def getUserByDiscord(self, discord: Union[str,int]):
-		"""Get a user object via their discord ID instead of user ID"""
-		r = requests.get(self.url+'discord/users/'+str(discord)+'/')
-		print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		r = r.json()
-		try:
-			return self.getUser(r['account']) if r['account'] else None
-		except KeyError:
-			return None
 		
 	def addTrainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, datetime=datetime.datetime.utcnow(), account: int=None):
 		"""Add a trainer to the database"""
