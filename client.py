@@ -36,6 +36,7 @@ class Client:
 			if i['username'].lower()==username.lower():
 				return User(i['account'])
 	
+	@classmethod
 	def get_teams(self):
 		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
 		teams = []
