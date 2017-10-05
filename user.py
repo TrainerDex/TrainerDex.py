@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import requests
-import iso8601
 from http import request_status, api_url
 from trainer import Trainer
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-import iso8601
+import maya
 from http import request_status, api_url
 from user import User
 
@@ -18,7 +18,7 @@ class DiscordUser:
 		self.name = r['name']
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
-		self.creation = iso8601.parse_date(r['creation'])
+		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
 		self.owner = User(int(r['account']))
 
 class DiscordMember(DiscordUser):
@@ -33,7 +33,7 @@ class DiscordMember(DiscordUser):
 #		r = r.json()
 #		self.raw = [self.raw, r]
 #		self.server = Server(r['server'])
-#		self.join = iso8601.parse_date(r['join'])
+#		self.join = maya.MayaDT.from_iso8601(r['join']).datetime()
 
 class DiscordServer:
 	"""Represents a cached Discord server"""

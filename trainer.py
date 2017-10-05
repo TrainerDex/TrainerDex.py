@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-import iso8601
+import maya
 from utils import Level
 from http import request_status, api_url
 from update import Update
@@ -21,8 +21,11 @@ class Trainer:
 		self.cheater = r['currently_cheats']
 		self.team = r['faction']
 		self.has_cheated = r['has_cheated']
-		self.last_cheated = r['last_cheated']
-		self.start_date = r['start_date']
+		if r['last_cheated']:
+			self.last_cheated = maya.MayaDT.from_iso8601(r['last_cheated']).datetime()
+		else:
+			self.last_cheated = None
+		self.start_date = maya.MayaDT.from_iso8601(r['start_date']).datetime()
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']

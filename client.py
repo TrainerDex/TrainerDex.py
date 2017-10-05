@@ -2,7 +2,7 @@
 import requests
 import json
 import datetime
-import iso8601
+import maya
 import inspect
 from collections import namedtuple
 from utils import Team
@@ -39,7 +39,7 @@ class Client:
 			teams.append(Team(i))
 		return teams
 		
-	def addTrainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, datetime=datetime.datetime.utcnow(), account: int=None):
+	def addTrainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, account: int=None):
 		"""Add a trainer to the database"""
 		url = api_url+'trainers/'
 		payload = {
@@ -52,7 +52,7 @@ class Client:
 			'daily_goal': daily_goal,
 			'total_goal': total_goal,
 			'prefered': prefered,
-			'last_modified': datetime.isoformat(),
+			'last_modified': maya.now().iso8601(),
 			'account': account
 		}
 		
@@ -65,9 +65,8 @@ class Client:
 		pass
 		args = locals()
 		url = api_url+'trainers/'+str(id_)+'/'
-		updated=datetime.datetime.utcnow()
 		payload = {
-			'last_modified': updated.isoformat()
+			'last_modified': maya.now().iso8601()
 		}
 		for i in args:
 			if args[i] is not None and i not in ['self','id']:
@@ -76,13 +75,13 @@ class Client:
 		print(request_status(r))
 		r.raise_for_status()
 	
-	def addUpdate(self, trainer: int, xp: int, datetime=:datetime.datetime = datetime.datetime.utcnow()):
+	def addUpdate(self, trainer: int, xp: int):
 		"""Add a Update object to the database"""
 		url = api_url+'update/'
 		payload = {
 			'trainer': trainer,
 			'xp': xp,
-			'datetime': datetime.isoformat()
+			'datetime': maya.now().iso8601()
 		}
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
@@ -90,7 +89,7 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 	
-	def patchDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
+	def patchDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime.datetime, user: int=None):
 		"""Update information about a discord user"""
 		url = api_url+'discord/users/'+str(id_)+'/'
 		payload = {
@@ -106,7 +105,7 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 		
-	def addDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
+	def addDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime.datetime, user: int=None):
 		"""Add a discord user"""
 		url = api_url+'discord/users/'
 		payload = {

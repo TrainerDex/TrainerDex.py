@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-import iso8601
+import maya
 from utils import Level
 from http import request_status, api_url
 
@@ -15,7 +15,7 @@ class Update:
 		r = r.json()
 		self.raw = r
 		self.id = r['id']
-		self.time_updated = iso8601.parse_date(r['datetime'])
+		self.time_updated = maya.MayaDT.from_iso8601(r['datetime']).datetime()
 		self.xp = r['xp']
 		self.dex_caught = r['dex_caught']
 		self.dex_seen = r ['dex_seen']
