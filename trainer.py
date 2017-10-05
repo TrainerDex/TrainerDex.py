@@ -29,7 +29,7 @@ class Trainer:
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
-		self.account = Trainer(int(r['account']))
+		self.account = User(int(r['account']))
 		update = r['update']
 		self.update = Update(update['id'])
 		self.statistics = r['statistics']
