@@ -23,16 +23,16 @@ class User:
 		
 	@classmethod
 	def trainer(cls, show_all=False):
-		profiles = cls.r['profiles']
-		list = []
-		for i in profiles:
+		_profiles = cls.r['profiles']
+		profiles = []
+		for i in _profiles:
 			if i.prefered==True:
-				list.append(Trainer(i))
+				profiles.append(Trainer(i))
 		if show_all==True:
-			for i in profiles:
+			for i in _profiles:
 				if i.prefered==False:
-					list.append(Trainer(i))
-		return list
+					profiles.append(Trainer(i))
+		return profiles
 		
 	@classmethod
 	def discord(cls):
