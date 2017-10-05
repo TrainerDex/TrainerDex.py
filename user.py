@@ -17,7 +17,7 @@ class User:
 		self.username = r['username']
 		self.first_name = r['first_name']
 		self.last_name = r['last_name']
-		xprofile = None #Extended Profiles are still under construction
+		#xprofile = None #Extended Profiles are still under construction
 		self.dob = None
 		self.birthday = self.dob
 		
