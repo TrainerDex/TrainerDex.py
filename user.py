@@ -7,8 +7,8 @@ from trainer import Trainer
 class User:
 	"""Represents a user"""
 	
-	def __init__(self, id):
-		r = requests.get(api_url+'users/'+str(id)+'/')
+	def __init__(self, id_):
+		r = requests.get(api_url+'users/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)
 		r.raise_for_status()
@@ -42,6 +42,6 @@ class User:
 		r.raise_for_status()
 		r = r.json()
 		for i in r:
-			if i['account']==cls.id:
+			if i['account']==cls.id_:
 				return DiscordUser(i)
 			

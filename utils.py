@@ -74,8 +74,8 @@ class Level:
 class Team:
 	"""Represents a Pokemon Go team"""
 	
-	def __init__(self, id: int):
-		r = requests.get(api_url+'factions/')
+	def __init__(self, id_: int):
+		r = requests.get(api_url+'factions/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)
 		r.raise_for_status()

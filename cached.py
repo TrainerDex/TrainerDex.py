@@ -7,8 +7,8 @@ from user import User
 class DiscordUser:
 	"""Represents a cached Discord user"""
 	
-	def __init__(self, id):
-		r = requests.get(api_url+'discord/users/'+str(id)+'/')
+	def __init__(self, id_):
+		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)
 		r.raise_for_status()
@@ -24,9 +24,9 @@ class DiscordUser:
 class DiscordMember(DiscordUser):
 	"""Represents a cached Discord member"""
 	
-	def __init__(self, id, server):
-		super().__init__(id)
-#		r = requests.get(api_url+'discord/members/'+str(id)+'/')
+	def __init__(self, id_, server):
+		super().__init__(id_)
+#		r = requests.get(api_url+'discord/members/'+str(id_)+'/')
 #		self.status = request_status(r)
 #		print(self.status)
 #		r.raise_for_status()
@@ -38,8 +38,8 @@ class DiscordMember(DiscordUser):
 class DiscordServer:
 	"""Represents a cached Discord server"""
 	
-	def __init__(self, id):
-		r = requests.get(api_url+'discord/servers/'+str(id)+'/')
+	def __init__(self, id_):
+		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)
 		r.raise_for_status()

@@ -9,8 +9,8 @@ from user import User
 class Trainer:
 	"""Get information about a trainer"""
 	
-	def __init__(self, id: int, force=False):
-		r = requests.get(api_url+'trainers/'+str(id)+'/')
+	def __init__(self, id_: int, force=False):
+		r = requests.get(api_url+'trainers/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)
 		r.raise_for_status()

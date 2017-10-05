@@ -60,11 +60,11 @@ class Client:
 		print(request_status(r))
 		r.raise_for_status()
 		
-	def patchTrainer(self, id: int, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
+	def patchTrainer(self, id_: int, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
 		"""Update parts of a trainer in a database"""
 		pass
 		args = locals()
-		url = api_url+'trainers/'+str(id)+'/'
+		url = api_url+'trainers/'+str(id_)+'/'
 		updated=datetime.datetime.utcnow()
 		payload = {
 			'last_modified': updated.isoformat()
@@ -90,14 +90,14 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 	
-	def patchDiscordUser(self, name: str, discriminator: Union[str,int], id: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
+	def patchDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
 		"""Update information about a discord user"""
-		url = api_url+'discord/users/'+str(id)+'/'
+		url = api_url+'discord/users/'+str(id_)+'/'
 		payload = {
 			'account': user,
 			'name': name,
 			'discriminator': discriminator,
-			'id': id,
+			'id': id_,
 			'avatar_url': avatar_url,
 			'creation': creation.isoformat()
 		}
@@ -106,14 +106,14 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 		
-	def addDiscordUser(self, name: str, discriminator: Union[str,int], id: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
+	def addDiscordUser(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime:datetime, user: int=None):
 		"""Add a discord user"""
 		url = api_url+'discord/users/'
 		payload = {
 			'account': user,
 			'name': name,
 			'discriminator': discriminator,
-			'id': id,
+			'id': id_,
 			'avatar_url': avatar_url,
 			'creation': creation.isoformat()
 		}
@@ -122,13 +122,13 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 	
-	def addDiscordServer(self, name: str, region: str, id: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+	def addDiscordServer(self, name: str, region: str, id_: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
 		url = api_url+'discord/servers/'
 		payload = {
 			'name': name,
 			'region': region,
-			'id': id,
+			'id': id_,
 			'icon': icon,
 			'owner': owner,
 			'bans_cheaters': bans_cheaters,
@@ -169,9 +169,9 @@ class Client:
 		r.raise_for_status()
 		return r.json()['id']
 		
-	def patchUserAccount(self, id: int, username: str=None, first_name: str=None, last_name: str=None):
+	def patchUserAccount(self, id_: int, username: str=None, first_name: str=None, last_name: str=None):
 		"""Update user info"""
-		url = api_url+'users/'+str(id)+'/'
+		url = api_url+'users/'+str(id_)+'/'
 		payload = {}
 		if username:
 			payload['username'] = username
