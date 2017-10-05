@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import requests
 from collections import namedtuple
-from client import http_url as api_url
+from http import api_url
 
 LevelTuple = namedtuple('LevelTuple', [
 	'level',

@@ -2,7 +2,7 @@
 import requests
 import iso8601
 from utils import Level
-from client import http_url as api_url
+from http import api_url
 from update import Update
 from user import User
 
