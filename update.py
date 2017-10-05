@@ -8,7 +8,7 @@ class Update:
 	"""Represents an Update object on the API"""
 	
 	def __init__(self, id: int):
-		r = requests.get(self.url+'update/'+id+'/')
+		r = requests.get(api_url+'update/'+id+'/')
 		self.status = r.status_code
 		r = r.json()
 		self.raw = r

@@ -47,7 +47,7 @@ class Trainer:
 	@classmethod
 	def get_updates(cls):
 		"""Get a list of all update objects by trainer"""
-		r = requests.get(self.url+'update/')
+		r = requests.get(api_url+'update/')
 		if r.status_code==200:
 			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
 		else:
