@@ -43,4 +43,18 @@ class User:
 		for i in r:
 			if i['account']==cls.id_:
 				return DiscordUser(i)
-			
+	
+	@classmethod
+	def update(self, username: str=None, first_name: str=None, last_name: str=None):
+		"""Update user info"""
+		args = locals()
+		url = api_url+'users/'+str(cls.id_)+'/'
+		payload = {}
+		for i in args:
+			if args[i] is not None and i not in ['cls', 'id_', 'cls.id_']:
+				payload[i] = args[i]
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return User(int(r.json()['id']))
+		
