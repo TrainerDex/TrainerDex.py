@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import iso8601
-from http import api_url
+from http import request_status, api_url
 from trainer import Trainer
 
 class User:
@@ -9,7 +9,9 @@ class User:
 	
 	def __init__(self, id):
 		r = requests.get(api_url+'users/'+str(id)+'/')
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']
@@ -36,6 +38,8 @@ class User:
 	@classmethod
 	def discord(cls):
 		r = requests.get(api_url+'discord/users/')
+		print(request_status(r))
+		r.raise_for_status()
 		r = r.json()
 		for i in r:
 			if i['account']==cls.id:

@@ -2,7 +2,7 @@
 import requests
 import iso8601
 from utils import Level
-from http import api_url
+from http import request_status, api_url
 from update import Update
 from user import User
 
@@ -11,7 +11,9 @@ class Trainer:
 	
 	def __init__(self, id: int, force=False):
 		r = requests.get(api_url+'trainers/'+str(id)+'/')
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']
@@ -48,10 +50,8 @@ class Trainer:
 	def get_updates(cls):
 		"""Get a list of all update objects by trainer"""
 		r = requests.get(api_url+'update/')
-		if r.status_code==200:
-			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
-		else:
-			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
+		print(request_status(r))
+		r.raise_for_status()
 		r = r.json()
 		updates = []
 		for update in r:

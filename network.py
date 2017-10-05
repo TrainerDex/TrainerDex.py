@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import iso8601
-from http import api_url
+from http import request_status, api_url
 
 class Network:
 	"""Networks are still under construction"""

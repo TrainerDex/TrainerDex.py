@@ -2,14 +2,16 @@
 import requests
 import iso8601
 from utils import Level
-from http import api_url
+from http import request_status, api_url
 
 class Update:
 	"""Represents an Update object on the API"""
 	
 	def __init__(self, id: int):
 		r = requests.get(api_url+'update/'+id+'/')
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 from collections import namedtuple
-from http import api_url
+from http import request_status, api_url
 
 LevelTuple = namedtuple('LevelTuple', [
 	'level',
@@ -76,11 +76,9 @@ class Team:
 	
 	def __init__(self, id: int):
 		r = requests.get(api_url+'factions/')
-		if r.status_code==200:
-			print("{}: OK".format(inspect.currentframe().f_code.co_name,r.status_code))
-		else:
-			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']

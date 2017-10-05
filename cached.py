@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import iso8601
-from http import api_url
+from http import request_status, api_url
 from user import User
 
 class DiscordUser:
@@ -9,7 +9,9 @@ class DiscordUser:
 	
 	def __init__(self, id):
 		r = requests.get(api_url+'discord/users/'+str(id)+'/')
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']
@@ -25,7 +27,9 @@ class DiscordMember(DiscordUser):
 	def __init__(self, id, server):
 		super().__init__(id)
 #		r = requests.get(api_url+'discord/members/'+str(id)+'/')
-#		self.status = [self.status, r.status_code]
+#		self.status = request_status(r)
+#		print(self.status)
+#		r.raise_for_status()
 #		r = r.json()
 #		self.raw = [self.raw, r]
 #		self.server = Server(r['server'])
@@ -36,7 +40,9 @@ class DiscordServer:
 	
 	def __init__(self, id):
 		r = requests.get(api_url+'discord/servers/'+str(id)+'/')
-		self.status = r.status_code
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
 		r = r.json()
 		self.raw = r
 		self.id = r['id']
