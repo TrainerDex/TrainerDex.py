@@ -7,7 +7,7 @@ class Network:
 	"""Networks are still under construction"""
 	
 	def __init__(self, id):
-	pass
+		pass
 	
 	@classmethod
 	def bans(cls):
