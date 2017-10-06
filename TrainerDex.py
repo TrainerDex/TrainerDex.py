@@ -28,7 +28,9 @@ TrainerList = namedtuple('TrainerList', [
 	'account',
 	'discord',
 	'team',
-	'prefered'
+	'prefered',
+	'xp',
+	'xp_time'
 ])
 
 Team = namedtuple('Team', [
@@ -304,9 +306,10 @@ class Requests:
 			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		trainers = []
-		discord=None
 		listDiscordUsers=self.listDiscordUsers()
 		for trainer in r:
+			update = trainer['update']
+			discord=None
 			for user in listDiscordUsers:
 				if user.account_id==trainer['account']:
 					discord = user.discord_id
@@ -317,7 +320,9 @@ class Requests:
 				account = trainer['account'],
 				discord = discord,
 				team = trainer['faction'],
-				prefered = trainer['prefered']
+				prefered = trainer['prefered'],
+				xp = update['xp'],
+				xp_time = iso8601.parse_date(update['datetime'])
 			))
 		
 		return trainers
