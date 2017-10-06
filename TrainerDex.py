@@ -306,10 +306,10 @@ class Requests:
 			print("{}: {} - {}".format(inspect.currentframe().f_code.co_name,r.status_code ,r.json()))
 		r = r.json()
 		trainers = []
-		discord=None
 		listDiscordUsers=self.listDiscordUsers()
 		for trainer in r:
 			update = trainer['update']
+			discord=None
 			for user in listDiscordUsers:
 				if user.account_id==trainer['account']:
 					discord = user.discord_id
