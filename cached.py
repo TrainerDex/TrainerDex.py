@@ -76,8 +76,8 @@ class refresh_discord:
 	"""
 	
 	def __init__(self, discordClient, client):
-	self.bot = discordClient # Bot should be a discord.Client() with a valid token. If you're using discord caching functions, you're likely already using a discord.py bot. Just pass this over in the bot arg
-	self.client = client # Client should be the trainerdex.Client() with a valid token.
+		self.bot = discordClient # Bot should be a discord.Client() with a valid token. If you're using discord caching functions, you're likely already using a discord.py bot. Just pass this over in the bot arg
+		self.client = client # Client should be the trainerdex.Client() with a valid token.
 	
 	@classmethod
 	def servers(cls):

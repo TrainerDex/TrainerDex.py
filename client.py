@@ -23,6 +23,7 @@ class Client:
 			headers['authorization'] = 'Token '+token
 		self.headers = headers
 	
+	
 	@classmethod
 	def get_user_from_username(self, username: str):
 		"""Returns a User object from a Trainers username"""
@@ -40,7 +41,7 @@ class Client:
 		for i in 0..3: #Hard coded team IDs, will change if teams ever increase in number
 			teams.append(Team(i))
 		return teams
-		
+	
 	def create_trainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, account: int=None):
 		"""Add a trainer to the database"""
 		url = api_url+'trainers/'
