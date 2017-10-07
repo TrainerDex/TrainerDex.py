@@ -62,6 +62,21 @@ class Client:
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(int(r.json()['id']))
+		
+	def update_trainer(cls, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
+		"""Update parts of a trainer in a database"""
+		args = locals()
+		url = api_url+'trainers/'+str(cls.id_)+'/'
+		payload = {
+			'last_modified': maya.now().iso8601()
+		}
+		for i in args:
+			if args[i] is not None and i not in ['cls', 'id_', 'cls.id_']:
+				payload[i] = args[i]
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return Trainer(int(r.json()['id']))
 	
 	def create_update(self, trainer: int, xp: int):
 		"""Add a Update object to the database"""
@@ -137,6 +152,19 @@ class Client:
 		if last_name:
 			payload['last_name'] = last_name
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return User(int(r.json()['id']))
+		
+	def update_user(self, username: str=None, first_name: str=None, last_name: str=None):
+		"""Update user info"""
+		args = locals()
+		url = api_url+'users/'+str(cls.id_)+'/'
+		payload = {}
+		for i in args:
+			if args[i] is not None and i not in ['cls', 'id_', 'cls.id_']:
+				payload[i] = args[i]
+		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(int(r.json()['id']))
