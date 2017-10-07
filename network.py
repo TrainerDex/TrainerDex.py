@@ -6,7 +6,7 @@
 class Network:
 	"""Networks are still under construction"""
 	
-	def __init__(self, id):
+	def __init__(self, id_):
 		pass
 	
 	@classmethod
