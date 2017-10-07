@@ -92,7 +92,7 @@ class Client:
 		r.raise_for_status()
 		return Update(int(r.json()['id']))
 		
-	def create_discord_user(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime.datetime, user: int=None):
+	def import_discord_user(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime.datetime, user: int=None):
 		"""Add a discord user"""
 		url = api_url+'discord/users/'
 		payload = {
@@ -108,7 +108,7 @@ class Client:
 		r.raise_for_status()
 		return DiscordUser(int(r.json()['id']))
 	
-	def create_discord_server(self, name: str, region: str, id_: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+	def import_discord_server(self, name: str, region: str, id_: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
 		url = api_url+'discord/servers/'
 		payload = {
@@ -127,7 +127,7 @@ class Client:
 		r.raise_for_status()
 		return DiscordServer(int(r.json()['id']))
 	
-	def create_discord_member(self, user: Union[str,int], server: Union[str,int], join: datetime.datetime):
+	def import_discord_member(self, user: Union[str,int], server: Union[str,int], join: datetime.datetime):
 		"""Add a discord member - stub"""
 		pass
 #		url = api_url+'discord/users/'
