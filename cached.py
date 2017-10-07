@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import maya
+import discord
 from http import request_status, api_url
 from user import User
 
@@ -81,20 +82,47 @@ class DiscordServer:
 		else:
 			self.minors = 0
 		self.owner = Member(int(r['owner']), self.id)
-		
+
+class refresh_discord:
+	"""Refresh all instances of cached users and servers
+	
+	Arguments:
+	bot - Bot should be a discord.Client() with a valid token. If you're using discord caching functions, you're likely already using a discord.py bot. Just pass this over in the bot arg
+	client - Client should be the trainerdex.Client() with a valid token.
+	
+	You've likely already declared these two, just pass them through.
+	"""
+	
+	def __init__(self, discordClient, client):
+	self.bot = discordClient # Bot should be a discord.Client() with a valid token. If you're using discord caching functions, you're likely already using a discord.py bot. Just pass this over in the bot arg
+	self.client = client # Client should be the trainerdex.Client() with a valid token.
+	
 	@classmethod
-	def update(self, name: str, region: str, id_: Union[str,int], icon: str, owner: int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
-		"""Update information about a discord server"""
-		url = api_url+'discord/users/'+str(cls.id_)+'/'
-		payload = {
-			'name': name,
-			'region': region,
-			'icon': icon,
-			'owner': owner,
-		}
-		#Cheaters and Minors functions aren't currently automated.
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
-		print(request_status(r))
-		r.raise_for_status()
-		return DiscordUser(int(r.json()['id']))
-		
+	def servers(cls):
+		bot = cls.self.bot
+		client = cls.self.client
+		cached_servers = requests.get(api_url+'discord/servers/')
+		print(request_status(cached_servers))
+		cached_servers.raise_for_status()
+		cached_servers = cached_servers.json()
+		cached_server_ids = []
+		for server in cached_servers:
+			cached_server_ids.append(server['id'])
+		client_servers = bot.servers
+		for server in client_servers:
+			if server.id in cached_server_ids:
+				url = api_url+'discord/servers/'+str(server.id)+'/'
+				payload = {
+					'name': server.name,
+					'region': str(server.region),
+					'icon': server.icon_url,
+					'owner': server.owner.id
+					}
+				patch = requests.patch(url, data=json.dumps(payload), headers=client.headers)
+				print(request_status(patch))
+				patch.raise_for_status()
+			url = None
+			payload = None
+			patch = None
+
+ 

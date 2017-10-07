@@ -21,6 +21,7 @@ class Client:
 		headers = {'content-type':'application/json'}
 		if token!=None:
 			headers['authorization'] = 'Token '+token
+		self.headers = headers
 	
 	@classmethod
 	def find_user_from_username(self, username: str):
