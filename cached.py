@@ -21,20 +21,6 @@ class DiscordUser:
 		self.avatar_url = r['avatar_url']
 		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
 		self.owner = User(int(r['account']))
-		
-	@classmethod
-	def update(self, name: str, discriminator: Union[str,int], avatar_url: str):
-		"""Update information about a discord user"""
-		url = api_url+'discord/users/'+str(cls.id_)+'/'
-		payload = {
-			'name': name,
-			'discriminator': str(discriminator)
-			'avatar_url': avatar_url
-		}
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
-		print(request_status(r))
-		r.raise_for_status()
-		return DiscordUser(int(r.json()['id']))
 
 class DiscordMember(DiscordUser):
 	"""Represents a cached Discord member"""
@@ -50,10 +36,6 @@ class DiscordMember(DiscordUser):
 #		self.raw = [self.raw, r]
 #		self.server = Server(r['server'])
 #		self.join = maya.MayaDT.from_iso8601(r['join']).datetime()
-	
-	@classmethod
-	def update(cls):
-		pass
 
 class DiscordServer:
 	"""Represents a cached Discord server"""
@@ -84,7 +66,7 @@ class DiscordServer:
 		self.owner = Member(int(r['owner']), self.id)
 
 class refresh_discord:
-	"""Refresh all instances of cached users and servers
+	"""Refresh all seen instances of cached users and servers
 	
 	Arguments:
 	bot - Bot should be a discord.Client() with a valid token. If you're using discord caching functions, you're likely already using a discord.py bot. Just pass this over in the bot arg
@@ -124,5 +106,30 @@ class refresh_discord:
 			url = None
 			payload = None
 			patch = None
-
- 
+	
+	@classmethod
+	def users(cls):
+		bot = cls.self.bot
+		client = cls.self.client
+		cached_users = requests.get(api_url+'discord/users/')
+		print(request_status(cached_users))
+		cached_users.raise_for_status()
+		cached_users = cached_users.json()
+		cached_user_ids = []
+		for user in cached_users:
+			cached_user_ids.append(int(user['id']))
+		client_users = bot.get_all_members()
+		for user in client_users:
+			if int(user.id) in cached_user_ids:
+				url = api_url+'discord/servers/'+str(user.id)+'/'
+				payload = {
+					'name': user.name,
+					'discriminator': str(user.discriminator),
+					'avatar_url': user.avatar_url
+					}
+				patch = requests.patch(url, data=json.dumps(payload), headers=client.headers)
+				print(request_status(patch))
+				patch.raise_for_status()
+			url = None
+			payload = None
+			patch = None
