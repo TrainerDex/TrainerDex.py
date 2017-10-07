@@ -50,8 +50,8 @@ class Trainer:
 		return Level().get_by_xp(cls.update['xp'])
 		
 	@classmethod
-	def get_updates(cls):
-		"""Get a list of all update objects by trainer"""
+	def all_updates(cls):
+		"""Get a list of all update objects by trainer in date order of newest first"""
 		r = requests.get(api_url+'update/')
 		print(request_status(r))
 		r.raise_for_status()
@@ -61,7 +61,7 @@ class Trainer:
 			if update['trainer']==trainer:
 				updates.append(Update(update['id']))
 		
-		return updates
+		return updates.sort(key=lambda x:x.time_updated, reverse=True)
 		
 	@classmethod
 	def update(cls, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
