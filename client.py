@@ -24,7 +24,7 @@ class Client:
 		self.headers = headers
 	
 	@classmethod
-	def find_user_from_username(self, username: str):
+	def get_user_from_username(self, username: str):
 		"""Returns a User object from a Trainers username"""
 		r = requests.get(api_url+'trainers/')
 		print(request_status(r))
