@@ -31,9 +31,9 @@ class Trainer:
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
 		self.account = User(int(r['account']))
-		update = r['update']
-		self.update = Update(update['id'])
-		self.level = Level().from_xp(update['xp'])
+		_update = r['update']
+		self.update = Update(_update['id'])
+		self.level = Level().from_xp(_update['xp'])
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
@@ -47,16 +47,11 @@ class Trainer:
 	def __str__(self):
 		return "Username: {0.username}, Level: {1}".format(self, Level().from_xp(self.update.xp).level)
 	
-	@classmethod
-	def all_updates(cls):
-		"""Get a list of all update objects by trainer in date order of newest first"""
-		r = requests.get(api_url+'update/')
-		print(request_status(r))
-		r.raise_for_status()
-		r = r.json()
+	def updates(self):
+		_updates = self.raw['updates']
 		updates = []
-		for update in r:
-			if update['trainer']==trainer:
+		for update in _updates:
+			if maya.MayaDT.from_iso8601(update['datetime']).datetime() >= maya.when('two weeks ago').datetime():
 				updates.append(Update(update['id']))
-		
-		return updates.sort(key=lambda x:x.time_updated, reverse=True)
+		updates.sort(key=lambda x:x.time_updated, reverse=True)
+		return updates
