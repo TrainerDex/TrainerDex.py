@@ -82,8 +82,8 @@ class Client:
 		"""Add a Update object to the database"""
 		url = api_url+'update/'
 		payload = {
-			'trainer': trainer,
-			'xp': xp,
+			'trainer': int(trainer),
+			'xp': int(xp),
 			'datetime': maya.now().iso8601()
 		}
 		
