@@ -51,6 +51,12 @@ class Trainer:
 	def __str__(self):
 		return "Username: {0.username}, Level: {1}".format(self, Level().from_xp(self.update.xp).level)
 	
+	def __hash__(self):
+		return self.id
+	
+	def __eq__(self, other):
+		return self.id == other.id
+	
 	def updates(self):
 		_updates = self.raw['updates']
 		updates = []
