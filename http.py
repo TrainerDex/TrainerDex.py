@@ -2,7 +2,7 @@ import requests
 
 api_url = 'http://www.ekpogo.uk/api/trainer/'
 
-def request_status(r):
+def request_status(r, detailed=False):
 	"""Returns a formatted string about the status, useful for logging.
 	
 	args:
@@ -17,7 +17,7 @@ def request_status(r):
 			string += " - {r.json()}"
 		else:
 			string += " - All is okay. I'm not a teapot."
-		return string.format(r)
+		return string.format(r=r)
 	elif r.status_code==request.codes.teapot:
 		string = base_string
 		if detailed is True:
