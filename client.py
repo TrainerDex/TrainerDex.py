@@ -36,7 +36,7 @@ class Client:
 	def get_teams(self):
 		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
 		teams = []
-		for i in 0..3: #Hard coded team IDs, will change if teams ever increase in number
+		for i in range(0,4): #Hard coded team IDs, will change if teams ever increase in number
 			teams.append(Team(i))
 		return teams
 	
