@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-from http import request_status, api_url
-from trainer import Trainer
+from .http import request_status, api_url
 
 class User:
 	"""Represents a user"""
@@ -23,6 +22,7 @@ class User:
 		
 	@classmethod
 	def trainer(cls, show_all=False):
+		from .trainer import Trainer
 		_profiles = cls.r['profiles']
 		profiles = []
 		for i in _profiles:

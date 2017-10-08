@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import requests
 import maya
-from utils import Level
-from http import request_status, api_url
-from update import Update
-from user import User
-from utils import Team
+from .utils import Level
+from .http import request_status, api_url
+from .update import Update
+from .user import User
+from .utils import Team
 
 class Trainer:
 	"""Get information about a trainer"""

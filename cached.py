@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import requests
 import maya
-import discord
-from http import request_status, api_url
-from user import User
+from .http import request_status, api_url
+from .user import User
 
 class DiscordUser:
 	"""Represents a cached Discord user"""

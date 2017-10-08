@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #import requests
-#import maya
-#from http import request_status, api_url
+#from .http import request_status, api_url
 
 class Network:
 	"""Networks are still under construction"""

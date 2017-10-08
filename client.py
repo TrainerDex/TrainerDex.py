@@ -3,13 +3,11 @@ import requests
 import json
 import datetime
 import maya
-import inspect
-from collections import namedtuple
-from utils import Team
-from trainer import Trainer
-from update import Update
-from cached import DiscordUser, DiscordMember, DiscordServer
-from http import request_status, api_url
+from .utils import Team
+from .trainer import Trainer
+from .update import Update
+from .cached import DiscordUser, DiscordMember, DiscordServer
+from .http import request_status, api_url
 
 class Client:
 	"""Interact with the TrainerDex API
