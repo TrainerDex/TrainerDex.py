@@ -72,7 +72,7 @@ class DiscordServer:
 				trainer_list.append(DiscordUser(member.id).owner.trainer(all_=False))
 			except requests.exceptions.HTTPError:
 				pass
-		return member_list
+		return set(trainer_list)
 
 class refresh_discord:
 	"""Refresh all seen instances of cached users and servers
