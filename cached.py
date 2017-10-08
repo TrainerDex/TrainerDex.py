@@ -63,6 +63,16 @@ class DiscordServer:
 		else:
 			self.minors = 0
 		self.owner = Member(int(r['owner']), self.id)
+	
+	def get_trainers(self, discord_server):
+		member_list = discord_server.members
+		trainer_list = []
+		for member in member_list:
+			try:
+				trainer_list.append(DiscordUser(member.id).owner.trainer(all_=False))
+			except requests.exceptions.HTTPError:
+				pass
+		return member_list
 
 class refresh_discord:
 	"""Refresh all seen instances of cached users and servers
