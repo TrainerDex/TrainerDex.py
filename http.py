@@ -17,16 +17,23 @@ def request_status(r, detailed=False):
 		if detailed is True:
 			string += " - {r.json()}"
 		else:
-			string += " - All is okay. I'm not a teapot."
+			string += " - 👍"
 		return string.format(r=r)
-	elif r.status_code==request.codes.teapot:
+	if r.status_code==requests.codes.created:
+		string = base_string
+		if detailed is True:
+			string += " - {r.json()}"
+		else:
+			string += " - 👍"
+		return string.format(r=r)
+	elif r.status_code==requests.codes.teapot:
 		string = base_string
 		if detailed is True:
 			string += "{r.json()}"
 		else:
 			string += " I'm a little teapot, short and stout. Here is my handle, here is my spout. When I get all steamed up, hear me shout! Just tip me over and pour me out."
-		return string.format(r)
+		return string.format(r=r)
 	else:
 		string = base_string
 		string += "{r.json()}"
-		return string.format(r)
+		return string.format(r=r)
