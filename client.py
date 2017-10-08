@@ -108,7 +108,7 @@ class Client:
 		r.raise_for_status()
 		return DiscordUser(int(r.json()['id']))
 	
-	def import_discord_server(self, name, region, id_, icon='https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png', owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+	def import_discord_server(self, name, region, id_, owner, icon='https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png', bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
 		url = api_url+'discord/servers/'
 		payload = {

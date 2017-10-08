@@ -62,7 +62,7 @@ class DiscordServer:
 			self.minors = 1
 		else:
 			self.minors = 0
-		self.owner = Member(int(r['owner']), self.id)
+		self.owner = DiscordMember(int(r['owner']), self.id)
 	
 	def get_trainers(self, discord_server):
 		member_list = discord_server.members
