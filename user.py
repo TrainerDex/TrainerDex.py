@@ -20,26 +20,24 @@ class User:
 		self.dob = None
 		self.birthday = self.dob
 		
-	@classmethod
-	def trainer(cls, show_all=False):
+	def trainer(self, all_=False):
 		from .trainer import Trainer
-		_profiles = cls.r['profiles']
+		_profiles = self.raw['profiles']
 		profiles = []
 		for i in _profiles:
-			if i.prefered==True:
-				profiles.append(Trainer(i))
-		if show_all==True:
-			for i in _profiles:
-				if i.prefered==False:
-					profiles.append(Trainer(i))
+			if all_==False:
+				if i['prefered']==True:
+					profiles = Trainer(i['id'])
+			if all_==True:
+				profiles.append(Trainer(i['id']))
 		return profiles
 		
-	@classmethod
-	def discord(cls):
+	def discord(self):
+		from .cached import DiscordUser
 		r = requests.get(api_url+'discord/users/')
 		print(request_status(r))
 		r.raise_for_status()
 		r = r.json()
 		for i in r:
-			if i['account']==cls.id_:
-				return DiscordUser(i)
+			if i['account']==self.id:
+				return DiscordUser(i['id'])
