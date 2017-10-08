@@ -33,6 +33,7 @@ class Trainer:
 		self.account = User(int(r['account']))
 		update = r['update']
 		self.update = Update(update['id'])
+		self.level = Level().from_xp(update['xp'])
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
@@ -45,11 +46,7 @@ class Trainer:
 		
 	def __str__(self):
 		return "Username: {0.username}, Level: {1}".format(self, Level().from_xp(self.update.xp).level)
-		
-	@classmethod
-	def level(cls):
-		return Level().get_by_xp(cls.update['xp'])
-		
+	
 	@classmethod
 	def all_updates(cls):
 		"""Get a list of all update objects by trainer in date order of newest first"""
