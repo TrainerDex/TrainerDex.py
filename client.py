@@ -31,6 +31,7 @@ class Client:
 		for i in r:
 			if i['username'].lower()==username.lower():
 				return Trainer(i['id'])
+		raise LookupError('Unable to find {} in the database.'.format(username))
 	
 	@classmethod
 	def get_teams(self):
