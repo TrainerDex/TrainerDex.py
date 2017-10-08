@@ -63,15 +63,15 @@ class Client:
 		r.raise_for_status()
 		return Trainer(int(r.json()['id']))
 		
-	def update_trainer(cls, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
+	def update_trainer(self, trainer, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
 		args = locals()
-		url = api_url+'trainers/'+str(cls.id_)+'/'
+		url = api_url+'trainers/'+str(trainer.id)+'/'
 		payload = {
 			'last_modified': maya.now().iso8601()
 		}
 		for i in args:
-			if args[i] is not None and i not in ['cls', 'id_', 'cls.id_']:
+			if args[i] is not None and i not in ['self', 'trainer']:
 				payload[i] = args[i]
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
