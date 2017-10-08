@@ -92,15 +92,15 @@ class Client:
 		r.raise_for_status()
 		return Update(int(r.json()['id']))
 		
-	def import_discord_user(self, name, discriminator, id_, avatar_url, creation, user=None):
+	def import_discord_user(self, name, discriminator, id_, avatar_url, creation, user):
 		"""Add a discord user"""
 		url = api_url+'discord/users/'
 		payload = {
-			'account': user,
-			'name': name,
-			'discriminator': discriminator,
-			'id': id_,
-			'avatar_url': avatar_url,
+			'account': int(user),
+			'name': str(name),
+			'discriminator': str(discriminator),
+			'id': int(id_),
+			'avatar_url': str(avatar_url),
 			'creation': creation.isoformat()
 		}
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
