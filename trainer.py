@@ -32,8 +32,12 @@ class Trainer:
 		self.prefered = r['prefered']
 		self.account = User(int(r['account']))
 		_update = r['update']
-		self.update = Update(_update['id'])
-		self.level = Level().from_xp(_update['xp'])
+		try:
+			self.update = Update(_update['id'])
+			self.level = Level().from_xp(_update['xp'])
+		except LookupError:
+			self.update = None
+			self.level = None
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
