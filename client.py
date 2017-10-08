@@ -15,7 +15,7 @@ class Client:
 	Supply an api token when calling the class.
 	"""
 	
-	def __init__(self, token: str=None):
+	def __init__(self, token=None):
 		headers = {'content-type':'application/json'}
 		if token!=None:
 			headers['authorization'] = 'Token '+token
@@ -23,7 +23,7 @@ class Client:
 	
 	
 	@classmethod
-	def get_user_from_username(self, username: str):
+	def get_user_from_username(self, username):
 		"""Returns a User object from a Trainers username"""
 		r = requests.get(api_url+'trainers/')
 		print(request_status(r))
@@ -40,7 +40,7 @@ class Client:
 			teams.append(Team(i))
 		return teams
 	
-	def create_trainer(self, username: str, team: int, has_cheated=False, last_cheated: datetime.date=None, currently_cheats=False, statistics=True, daily_goal: int=None, total_goal: int=None, prefered=True, account: int=None):
+	def create_trainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""
 		url = api_url+'trainers/'
 		payload = {
@@ -62,7 +62,7 @@ class Client:
 		r.raise_for_status()
 		return Trainer(int(r.json()['id']))
 		
-	def update_trainer(cls, username: str=None, has_cheated=None, last_cheated: datetime.date=None, currently_cheats=None, statistics=None, daily_goal: int=None, total_goal: int=None, prefered=None, account: int=None):
+	def update_trainer(cls, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
 		args = locals()
 		url = api_url+'trainers/'+str(cls.id_)+'/'
@@ -77,7 +77,7 @@ class Client:
 		r.raise_for_status()
 		return Trainer(int(r.json()['id']))
 	
-	def create_update(self, trainer: int, xp: int):
+	def create_update(self, trainer, xp):
 		"""Add a Update object to the database"""
 		url = api_url+'update/'
 		payload = {
@@ -91,7 +91,7 @@ class Client:
 		r.raise_for_status()
 		return Update(int(r.json()['id']))
 		
-	def import_discord_user(self, name: str, discriminator: Union[str,int], id_: Union[str,int], avatar_url: str, creation: datetime.datetime, user: int=None):
+	def import_discord_user(self, name, discriminator, id_, avatar_url, creation, user=None):
 		"""Add a discord user"""
 		url = api_url+'discord/users/'
 		payload = {
@@ -107,7 +107,7 @@ class Client:
 		r.raise_for_status()
 		return DiscordUser(int(r.json()['id']))
 	
-	def import_discord_server(self, name: str, region: str, id_: Union[str,int], icon: str, owner:int, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
+	def import_discord_server(self, name, region, id_, icon, owner, bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
 		url = api_url+'discord/servers/'
 		payload = {
@@ -126,7 +126,7 @@ class Client:
 		r.raise_for_status()
 		return DiscordServer(int(r.json()['id']))
 	
-	def import_discord_member(self, user: Union[str,int], server: Union[str,int], join: datetime.datetime):
+	def import_discord_member(self, user, server, join):
 		"""Add a discord member - stub"""
 		pass
 #		url = api_url+'discord/users/'
@@ -140,7 +140,7 @@ class Client:
 #		r.raise_for_status()
 #		return DiscordMember(int(r.json()['id']))
 	
-	def create_user(self, username: str, first_name: str=None, last_name: str=None):
+	def create_user(self, username, first_name=None, last_name=None):
 		"""Create a user"""
 		url = api_url+'users/'
 		payload = {
@@ -155,7 +155,7 @@ class Client:
 		r.raise_for_status()
 		return User(int(r.json()['id']))
 		
-	def update_user(self, username: str=None, first_name: str=None, last_name: str=None):
+	def update_user(self, username=None, first_name=None, last_name=None):
 		"""Update user info"""
 		args = locals()
 		url = api_url+'users/'+str(cls.id_)+'/'

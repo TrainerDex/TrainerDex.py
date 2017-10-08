@@ -60,13 +60,13 @@ class Level:
 		return self.all
 	
 	@classmethod
-	def from_level(cls, level: int):
+	def from_level(cls, level):
 		for i in Level().all:
 			if i.level==level:
 				return i
 	
 	@classmethod
-	def from_xp(cls, xp: int):
+	def from_xp(cls, xp):
 		for i in Level().all[::-1]:
 			if i.total_xp<=xp:
 					return i
@@ -74,7 +74,7 @@ class Level:
 class Team:
 	"""Represents a Pokemon Go team"""
 	
-	def __init__(self, id_: int):
+	def __init__(self, id_):
 		r = requests.get(api_url+'factions/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)

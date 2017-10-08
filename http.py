@@ -2,8 +2,12 @@ import requests
 
 api_url = 'http://www.ekpogo.uk/api/trainer/'
 
-def request_status(r: requests.models.Response):
-	"""Returns a formatted string about the status, useful for logging."""
+def request_status(r):
+	"""Returns a formatted string about the status, useful for logging.
+	
+	args:
+	r - takes requests.models.Response
+	"""
 	
 	base_string = "HTTP {r.request.method} {r.request.url}: {r.status_code}"
 	

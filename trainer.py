@@ -8,9 +8,9 @@ from .user import User
 from .utils import Team
 
 class Trainer:
-	"""Get information about a trainer"""
+	"""Reprsents a Trainer Profile"""
 	
-	def __init__(self, id_: int, force=False):
+	def __init__(self, id_, force=False):
 		r = requests.get(api_url+'trainers/'+str(id_)+'/')
 		self.status = request_status(r)
 		print(self.status)

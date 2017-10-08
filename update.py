@@ -7,7 +7,7 @@ from .http import request_status, api_url
 class Update:
 	"""Represents an Update object on the API"""
 	
-	def __init__(self, id_: int):
+	def __init__(self, id_):
 		r = requests.get(api_url+'update/'+id_+'/')
 		self.status = request_status(r)
 		print(self.status)
