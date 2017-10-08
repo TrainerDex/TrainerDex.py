@@ -156,13 +156,13 @@ class Client:
 		r.raise_for_status()
 		return User(int(r.json()['id']))
 		
-	def update_user(self, username=None, first_name=None, last_name=None):
+	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
 		args = locals()
-		url = api_url+'users/'+str(cls.id_)+'/'
+		url = api_url+'users/'+str(user.id)+'/'
 		payload = {}
 		for i in args:
-			if args[i] is not None and i not in ['cls', 'id_', 'cls.id_']:
+			if args[i] is not None and i not in ['self', 'user']:
 				payload[i] = args[i]
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
