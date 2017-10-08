@@ -12,14 +12,7 @@ def request_status(r, detailed=False):
 	
 	base_string = "HTTP {r.request.method} {r.request.url}: {r.status_code}"
 	
-	if r.status_code==requests.codes.ok:
-		string = base_string
-		if detailed is True:
-			string += " - {r.json()}"
-		else:
-			string += " - 👍"
-		return string.format(r=r)
-	if r.status_code==requests.codes.created:
+	if r.status_code in range(200,99):
 		string = base_string
 		if detailed is True:
 			string += " - {r.json()}"
@@ -35,5 +28,4 @@ def request_status(r, detailed=False):
 		return string.format(r=r)
 	else:
 		string = base_string
-		string += "{r.json()}"
 		return string.format(r=r)
