@@ -22,16 +22,15 @@ class Client:
 			headers['authorization'] = 'Token '+token
 		self.headers = headers
 	
-	
 	@classmethod
-	def get_user_from_username(self, username):
-		"""Returns a User object from a Trainers username"""
+	def get_trainer_from_username(self, username):
+		"""Returns a Trainer object from a Trainers username"""
 		r = requests.get(api_url+'trainers/')
 		print(request_status(r))
 		r = r.json()
 		for i in r:
 			if i['username'].lower()==username.lower():
-				return User(i['account'])
+				return Trainer(i['id'])
 	
 	@classmethod
 	def get_teams(self):
