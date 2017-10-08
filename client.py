@@ -8,6 +8,7 @@ from .trainer import Trainer
 from .update import Update
 from .cached import DiscordUser, DiscordMember, DiscordServer
 from .http import request_status, api_url
+from .user import User
 
 class Client:
 	"""Interact with the TrainerDex API
