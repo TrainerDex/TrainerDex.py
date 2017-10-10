@@ -44,8 +44,7 @@ class Client:
 		"""
 		
 		r = requests.get(api_url+'factions/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		r = r.json()
 		
@@ -188,8 +187,7 @@ class Client:
 		"""Returns the Trainer object for the ID"""
 		
 		r = requests.get(api_url+'trainers/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json(), respect_privacy)
 	
@@ -197,8 +195,7 @@ class Client:
 		"""Returns the update object for the ID"""
 		
 		r = requests.get(api_url+'update/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		return Update(r.json())
 	
@@ -206,8 +203,7 @@ class Client:
 		"""Returns the User object for the ID"""
 		
 		r = requests.get(api_url+'users/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
 	
@@ -215,8 +211,7 @@ class Client:
 		"""Returns the User object for the ID"""
 		
 		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
 	
@@ -224,8 +219,7 @@ class Client:
 		"""Returns the User object for the ID"""
 		
 		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
+		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
 	
