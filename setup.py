@@ -6,7 +6,7 @@ def readme():
 
 setup(
 	name='trainerdex',
-	version='1.2.0',
+	version='1.2.1',
 	description='An API to interact with TrainerDex - a online database of Pokemon Go trainers.',
 	long_description=readme(),
 	author='JayTurnr',
