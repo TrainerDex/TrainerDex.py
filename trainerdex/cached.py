@@ -15,7 +15,7 @@ class DiscordUser:
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
 		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
-		self.owner = User(int(r['account']))
+		self.owner = Client.get_user(r['account'])
 
 class DiscordServer:
 	"""Represents a cached Discord server"""

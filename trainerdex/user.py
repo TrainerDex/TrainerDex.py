@@ -5,20 +5,15 @@ from .http import request_status, api_url
 class User:
 	"""Represents a user"""
 	
-	def __init__(self, id_):
-		r = requests.get(api_url+'users/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
 		self.username = r['username']
 		self.first_name = r['first_name']
 		self.last_name = r['last_name']
 		#xprofile = None #Extended Profiles are still under construction
-		self.dob = None
-		self.birthday = self.dob
+		#self.dob = None
+		#self.birthday = self.dob
 		
 	def trainer(self, all_=False):
 		from .trainer import Trainer

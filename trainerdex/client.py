@@ -173,6 +173,15 @@ class Client:
 		r.raise_for_status()
 		return Update(r.json())
 	
+	def get_user(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'users/'+str(id_)+'/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		return User(r.json())
+	
 	def get_discord_user(self, id_):
 		"""Returns the User object for the ID"""
 		
