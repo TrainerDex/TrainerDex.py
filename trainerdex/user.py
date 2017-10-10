@@ -27,9 +27,9 @@ class User:
 		for i in _profiles:
 			if all_==False:
 				if i['prefered']==True:
-					profiles = Trainer(i['id'])
+					profiles = Trainer(i)
 			if all_==True:
-				profiles.append(Trainer(i['id']))
+				profiles.append(Trainer(i))
 		return profiles
 		
 	def discord(self):

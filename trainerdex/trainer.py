@@ -10,12 +10,7 @@ from .utils import Team
 class Trainer:
 	"""Reprsents a Trainer Profile"""
 	
-	def __init__(self, id_, force=False):
-		r = requests.get(api_url+'trainers/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r, respect_privacy=True):
 		self.raw = r
 		self.id = r['id']
 		self.username = r['username']
@@ -32,17 +27,13 @@ class Trainer:
 		self.prefered = r['prefered']
 		self.account = User(int(r['account']))
 		_update = r['update']
-		try:
-			self.update = Update(_update['id'])
-			self.level = Level().from_xp(_update['xp'])
-		except LookupError:
-			self.update = None
-			self.level = None
+		self.update = Update(_update)
+		self.level = Level().from_xp(_update)
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
 			self.prefered = None
-			if force is False:
+			if respect_privacy is True:
 				self.start_date = None
 				self.goal_daily = None
 				self.goal_total = None

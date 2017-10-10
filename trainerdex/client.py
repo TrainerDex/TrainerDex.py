@@ -30,7 +30,7 @@ class Client:
 		r = r.json()
 		for i in r:
 			if i['username'].lower()==username.lower():
-				return Trainer(i['id'])
+				return Trainer(i)
 		raise LookupError('Unable to find {} in the database.'.format(username))
 	
 	@classmethod
@@ -168,6 +168,15 @@ class Client:
 		print(request_status(r))
 		r.raise_for_status()
 		return User(int(r.json()['id']))
+	
+	def get_trainer(self, id_, respect_privacy=True):
+		"""Returns the Trainer object for the ID"""
+		
+		r = requests.get(api_url+'trainers/'+str(id_)+'/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		return Trainer(r.json(), respect_privacy)
 	
 	def get_update(self, id_):
 		"""Returns the update object for the ID"""
