@@ -7,44 +7,20 @@ from .user import User
 class DiscordUser:
 	"""Represents a cached Discord user"""
 	
-	def __init__(self, id_):
-		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
 		self.name = r['name']
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
 		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
-		self.owner = User(int(r['account']))
-
-class DiscordMember(DiscordUser):
-	"""Represents a cached Discord member"""
-	
-	def __init__(self, id_, server):
-		super().__init__(id_)
-		pass
-#		r = requests.get(api_url+'discord/members/'+str(id_)+'/')
-#		self.status = request_status(r)
-#		print(self.status)
-#		r.raise_for_status()
-#		r = r.json()
-#		self.raw = [self.raw, r]
-#		self.server = Server(r['server'])
-#		self.join = maya.MayaDT.from_iso8601(r['join']).datetime()
+		from .client import Client
+		self.owner = Client().get_user(r['account'])
 
 class DiscordServer:
 	"""Represents a cached Discord server"""
 	
-	def __init__(self, id_):
-		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
 		self.name = r['name']
@@ -62,14 +38,15 @@ class DiscordServer:
 			self.minors = 1
 		else:
 			self.minors = 0
-		self.owner = DiscordMember(int(r['owner']), self.id)
+		from .client import Client
+		self.owner = Client().get_discord_user(r['owner'])
 	
 	def get_trainers(self, discord_server):
 		member_list = discord_server.members
 		trainer_list = []
 		for member in member_list:
 			try:
-				trainer_list.append(DiscordUser(member.id).owner.trainer(all_=False))
+				trainer_list.append(Client().get_discord_user(member.id).owner.trainer(all_=False))
 			except requests.exceptions.HTTPError:
 				pass
 		return set(trainer_list)
