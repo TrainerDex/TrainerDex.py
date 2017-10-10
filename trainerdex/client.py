@@ -127,20 +127,6 @@ class Client:
 		r.raise_for_status()
 		return DiscordServer(int(r.json()['id']))
 	
-	def import_discord_member(self, user, server, join):
-		"""Add a discord member - stub"""
-		pass
-#		url = api_url+'discord/users/'
-#		payload = {
-#			'user': user,
-#			'server': server,
-#			'join': join.isoformat()
-#		}
-#		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-#		print(request_status(r))
-#		r.raise_for_status()
-#		return DiscordMember(int(r.json()['id']))
-	
 	def create_user(self, username, first_name=None, last_name=None):
 		"""Create a user"""
 		url = api_url+'users/'
@@ -186,4 +172,22 @@ class Client:
 		print(self.status)
 		r.raise_for_status()
 		return Update(r.json())
+	
+	def get_discord_user(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		return User(r.json())
+	
+	def get_discord_server(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		return User(r.json())
 	
