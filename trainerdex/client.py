@@ -35,11 +35,40 @@ class Client:
 	
 	@classmethod
 	def get_teams(self):
-		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
+		"""Returns a list of teams, as these are unlikely to change, it's best to just cache the result in the end.
+		
+		0 - Uncontested
+		1 - Mystic
+		2 - Valor
+		3 - Instinct
+		"""
+		
+		r = requests.get(api_url+'factions/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		r = r.json()
+		
 		teams = []
-		for i in range(0,4): #Hard coded team IDs, will change if teams ever increase in number
+		for i in r:
 			teams.append(Team(i))
 		return teams
+	
+	@classmethod
+	def get_team(self, id_):
+		"""Returns a specific Team object.
+		
+		0 - Uncontested
+		1 - Mystic
+		2 - Valor
+		3 - Instinct
+		"""
+		
+		r = requests.get(api_url+'factions/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		r = r.json()
+		return Team(r)
 	
 	def create_trainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""

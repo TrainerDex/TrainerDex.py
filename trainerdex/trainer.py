@@ -6,6 +6,7 @@ from .http import request_status, api_url
 from .update import Update
 from .user import User
 from .utils import Team
+from .client import Client
 
 class Trainer:
 	"""Reprsents a Trainer Profile"""
@@ -15,7 +16,7 @@ class Trainer:
 		self.id = r['id']
 		self.username = r['username']
 		self.cheater = r['currently_cheats']
-		self.team = Team(r['faction'])
+		self.team = Client.get_team(r['faction'])
 		self.has_cheated = r['has_cheated']
 		if r['last_cheated']:
 			self.last_cheated = maya.MayaDT.from_iso8601(r['last_cheated']).datetime()
