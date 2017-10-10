@@ -155,7 +155,7 @@ class Client:
 		print(request_status(r))
 		r.raise_for_status()
 		return User(int(r.json()['id']))
-		
+	
 	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
 		args = locals()

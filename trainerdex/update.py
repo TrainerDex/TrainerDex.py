@@ -18,7 +18,7 @@ class Update:
 		self.time_updated = maya.MayaDT.from_iso8601(r['datetime']).datetime()
 		self.xp = r['xp']
 		self.dex_caught = r['dex_caught']
-		self.dex_seen = r ['dex_seen']
+		self.dex_seen = r['dex_seen']
 		self.walk_dist = r['walk_dist']
 		self.gen_1_dex = r['gen_1_dex']
 		self.pkmn_caught = r['pkmn_caught']
