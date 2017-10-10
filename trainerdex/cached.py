@@ -2,7 +2,6 @@
 import requests
 import maya
 from .http import request_status, api_url
-from .user import User
 
 class DiscordUser:
 	"""Represents a cached Discord user"""

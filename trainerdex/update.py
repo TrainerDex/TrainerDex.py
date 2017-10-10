@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import requests
 import maya
 from .utils import Level
-from .http import request_status, api_url
 
 class Update:
 	"""Represents an Update object on the API"""

@@ -22,5 +22,4 @@ from .trainer import Trainer
 from .utils import Level, Team
 from .update import Update
 from .cached import DiscordUser, DiscordServer, refresh_discord
-from .network import Network
 from .user import User
