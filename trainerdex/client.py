@@ -6,7 +6,7 @@ import maya
 from .utils import Team
 from .trainer import Trainer
 from .update import Update
-from .cached import DiscordUser, DiscordMember, DiscordServer
+from .cached import DiscordUser, DiscordServer
 from .http import request_status, api_url
 from .user import User
 
@@ -89,7 +89,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Trainer(int(r.json()['id']))
+		return Trainer(r.json())
 		
 	def update_trainer(self, trainer, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
@@ -104,7 +104,7 @@ class Client:
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Trainer(int(r.json()['id']))
+		return Trainer(r.json())
 	
 	def create_update(self, trainer, xp):
 		"""Add a Update object to the database"""
@@ -118,7 +118,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Update(int(r.json()['id']))
+		return Update(r.json())
 		
 	def import_discord_user(self, name, discriminator, id_, avatar_url, creation, user):
 		"""Add a discord user"""
@@ -134,7 +134,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return DiscordUser(int(r.json()['id']))
+		return DiscordUser(r.json())
 	
 	def import_discord_server(self, name, region, id_, owner, icon='https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png', bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
@@ -153,7 +153,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return DiscordServer(int(r.json()['id']))
+		return DiscordServer(r.json())
 	
 	def create_user(self, username, first_name=None, last_name=None):
 		"""Create a user"""
@@ -168,7 +168,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return User(int(r.json()['id']))
+		return User(r.json())
 	
 	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
@@ -181,7 +181,7 @@ class Client:
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return User(int(r.json()['id']))
+		return User(r.json())
 	
 	def get_trainer(self, id_, respect_privacy=True):
 		"""Returns the Trainer object for the ID"""
@@ -213,7 +213,7 @@ class Client:
 		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
 		print(request_status(r))
 		r.raise_for_status()
-		return User(r.json())
+		return DiscordUser(r.json())
 	
 	def get_discord_server(self, id_):
 		"""Returns the User object for the ID"""
@@ -221,5 +221,5 @@ class Client:
 		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
 		print(request_status(r))
 		r.raise_for_status()
-		return User(r.json())
+		return DiscordServer(r.json())
 	

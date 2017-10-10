@@ -6,7 +6,6 @@ from .http import request_status, api_url
 from .update import Update
 from .user import User
 from .utils import Team
-from .client import Client
 
 class Trainer:
 	"""Reprsents a Trainer Profile"""
@@ -16,7 +15,8 @@ class Trainer:
 		self.id = r['id']
 		self.username = r['username']
 		self.cheater = r['currently_cheats']
-		self.team = Client.get_team(r['faction'])
+		from .client import Client
+		self.team = Client().get_team(r['faction'])
 		self.has_cheated = r['has_cheated']
 		if r['last_cheated']:
 			self.last_cheated = maya.MayaDT.from_iso8601(r['last_cheated']).datetime()
@@ -26,10 +26,9 @@ class Trainer:
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
-		self.account = User(int(r['account']))
-		_update = r['update']
-		self.update = Update(_update)
-		self.level = Level().from_xp(_update)
+		self.account = Client().get_user(r['account'])
+		self.update = Update(r['update'])
+		self.level = Level().from_xp(self.update.xp)
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None

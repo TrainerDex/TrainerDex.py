@@ -3,7 +3,6 @@ import requests
 import maya
 from .http import request_status, api_url
 from .user import User
-from .client import Client
 
 class DiscordUser:
 	"""Represents a cached Discord user"""
@@ -15,7 +14,8 @@ class DiscordUser:
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
 		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
-		self.owner = Client.get_user(r['account'])
+		from .client import Client
+		self.owner = Client().get_user(r['account'])
 
 class DiscordServer:
 	"""Represents a cached Discord server"""
@@ -38,14 +38,15 @@ class DiscordServer:
 			self.minors = 1
 		else:
 			self.minors = 0
-		self.owner = Client.get_discord_user(r['owner'])
+		from .client import Client
+		self.owner = Client().get_discord_user(r['owner'])
 	
 	def get_trainers(self, discord_server):
 		member_list = discord_server.members
 		trainer_list = []
 		for member in member_list:
 			try:
-				trainer_list.append(Client.get_discord_user(member.id).owner.trainer(all_=False))
+				trainer_list.append(Client().get_discord_user(member.id).owner.trainer(all_=False))
 			except requests.exceptions.HTTPError:
 				pass
 		return set(trainer_list)
