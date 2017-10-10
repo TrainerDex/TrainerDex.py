@@ -169,3 +169,12 @@ class Client:
 		r.raise_for_status()
 		return User(int(r.json()['id']))
 	
+	def get_update(self, id_):
+		"""Returns the update object for the ID"""
+		
+		r = requests.get(api_url+'update/'+str(id_)+'/')
+		self.status = request_status(r)
+		print(self.status)
+		r.raise_for_status()
+		return Update(r.json())
+	

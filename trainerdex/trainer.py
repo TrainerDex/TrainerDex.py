@@ -60,8 +60,7 @@ class Trainer:
 	def updates(self):
 		_updates = self.raw['updates']
 		updates = []
-		for update in _updates:
-			if maya.MayaDT.from_iso8601(update['datetime']).datetime() >= maya.when('two weeks ago').datetime():
-				updates.append(Update(update['id']))
+		for json in _updates:
+			updates.append(Update(json))
 		updates.sort(key=lambda x:x.time_updated, reverse=True)
 		return updates

@@ -7,12 +7,7 @@ from .http import request_status, api_url
 class Update:
 	"""Represents an Update object on the API"""
 	
-	def __init__(self, id_):
-		r = requests.get(api_url+'update/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
 		self.time_updated = maya.MayaDT.from_iso8601(r['datetime']).datetime()
