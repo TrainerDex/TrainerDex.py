@@ -15,12 +15,12 @@ __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2017 JayTurnr'
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 from .client import Client
 from .trainer import Trainer
 from .utils import Level, Team
 from .update import Update
-from .cached import DiscordUser, DiscordServer, DiscordMember, refresh_discord
+from .cached import DiscordUser, DiscordServer, refresh_discord
 from .network import Network
 from .user import User

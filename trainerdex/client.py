@@ -6,7 +6,7 @@ import maya
 from .utils import Team
 from .trainer import Trainer
 from .update import Update
-from .cached import DiscordUser, DiscordMember, DiscordServer
+from .cached import DiscordUser, DiscordServer
 from .http import request_status, api_url
 from .user import User
 
@@ -30,16 +30,44 @@ class Client:
 		r = r.json()
 		for i in r:
 			if i['username'].lower()==username.lower():
-				return Trainer(i['id'])
+				return Trainer(i)
 		raise LookupError('Unable to find {} in the database.'.format(username))
 	
 	@classmethod
 	def get_teams(self):
-		"""Get a list of teams, mostly unchanging so safe to call on init and keep result"""
+		"""Returns a list of teams, as these are unlikely to change, it's best to just cache the result in the end.
+		
+		0 - Uncontested
+		1 - Mystic
+		2 - Valor
+		3 - Instinct
+		"""
+		
+		r = requests.get(api_url+'factions/')
+		print(request_status(r))
+		r.raise_for_status()
+		r = r.json()
+		
 		teams = []
-		for i in range(0,4): #Hard coded team IDs, will change if teams ever increase in number
+		for i in r:
 			teams.append(Team(i))
 		return teams
+	
+	@classmethod
+	def get_team(self, id_):
+		"""Returns a specific Team object.
+		
+		0 - Uncontested
+		1 - Mystic
+		2 - Valor
+		3 - Instinct
+		"""
+		
+		r = requests.get(api_url+'factions/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		r = r.json()
+		return Team(r)
 	
 	def create_trainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""
@@ -61,7 +89,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Trainer(int(r.json()['id']))
+		return Trainer(r.json())
 		
 	def update_trainer(self, trainer, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
@@ -76,7 +104,7 @@ class Client:
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Trainer(int(r.json()['id']))
+		return Trainer(r.json())
 	
 	def create_update(self, trainer, xp):
 		"""Add a Update object to the database"""
@@ -90,7 +118,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return Update(int(r.json()['id']))
+		return Update(r.json())
 		
 	def import_discord_user(self, name, discriminator, id_, avatar_url, creation, user):
 		"""Add a discord user"""
@@ -106,7 +134,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return DiscordUser(int(r.json()['id']))
+		return DiscordUser(r.json())
 	
 	def import_discord_server(self, name, region, id_, owner, icon='https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png', bans_cheaters=None, seg_cheaters=None, bans_minors=None, seg_minors=None):
 		"""Add a discord server"""
@@ -125,21 +153,7 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return DiscordServer(int(r.json()['id']))
-	
-	def import_discord_member(self, user, server, join):
-		"""Add a discord member - stub"""
-		pass
-#		url = api_url+'discord/users/'
-#		payload = {
-#			'user': user,
-#			'server': server,
-#			'join': join.isoformat()
-#		}
-#		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-#		print(request_status(r))
-#		r.raise_for_status()
-#		return DiscordMember(int(r.json()['id']))
+		return DiscordServer(r.json())
 	
 	def create_user(self, username, first_name=None, last_name=None):
 		"""Create a user"""
@@ -154,8 +168,8 @@ class Client:
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return User(int(r.json()['id']))
-		
+		return User(r.json())
+	
 	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
 		args = locals()
@@ -167,5 +181,45 @@ class Client:
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
-		return User(int(r.json()['id']))
+		return User(r.json())
+	
+	def get_trainer(self, id_, respect_privacy=True):
+		"""Returns the Trainer object for the ID"""
+		
+		r = requests.get(api_url+'trainers/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		return Trainer(r.json(), respect_privacy)
+	
+	def get_update(self, id_):
+		"""Returns the update object for the ID"""
+		
+		r = requests.get(api_url+'update/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		return Update(r.json())
+	
+	def get_user(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'users/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		return User(r.json())
+	
+	def get_discord_user(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'discord/users/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		return DiscordUser(r.json())
+	
+	def get_discord_server(self, id_):
+		"""Returns the User object for the ID"""
+		
+		r = requests.get(api_url+'discord/servers/'+str(id_)+'/')
+		print(request_status(r))
+		r.raise_for_status()
+		return DiscordServer(r.json())
 	

@@ -74,12 +74,7 @@ class Level:
 class Team:
 	"""Represents a Pokemon Go team"""
 	
-	def __init__(self, id_):
-		r = requests.get(api_url+'factions/'+str(id_)+'/')
-		self.status = request_status(r)
-		print(self.status)
-		r.raise_for_status()
-		r = r.json()
+	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
 		self.name = r['name']
@@ -92,4 +87,4 @@ class Team:
 	@classmethod
 	def image_url(cls):
 		"""Returns a usable url for an image"""
-		return '{}media{}'.format(api_url, selfcls.r['image'])
+		return '{}media{}'.format(api_url, cls.self.image)
