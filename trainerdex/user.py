@@ -35,4 +35,4 @@ class User:
 		r = r.json()
 		for i in r:
 			if i['account']==self.id:
-				return DiscordUser(i['id'])
+				return DiscordUser(i)
