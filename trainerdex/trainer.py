@@ -24,7 +24,10 @@ class Trainer:
 		self.prefered = r['prefered']
 		self.account = Client().get_user(r['account'])
 		self.update = Update(r['update'])
-		self.level = Level().from_xp(self.update.xp)
+		try:
+			self.level = Level().from_xp(self.update.xp)
+		except TypeError:
+			self.level = None
 		self.statistics = r['statistics']
 		if self.statistics is False:
 			self.account = None
@@ -36,7 +39,7 @@ class Trainer:
 				self.update = None
 		
 	def __str__(self):
-		return "Username: {0.username}, Level: {1}".format(self, Level().from_xp(self.update.xp).level)
+		return self.username
 	
 	def __hash__(self):
 		return self.id
