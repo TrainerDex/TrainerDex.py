@@ -31,4 +31,8 @@ setup(
 	keywords='pokemon pokemongo trainer',
 	packages=['trainerdex'],
 	zip_safe=True,
+	install_requires=[
+		'maya',
+		'requests',
+	],
 )
