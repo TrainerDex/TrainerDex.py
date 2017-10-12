@@ -2,7 +2,6 @@
 import requests
 import maya
 from .http import request_status, api_url
-from .user import User
 
 class DiscordUser:
 	"""Represents a cached Discord user"""
@@ -44,6 +43,7 @@ class DiscordServer:
 	def get_trainers(self, discord_server):
 		member_list = discord_server.members
 		trainer_list = []
+		from .client import Client
 		for member in member_list:
 			try:
 				trainer_list.append(Client().get_discord_user(member.id).owner.trainer(all_=False))
