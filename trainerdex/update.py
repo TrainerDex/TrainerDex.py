@@ -7,8 +7,12 @@ class Update:
 	
 	def __init__(self, r):
 		self.raw = r
-		self.id = r['id']
-		self.time_updated = maya.MayaDT.from_iso8601(r['datetime']).datetime()
+		try:
+			self.id = r['id']
+			self.time_updated = maya.MayaDT.from_iso8601(r['datetime']).datetime()
+		except KeyError:
+			self.id = 0
+			self.time_updated = None
 		self.xp = r['xp']
 		self.dex_caught = r['dex_caught']
 		self.dex_seen = r['dex_seen']
@@ -47,7 +51,12 @@ class Update:
 		self.pkmn_ghost = r['pkmn_ghost']
 		self.pkmn_ice = r['pkmn_ice']
 		self.pkmn_dragon = r['pkmn_dragon']
-		
+	
 	@classmethod
 	def level(cls):
 		return Level().get_by_xp(cls.r['xp'])
+	
+	@classmethod
+	def trainer(cls):
+		from .client import Client
+		return Client().get_trainer(r['trainer'])
