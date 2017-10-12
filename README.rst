@@ -16,3 +16,26 @@ Installation
 
     pip install trainerdex
 
+Update Notes
+------------
+
+1.2.3
+^^^^^
+* Fixed error preventing a user from being added to the database
+* Added function to find the Trainer for an update - likely never to be used but still better than it being blind
+* Fixed an error when retrieveing a list of trainers from a list of server members
+* Fixed an error in which the levels had the wrong value required to finish it.
+
+1.2.2
+^^^^^
+* Fixed a bug which would cause en error when trying to retreive the Discord ID for a user
+* Minor cleanup of source-code
+
+1.2.1
+^^^^^
+* Improved speed of the library by changing how things are parsed
+
+1.2.0
+^^^^^
+* Initial upload to PyPi
+* A major rewrite. This should have been called version 2.0.0, but it's too late now.
