@@ -24,7 +24,8 @@ Update Notes
 * Fixed error preventing a user from being added to the database
 * Added function to find the Trainer for an update - likely never to be used but still better than it being blind
 * Fixed an error when retrieveing a list of trainers from a list of server members
-* Fixed an error in which the levels had the wrong value required to finish it.
+* Fixed an error in which the levels had the wrong value required to finish it
+* Fixed an error in which a Trainer would spit out an error trying to calculate the level if theres no Update object (edge case, during creation)
 
 1.2.2
 ^^^^^
