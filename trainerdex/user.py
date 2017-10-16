@@ -8,6 +8,7 @@ class User:
 	def __init__(self, r):
 		self.raw = r
 		self.id = r['id']
+		print('trainerdex.User({})'.format(self.id))
 		self.username = r['username']
 		self.first_name = r['first_name']
 		self.last_name = r['last_name']
@@ -36,3 +37,9 @@ class User:
 		for i in r:
 			if i['account']==self.id:
 				return DiscordUser(i)
+	
+	def __hash__(self):
+		return self.id
+	
+	def __eq__(self, other):
+		return self.id == other.id

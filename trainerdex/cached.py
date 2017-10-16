@@ -13,8 +13,11 @@ class DiscordUser:
 		self.discriminator = r['discriminator']
 		self.avatar_url = r['avatar_url']
 		self.creation = maya.MayaDT.from_iso8601(r['creation']).datetime()
+		self.owner_id = r['account']
+	
+	def owner(self):
 		from .client import Client
-		self.owner = Client().get_user(r['account'])
+		return Client().get_user(self.raw['account'])
 
 class DiscordServer:
 	"""Represents a cached Discord server"""
@@ -37,19 +40,23 @@ class DiscordServer:
 			self.minors = 1
 		else:
 			self.minors = 0
-		from .client import Client
-		self.owner = Client().get_discord_user(r['owner'])
+		self.owner_id = r['owner']
 	
-	def get_trainers(self, discord_server):
-		member_list = discord_server.members
-		trainer_list = []
+	def owner(self):
 		from .client import Client
-		for member in member_list:
-			try:
-				trainer_list.append(Client().get_discord_user(member.id).owner.trainer(all_=False))
-			except requests.exceptions.HTTPError:
-				pass
-		return set(trainer_list)
+		return Client().get_discord_user(self.raw['owner'])
+	
+	def get_users(self, discord_server):
+		from .client import Client
+		member_list = set(x.id for x in discord_server.members)
+		discord_user_list = Client().get_all_discord_users()
+		filtered_user_list = [x.owner_id for x in discord_user_list if x.id in member_list]
+		user_list = Client().get_all_users()
+		final_user_list = []
+		for user in user_list:
+			if user.id in filtered_user_list:
+				final_user_list.append(user)
+		return set(final_user_list)
 
 class refresh_discord:
 	"""Refresh all seen instances of cached users and servers
