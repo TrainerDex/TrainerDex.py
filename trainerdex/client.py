@@ -223,3 +223,24 @@ class Client:
 		r.raise_for_status()
 		return DiscordServer(r.json())
 	
+	def get_all_users(self):
+		"""Returns all the users"""
+		
+		r = requests.get(api_url+'users/')
+		print(request_status(r))
+		r.raise_for_status()
+		user_list = []
+		for user in r.json():
+			user_list.append(User(user))
+		return user_list
+	
+	def get_all_discord_users(self):
+		"""Returns all the discord users"""
+		
+		r = requests.get(api_url+'discord/users/')
+		print(request_status(r))
+		r.raise_for_status()
+		user_list = []
+		for user in r.json():
+			user_list.append(DiscordUser(user))
+		return user_list

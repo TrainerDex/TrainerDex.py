@@ -11,8 +11,6 @@ class Trainer:
 		self.id = r['id']
 		self.username = r['username']
 		self.cheater = r['currently_cheats']
-		from .client import Client
-		self.team = Client().get_team(r['faction'])
 		self.has_cheated = r['has_cheated']
 		if r['last_cheated']:
 			self.last_cheated = maya.MayaDT.from_iso8601(r['last_cheated']).datetime()
@@ -22,7 +20,6 @@ class Trainer:
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
-		self.account = Client().get_user(r['account'])
 		self.update = Update(r['update'])
 		try:
 			self.level = Level().from_xp(self.update.xp)
@@ -54,3 +51,11 @@ class Trainer:
 			updates.append(Update(json))
 		updates.sort(key=lambda x:x.time_updated, reverse=True)
 		return updates
+	
+	def team(self):
+		from .client import Client
+		return Client().get_team(self.raw['faction'])
+	
+	def owner(self):
+		from .client import Client
+		return Client().get_user(self.raw['account'])
