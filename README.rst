@@ -19,6 +19,12 @@ Installation
 Update Notes
 ------------
 
+1.3.0
+^^^^^
+* Attributes which made another API call are now methods. For example, `Trainer().owner` is now `Trainer().owner()`
+* User objects are now hashable and comparable
+* Two new methods have been introduced to Client() - get_all_users and get_all_discord_users
+
 1.2.3
 ^^^^^
 * Fixed error preventing a user from being added to the database
