@@ -69,38 +69,43 @@ class Client:
 		r = r.json()
 		return Team(r)
 	
-	def create_trainer(self, username, team, has_cheated=False, last_cheated=None, currently_cheats=False, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
+	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""
 		url = api_url+'trainers/'
 		payload = {
 			'username': username,
 			'faction': team,
-			'has_cheated': has_cheated,
-			'last_cheated': last_cheated,
-			'currently_cheats': currently_cheats,
 			'statistics': statistics,
-			'daily_goal': daily_goal,
-			'total_goal': total_goal,
 			'prefered': prefered,
 			'last_modified': maya.now().iso8601(),
 			'account': account
 		}
+		
+		for i in args:
+			if args[i] is not None and i not in ['self', 'username', 'team', 'account', 'start_date']:
+				payload[i] = args[i]
+			elif args[i] is not None and i=='start_date':
+				payload[i] = args[i].date().isoformat()
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
 		
-	def update_trainer(self, trainer, username=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
+	def update_trainer(self, trainer, username=None, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None, account=None):
 		"""Update parts of a trainer in a database"""
 		args = locals()
 		url = api_url+'trainers/'+str(trainer.id)+'/'
 		payload = {
 			'last_modified': maya.now().iso8601()
 		}
+		
 		for i in args:
-			if args[i] is not None and i not in ['self', 'trainer']:
+			if args[i] is not None and i not in ['self', 'trainer', 'start_date']:
 				payload[i] = args[i]
+			elif args[i] is not None and i=='start_date':
+				payload[i] = args[i].date().isoformat()
+		
 		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
