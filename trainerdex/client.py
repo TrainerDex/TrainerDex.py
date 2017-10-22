@@ -23,14 +23,14 @@ class Client:
 		self.headers = headers
 	
 	@classmethod
-	def get_trainer_from_username(self, username):
+	def get_trainer_from_username(self, username, respect_privacy=True):
 		"""Returns a Trainer object from a Trainers username"""
 		r = requests.get(api_url+'trainers/')
 		print(request_status(r))
 		r = r.json()
 		for i in r:
 			if i['username'].lower()==username.lower():
-				return Trainer(i)
+				return Trainer(i, respect_privacy=respect_privacy)
 		raise LookupError('Unable to find {} in the database.'.format(username))
 	
 	@classmethod

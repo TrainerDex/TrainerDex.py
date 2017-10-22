@@ -19,6 +19,10 @@ Installation
 Update Notes
 ------------
 
+1.3.2
+^^^^^
+* Added respect_privacy flag passthrough to get_trainer_by_username
+
 1.3.1
 ^^^^^
 * Fixed an issue which caused Trainers with statistics disabled to not load
