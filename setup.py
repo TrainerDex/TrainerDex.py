@@ -6,7 +6,7 @@ def readme():
 
 setup(
 	name='trainerdex',
-	version='1.3.0',
+	version='1.3.1',
 	description='An API to interact with TrainerDex - a online database of Pokemon Go trainers.',
 	long_description=readme(),
 	author='JayTurnr',
@@ -32,7 +32,7 @@ setup(
 	packages=['trainerdex'],
 	zip_safe=True,
 	install_requires=[
-		'maya',
-		'requests',
+		'maya==0.3.3',
+		'requests==2.18.4',
 	],
 )

@@ -19,6 +19,10 @@ Installation
 Update Notes
 ------------
 
+1.3.1
+^^^^^
+* Fixed an issue which caused Trainers with statistics disabled to not load
+
 1.3.0
 ^^^^^
 * Attributes which made another API call are now methods. For example, `Trainer().owner` is now `Trainer().owner()`
@@ -29,13 +33,13 @@ Update Notes
 ^^^^^
 * Fixed error preventing a user from being added to the database
 * Added function to find the Trainer for an update - likely never to be used but still better than it being blind
-* Fixed an error when retrieveing a list of trainers from a list of server members
+* Fixed an error when retrieving a list of trainers from a list of server members
 * Fixed an error in which the levels had the wrong value required to finish it
-* Fixed an error in which a Trainer would spit out an error trying to calculate the level if theres no Update object (edge case, during creation)
+* Fixed an error in which a Trainer would spit out an error trying to calculate the level if there's no Update object (edge case, during creation)
 
 1.2.2
 ^^^^^
-* Fixed a bug which would cause en error when trying to retreive the Discord ID for a user
+* Fixed a bug which would cause an error when trying to retrieve the Discord ID for a user
 * Minor cleanup of source-code
 
 1.2.1
