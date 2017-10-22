@@ -26,14 +26,11 @@ class Trainer:
 		except TypeError:
 			self.level = None
 		self.statistics = r['statistics']
-		if self.statistics is False:
-			self.account = None
-			self.prefered = None
-			if respect_privacy is True:
-				self.start_date = None
-				self.goal_daily = None
-				self.goal_total = None
-				self.update = None
+		if self.statistics is False and respect_privacy is True:
+			self.start_date = None
+			self.goal_daily = None
+			self.goal_total = None
+			self.update = None
 		
 	def __str__(self):
 		return self.username
@@ -59,3 +56,5 @@ class Trainer:
 	def owner(self):
 		from .client import Client
 		return Client().get_user(self.raw['account'])
+	
+	account = owner

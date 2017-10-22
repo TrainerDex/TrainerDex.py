@@ -19,6 +19,10 @@ Installation
 Update Notes
 ------------
 
+1.3.1
+^^^^^
+* Fixed an issue which caused Trainers with statistics disabled to not load
+
 1.3.0
 ^^^^^
 * Attributes which made another API call are now methods. For example, `Trainer().owner` is now `Trainer().owner()`
