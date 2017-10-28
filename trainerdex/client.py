@@ -71,6 +71,7 @@ class Client:
 	
 	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""
+		args = locals()
 		url = api_url+'trainers/'
 		payload = {
 			'username': username,
