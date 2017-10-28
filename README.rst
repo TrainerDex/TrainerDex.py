@@ -19,6 +19,10 @@ Installation
 Update Notes
 ------------
 
+1.3.3
+^^^^^
+* Added more fields to update_trainer
+
 1.3.2
 ^^^^^
 * Added respect_privacy flag passthrough to get_trainer_by_username
