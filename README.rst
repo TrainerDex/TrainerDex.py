@@ -19,9 +19,10 @@ Installation
 Update Notes
 ------------
 
-1.3.3
+1.3.4
 ^^^^^
 * Added more fields to update_trainer
+* Replaced 1.3.3 which introduced a bug
 
 1.3.2
 ^^^^^
