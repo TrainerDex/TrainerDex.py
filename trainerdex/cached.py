@@ -48,16 +48,8 @@ class DiscordServer:
 	
 	def get_users(self, discord_server):
 		from .client import Client
-		member_list = set(x.id for x in discord_server.members)
-		discord_user_list = Client().get_all_discord_users()
-		filtered_user_list = [x.owner_id for x in discord_user_list if x.id in member_list]
-		user_list = Client().get_all_users()
-		final_user_list = []
-		for user in user_list:
-			if user.id in filtered_user_list:
-				final_user_list.append(user)
-		return set(final_user_list)
-
+		return Client().get_users(discord_server.members)
+	
 class refresh_discord:
 	"""Refresh all seen instances of cached users and servers
 	

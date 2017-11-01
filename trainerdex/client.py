@@ -69,6 +69,17 @@ class Client:
 		r = r.json()
 		return Team(r)
 	
+	def get_users(self, memberlist):
+		member_list = set(x.id for x in memberlist)
+		discord_user_list = get_all_discord_users(self)
+		filtered_user_list = [x.owner_id for x in discord_user_list if x.id in member_list]
+		user_list = get_all_users(self)
+		final_user_list = []
+		for user in user_list:
+			if user.id in filtered_user_list:
+				final_user_list.append(user)
+		return set(final_user_list)
+	
 	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
 		"""Add a trainer to the database"""
 		args = locals()
