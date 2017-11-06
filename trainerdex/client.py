@@ -123,14 +123,13 @@ class Client:
 		r.raise_for_status()
 		return Trainer(r.json())
 	
-	def create_update(self, trainer, xp):
+	def create_update(self, trainer, xp, time_updated=maya.now(), **kwargs):
 		"""Add a Update object to the database"""
 		url = api_url+'update/'
-		payload = {
-			'trainer': int(trainer),
-			'xp': int(xp),
-			'datetime': maya.now().iso8601()
-		}
+		
+		payload = {'trainer': int(trainer),'xp': int(xp),'datetime': time_updated.iso8601()}
+		if kwargs:
+			payload.update(kwargs)
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))
