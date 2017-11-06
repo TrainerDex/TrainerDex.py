@@ -19,6 +19,10 @@ Installation
 Update Notes
 ------------
 
+1.4.0
+^^^^^
+* To suppliment 1.3.4, you can now add medals to the updates. 
+
 1.3.4
 ^^^^^
 * Added more fields to update_trainer
