@@ -124,7 +124,51 @@ class Client:
 		return Trainer(r.json())
 	
 	def create_update(self, trainer, xp, time_updated=maya.now(), **kwargs):
-		"""Add a Update object to the database"""
+		"""Add a Update object to the database
+		
+		Arguments:
+		trainer - expects a int of trainer's id
+		xp
+		time_updated - expects datetime.datetime
+		dex_caught (optional)
+		dex_seen (optional)
+		walk_dist (optional)
+		gen_1_dex (optional)
+		pkmn_caught (optional)
+		pkmn_evolved (optional)
+		pkstops_spun (optional)
+		battles_won (optional)
+		gen_2_dex (optional)
+		berry_fed (optional)
+		gym_defended (optional)
+		eggs_hatched (optional)
+		big_magikarp (optional)
+		legacy_gym_trained (optional)
+		tiny_rattata (optional)
+		pikachu_caught (optional)
+		unown_alphabet (optional)
+		raids_completed (optional)
+		leg_raids_completed (optional)
+		gen_3_dex (optional)
+		pkmn_normal (optional)
+		pkmn_flying (optional)
+		pkmn_poison (optional)
+		pkmn_ground (optional)
+		pkmn_rock (optional)
+		pkmn_bug (optional)pkmn_steel (optional)
+		pkmn_fire (optional)
+		pkmn_water (optional)
+		pkmn_grass (optional)
+		pkmn_electric (optional)
+		pkmn_psychic (optional)
+		pkmn_dark (optional)
+		pkmn_fairy (optional)
+		pkmn_fighting (optional)
+		pkmn_ghost (optional)
+		pkmn_ice (optional)pkmn_dragon (optional)
+		gym_badges (optional)
+		
+		"""
 		url = api_url+'update/'
 		
 		payload = {'trainer': int(trainer),'xp': int(xp),'datetime': time_updated.iso8601()}
