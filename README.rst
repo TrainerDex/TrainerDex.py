@@ -19,6 +19,11 @@ Installation
 Update Notes
 ------------
 
+1.4.1
+^^^^^
+
+* Fixed a bug when start_date is null
+
 1.4.0
 ^^^^^
 * To suppliment 1.3.4, you can now add medals to the updates. 
