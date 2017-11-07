@@ -16,7 +16,10 @@ class Trainer:
 			self.last_cheated = maya.MayaDT.from_iso8601(r['last_cheated']).datetime()
 		else:
 			self.last_cheated = None
-		self.start_date = maya.MayaDT.from_iso8601(r['start_date']).datetime()
+		if r['start_date']:
+			self.start_date = maya.MayaDT.from_iso8601(r['start_date']).datetime()
+		else:
+			self.start_date = None
 		self.goal_daily = r['daily_goal']
 		self.goal_total = r['total_goal']
 		self.prefered = r['prefered']
