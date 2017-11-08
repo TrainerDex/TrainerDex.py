@@ -71,9 +71,9 @@ class Client:
 	
 	def get_users(self, memberlist):
 		member_list = set(x.id for x in memberlist)
-		discord_user_list = get_all_discord_users(self)
+		discord_user_list = self.get_all_discord_users()
 		filtered_user_list = [x.owner_id for x in discord_user_list if x.id in member_list]
-		user_list = get_all_users(self)
+		user_list = self.get_all_users()
 		final_user_list = []
 		for user in user_list:
 			if user.id in filtered_user_list:
