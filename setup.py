@@ -1,12 +1,20 @@
+import re
 from setuptools import setup
 
 def readme():
 	with open('README.rst') as f:
 		return f.read()
 
+version = ''
+with open('trainerdex/__init__.py') as f:
+	version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
+
+if not version:
+	raise RuntimeError('version is not set')
+
 setup(
 	name='trainerdex',
-	version='1.4.2',
+	version=version,
 	description='An API to interact with TrainerDex - a online database of Pokemon Go trainers.',
 	long_description=readme(),
 	author='JayTurnr',
