@@ -1,7 +1,7 @@
 ﻿# coding=utf-8
 import requests
 
-api_url = 'http://www.ekpogo.uk/api/trainer/'
+api_url = 'http://www.trainerdex.co.uk/api/trainer/'
 
 def request_status(r, detailed=False):
 	"""Returns a formatted string about the status, useful for logging.
