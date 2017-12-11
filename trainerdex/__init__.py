@@ -15,7 +15,7 @@ __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2017 JayTurnr'
-__version__ = '1.4.2'
+__version__ = '1.4.2.1'
 
 from .client import Client
 from .trainer import Trainer
