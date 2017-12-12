@@ -15,6 +15,11 @@ Installation
 Update Notes
 ------------
 
+1.4.3
+^^^^^
+
+* Fixed issue with not supplying a datetime when creating a update
+
 1.4.2
 ^^^^^
 * To suppliment 1.3.4, you can now add medals to the updates. 
