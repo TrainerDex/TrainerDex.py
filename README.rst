@@ -15,9 +15,10 @@ Installation
 Update Notes
 ------------
 
-1.4.3
-^^^^^
+1.4.3.1
+^^^^^^^
 
+* Enabled SSL
 * Fixed issue with not supplying a datetime when creating a update
 
 1.4.2
