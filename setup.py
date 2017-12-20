@@ -22,7 +22,7 @@ setup(
 	url='https://github.com/TrainerDex/TrainerDex.py',
 	license='GPL-3.0',
 	classifiers=[
-		'Development Status :: 5 - Production/Stable',
+		'Development Status :: 4 - Beta',
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 		'Natural Language :: English',
