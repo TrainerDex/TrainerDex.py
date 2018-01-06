@@ -14,11 +14,13 @@ class Client:
 	Supply an api token when calling the class.
 	"""
 	
-	def __init__(self, token=None):
+	def __init__(self, token=None, identifier=None):
 		headers = {'content-type':'application/json'}
 		if token!=None:
 			headers['authorization'] = 'Token '+token
 		self.headers = headers
+		if identifier:
+			self.identifier = str(identifier)
 	
 	def get_trainer_from_username(self, username, detail=False):
 		"""Returns a Trainer object from a Trainers username"""
@@ -121,6 +123,8 @@ class Client:
 			payload['datetime'] = maya.now().iso8601()
 		else:
 			payload['datetime'] = time_updated.iso8601()
+		if self.identifier:
+			payload['meta_source'] = self.identifier
 		
 		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
 		print(request_status(r))

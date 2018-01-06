@@ -15,6 +15,14 @@ Installation
 Update Notes
 ------------
 
+2.0.2
+^^^^^
+* Indentifier for updates
+
+2.0.1
+^^^^^
+* Rewrite for website upgrade
+
 1.4.3.1
 ^^^^^^^
 
