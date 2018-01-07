@@ -15,6 +15,10 @@ Installation
 Update Notes
 ------------
 
+2.0.3
+^^^^^
+Support for blank leaderboard command
+
 2.0.2
 ^^^^^
 * Indentifier for updates

@@ -52,8 +52,9 @@ class Client:
 		
 		url = api_url+'leaderboard/'
 		str_filterset = []
-		for x in filterset:
-			str_filterset.append(str(x))
+		if filterset:
+			for x in filterset:
+				str_filterset.append(str(x))
 		r = requests.get(url, params = {'users':','.join(str_filterset)})
 		print(request_status(r))
 		r.raise_for_status()
