@@ -60,7 +60,7 @@ class Client:
 		r.raise_for_status()
 		return r.json()
 	
-	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None):
+	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None, verified=False):
 		"""Add a trainer to the database"""
 		args = locals()
 		url = api_url+'trainers/'
@@ -71,6 +71,7 @@ class Client:
 			'prefered': prefered,
 			'last_modified': maya.now().iso8601(),
 			'owner': account
+			'verified': verified
 		}
 		
 		for i in args:
