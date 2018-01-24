@@ -70,7 +70,7 @@ class Client:
 			'statistics': statistics,
 			'prefered': prefered,
 			'last_modified': maya.now().iso8601(),
-			'owner': account
+			'owner': account,
 			'verified': verified
 		}
 		
