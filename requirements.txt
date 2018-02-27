@@ -1,2 +1,2 @@
 requests==2.18.4
-maya==0.3.3
+maya==0.3.4
