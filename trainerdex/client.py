@@ -122,9 +122,9 @@ class Client:
 		payload = {'trainer' : int(trainer), 'xp' : int(xp)}
 		
 		if time_updated is None:
-			payload['datetime'] = maya.now().iso8601()
+			payload['update_time'] = maya.now().iso8601()
 		else:
-			payload['datetime'] = time_updated.iso8601()
+			payload['update_time'] = time_updated.iso8601()
 		if self.identifier:
 			payload['meta_source'] = self.identifier
 		
