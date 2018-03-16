@@ -74,13 +74,4 @@ def level_parser(xp=None, level=None):
 		raise ValueError
 
 def get_team(team):
-	if team == 0:
-		return TeamTuple(id=0, name='Teamless', colour='#929292')
-	elif team == 1:
-		return TeamTuple(id=1, name='Mystic', colour='#0005ff')
-	elif team == 2:
-		return TeamTuple(id=2, name='Valor', colour='#ff0000')
-	elif team == 3:
-		return TeamTuple(id=3, name='Instinct', colour='#fff600')
-	else:
-		return TeamTuple(id=team, name='The Secret Team', colour='#ffffff')
+	return (TeamTuple(id=0, name='Teamless', colour='#929292'),TeamTuple(id=1, name='Mystic', colour='#0005ff'),TeamTuple(id=2, name='Valor', colour='#ff0000'),TeamTuple(id=3, name='Instinct', colour='#fff600'))[team]

@@ -7,6 +7,7 @@ from .update import Update
 from .cached import DiscordUser
 from .http import request_status, api_url
 from .user import User
+from .leaderboard import DiscordLeaderboard
 
 class Client:
 	"""Interact with the TrainerDex API
@@ -235,3 +236,10 @@ class Client:
 			result.append(User(x))
 		return result
 	
+	def get_discord_leaderboard(self, guild):
+		"""expects discord guild ID, returns leaderboard"""
+		
+		r = requests.get(api_url+'leaderboard/discord/'+str(guild)+'/', headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return DiscordLeaderboard(r.json())
