@@ -1,7 +1,6 @@
 ﻿import requests
 
-#api_url = 'https://www.trainerdex.co.uk/api/v1/'
-api_url = 'http://127.0.0.1:8000/api/v1/'
+api_url = 'https://www.trainerdex.co.uk/api/v1/'
 
 def request_status(r, detailed=False):
 	"""Returns a formatted string about the status, useful for logging.
