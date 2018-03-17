@@ -133,7 +133,11 @@ class Client:
 		return DiscordUser(r.json())
 	
 	def create_user(self, username, first_name=None, last_name=None):
-		"""Create a user"""
+		"""
+		Creates a new user object on database
+		Returns the User Object. Must be linked to a new trainer soon after
+		"""
+		
 		url = api_url+'users/'
 		payload = {
 			'username':username
@@ -149,6 +153,7 @@ class Client:
 	
 	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
+		
 		if not isinstance(user, User):
 			raise ValueError
 		args = locals()
@@ -165,6 +170,7 @@ class Client:
 	def get_trainer(self, id_, respect_privacy=True):
 		"""Returns the Trainer object for the ID"""
 		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params = {'statistics': 'force'}, headers=self.headers)
+		
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
