@@ -7,7 +7,7 @@ from .update import Update
 from .cached import DiscordUser
 from .http import request_status, api_url
 from .user import User
-from .leaderboard import DiscordLeaderboard
+from .leaderboard import DiscordLeaderboard, WorldwideLeaderboard
 
 class Client:
 	"""Interact with the TrainerDex API
@@ -44,22 +44,6 @@ class Client:
 		"""
 		_memberlist = self.get_discord_user(x.id for x in memberlist)
 		return list(set(x.owner() for x in _memberlist))
-	
-	def leaderboard(self, filterset=None):
-		"""
-		params: filterset, optional, expects a list of ints or strings as trainer IDs
-		returns, leaderboard
-		"""
-		
-		url = api_url+'leaderboard/'
-		str_filterset = []
-		if filterset:
-			for x in filterset:
-				str_filterset.append(str(x))
-		r = requests.get(url, params = {'users':','.join(str_filterset)})
-		print(request_status(r))
-		r.raise_for_status()
-		return r.json()
 	
 	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None, verified=False):
 		"""Add a trainer to the database"""
@@ -237,9 +221,23 @@ class Client:
 		return result
 	
 	def get_discord_leaderboard(self, guild):
-		"""expects discord guild ID, returns leaderboard"""
+		"""
+		Expects: `int` - Discord Guild ID
+		Returns: `trainerdex.DiscordLeaderboard`
+		"""
 		
 		r = requests.get(api_url+'leaderboard/discord/'+str(guild)+'/', headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return DiscordLeaderboard(r.json())
+	
+	
+	def get_worldwide_leaderboard(self):
+		"""
+		Returns: `trainerdex.WorldwideLeaderboard`
+		"""
+		
+		r = requests.get(api_url+'leaderboard/', headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return WorldwideLeaderboard(r.json())
