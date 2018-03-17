@@ -167,10 +167,16 @@ class Client:
 		r.raise_for_status()
 		return User(r.json())
 	
-	def get_trainer(self, id_, respect_privacy=True):
+	def get_trainer(self, id_, respect_privacy=True, detail=True):
 		"""Returns the Trainer object for the ID"""
-		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params = {'statistics': 'force'}, headers=self.headers)
 		
+		parameters = {}
+		if respect_privacy is False:
+			parameters['statistics'] = 'force'
+		if detail is False:
+			parameters['detail'] = 'low'
+			
+		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params=parameters, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
