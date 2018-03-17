@@ -72,7 +72,7 @@ class DiscordLeaderboard:
 	def __init__(self, r):
 		self._get = r
 		self._time = MayaDT.from_iso8601(r['generated']).datetime()
-		self._title = r['generated']
+		self._title = r['title']
 		self._leaderboard = r['leaderboard']
 	
 	@property
