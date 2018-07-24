@@ -87,7 +87,7 @@ class DiscordLeaderboard:
 	def top_25(cls):
 		return [LeaderboardInstance(x) for x in cls._leaderboard[:25]]
 	
-	def get_postion(self, postion):
+	def get_postion(self, position):
 		try:
 			return LeaderboardInstance(self._leaderboard[position-1])
 		except IndexError:
