@@ -41,6 +41,6 @@ setup(
 	zip_safe=True,
 	install_requires=[
 		'maya==0.6.0',
-		'requests==2.21.0',
+		'requests==2.23.0',
 	],
 )
