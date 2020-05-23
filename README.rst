@@ -3,6 +3,10 @@ TrainerDex
 
 .. image:: https://badge.fury.io/py/trainerdex.svg
     :target: https://badge.fury.io/py/trainerdex
+		
+.. image:: https://github.com/TrainerDex/PogoOCR/workflows/Python%20package/badge.svg
+	:alt: Python package
+
 
 A python library for interacting with the API of TrainerDex
 
@@ -35,7 +39,7 @@ Support for blank leaderboard command
 
 1.4.2
 ^^^^^
-* To suppliment 1.3.4, you can now add medals to the updates. 
+* To suppliment 1.3.4, you can now add medals to the updates.
 * Fixed a bug when start_date is null
 * Fixed a major bug
 * Replaces 1.4.1 and 1.4.0 which will be removed from PyPi
