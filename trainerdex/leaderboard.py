@@ -1,6 +1,11 @@
 from .trainer import Trainer
 from warnings import warn
-from maya import MayaDT
+
+try:
+	from maya import MayaDT
+except ModuleNotFoundError:
+	import dateutil.parser
+	MayaDT = None
 
 class LeaderboardInstance:
 	
@@ -11,7 +16,10 @@ class LeaderboardInstance:
 		self._trainer_username = r['username']
 		self._user_id = r['user_id']
 		self._xp = int(r['xp'])
-		self._time = MayaDT.from_iso8601(r['last_updated']).datetime()
+		if MayaDT:
+			self._time = MayaDT.from_iso8601(r['last_updated']).datetime()
+		else:
+			self._time = dateutil.parser.parse(r['last_updated'])
 		self._level = int(r['level'])
 		self._faction = r['faction']
 	
@@ -71,7 +79,10 @@ class DiscordLeaderboard:
 	
 	def __init__(self, r):
 		self._get = r
-		self._time = MayaDT.from_iso8601(r['generated']).datetime()
+		if MayaDT:
+			self._time = MayaDT.from_iso8601(r['generated']).datetime()
+		else:
+			self._time = dateutil.parser.parse(r['generated'])
 		self._title = r['title']
 		self._leaderboard = r['leaderboard']
 	
