@@ -1,13 +1,12 @@
 import requests
 import json
 import datetime
-import maya
 from .trainer import Trainer
 from .update import Update
 from .cached import DiscordUser
 from .http import request_status, api_url
 from .user import User
-from .leaderboard import DiscordLeaderboard
+from .leaderboard import DiscordLeaderboard, WorldwideLeaderboard
 
 class Client:
 	"""Interact with the TrainerDex API
@@ -45,22 +44,6 @@ class Client:
 		_memberlist = self.get_discord_user(x.id for x in memberlist)
 		return list(set(x.owner() for x in _memberlist))
 	
-	def leaderboard(self, filterset=None):
-		"""
-		params: filterset, optional, expects a list of ints or strings as trainer IDs
-		returns, leaderboard
-		"""
-		
-		url = api_url+'leaderboard/'
-		str_filterset = []
-		if filterset:
-			for x in filterset:
-				str_filterset.append(str(x))
-		r = requests.get(url, params = {'users':','.join(str_filterset)})
-		print(request_status(r))
-		r.raise_for_status()
-		return r.json()
-	
 	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None, verified=False):
 		"""Add a trainer to the database"""
 		args = locals()
@@ -70,7 +53,7 @@ class Client:
 			'faction': team,
 			'statistics': statistics,
 			'prefered': prefered,
-			'last_modified': maya.now().iso8601(),
+			'last_modified': datetime.datetime.utcnow().isoformat(),
 			'owner': account,
 			'verified': verified
 		}
@@ -93,7 +76,7 @@ class Client:
 			raise ValueError
 		url = api_url+'trainers/'+str(trainer.id)+'/'
 		payload = {
-			'last_modified': maya.now().iso8601()
+			'last_modified': datetime.datetime.utcnow().isoformat()
 		}
 		
 		for i in args:
@@ -122,10 +105,21 @@ class Client:
 		url = api_url+'trainers/'+str(trainer)+'/updates/'
 		payload = {'trainer' : int(trainer), 'xp' : int(xp)}
 		
-		if time_updated is None:
-			payload['update_time'] = maya.now().iso8601()
+		if isinstance(time_updated, datetime.datetime):
+			payload['update_time'] = time_updated.isoformat()
+		elif isinstance(time_updated, type(None)):
+			payload['update_time'] = datetime.datetime.utcnow().isoformat()
 		else:
-			payload['update_time'] = time_updated.iso8601()
+			try:
+				import maya
+			except ModuleNotFoundError:
+				pass
+			else:
+				if isinstance(time_updated, maya.MayaDT):
+					payload['update_time'] = time_updated.iso8601()
+				else:
+					raise
+		
 		if self.identifier:
 			payload['meta_source'] = self.identifier
 		
@@ -149,7 +143,11 @@ class Client:
 		return DiscordUser(r.json())
 	
 	def create_user(self, username, first_name=None, last_name=None):
-		"""Create a user"""
+		"""
+		Creates a new user object on database
+		Returns the User Object. Must be linked to a new trainer soon after
+		"""
+		
 		url = api_url+'users/'
 		payload = {
 			'username':username
@@ -165,6 +163,7 @@ class Client:
 	
 	def update_user(self, user, username=None, first_name=None, last_name=None):
 		"""Update user info"""
+		
 		if not isinstance(user, User):
 			raise ValueError
 		args = locals()
@@ -178,9 +177,16 @@ class Client:
 		r.raise_for_status()
 		return User(r.json())
 	
-	def get_trainer(self, id_, respect_privacy=True):
+	def get_trainer(self, id_, respect_privacy=True, detail=True):
 		"""Returns the Trainer object for the ID"""
-		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params = {'statistics': 'force'}, headers=self.headers)
+		
+		parameters = {}
+		if respect_privacy is False:
+			parameters['statistics'] = 'force'
+		if detail is False:
+			parameters['detail'] = 'low'
+			
+		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params=parameters, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
@@ -237,9 +243,23 @@ class Client:
 		return result
 	
 	def get_discord_leaderboard(self, guild):
-		"""expects discord guild ID, returns leaderboard"""
+		"""
+		Expects: `int` - Discord Guild ID
+		Returns: `trainerdex.DiscordLeaderboard`
+		"""
 		
 		r = requests.get(api_url+'leaderboard/discord/'+str(guild)+'/', headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return DiscordLeaderboard(r.json())
+	
+	
+	def get_worldwide_leaderboard(self):
+		"""
+		Returns: `trainerdex.WorldwideLeaderboard`
+		"""
+		
+		r = requests.get(api_url+'leaderboard/', headers=self.headers)
+		print(request_status(r))
+		r.raise_for_status()
+		return WorldwideLeaderboard(r.json())

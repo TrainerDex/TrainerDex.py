@@ -1,6 +1,11 @@
 from .trainer import Trainer
 from warnings import warn
-from maya import MayaDT
+
+try:
+	from maya import MayaDT
+except ModuleNotFoundError:
+	import dateutil.parser
+	MayaDT = None
 
 class LeaderboardInstance:
 	
@@ -11,7 +16,10 @@ class LeaderboardInstance:
 		self._trainer_username = r['username']
 		self._user_id = r['user_id']
 		self._xp = int(r['xp'])
-		self._time = MayaDT.from_iso8601(r['last_updated']).datetime()
+		if MayaDT:
+			self._time = MayaDT.from_iso8601(r['last_updated']).datetime()
+		else:
+			self._time = dateutil.parser.parse(r['last_updated'])
 		self._level = int(r['level'])
 		self._faction = r['faction']
 	
@@ -71,7 +79,10 @@ class DiscordLeaderboard:
 	
 	def __init__(self, r):
 		self._get = r
-		self._time = MayaDT.from_iso8601(r['generated']).datetime()
+		if MayaDT:
+			self._time = MayaDT.from_iso8601(r['generated']).datetime()
+		else:
+			self._time = dateutil.parser.parse(r['generated'])
 		self._title = r['title']
 		self._leaderboard = r['leaderboard']
 	
@@ -82,6 +93,61 @@ class DiscordLeaderboard:
 	@property
 	def time(cls):
 		return cls._time
+	
+	@property
+	def top_25(cls):
+		return [LeaderboardInstance(x) for x in cls._leaderboard[:25]]
+	
+	def get_postion(self, position):
+		try:
+			return LeaderboardInstance(self._leaderboard[position-1])
+		except IndexError:
+			warn("{} outside leaderboard length".format(position))
+			return None
+	
+	def get_positions(self, positions):
+		return [self.get_postion(x) for x in positions]
+	
+	@property
+	def top(cls):
+		return LeaderboardInstance(cls._leaderboard[0])
+	
+	@property
+	def bottom(cls):
+		return LeaderboardInstance(cls._leaderboard[-1])
+	
+	def get_lower_levels(self, min=1, max=39):
+		return [LeaderboardInstance(x) for x in self._leaderboard if min <= x['level'] <= max]
+	
+	@property
+	def mystic(cls):
+		return cls.filter_teams((1,))
+	
+	@property
+	def valor(cls):
+		return cls.filter_teams((2,))
+	
+	@property
+	def instinct(cls):
+		return cls.filter_teams((3,))
+	
+	def filter_teams(self, teams):
+		"""Expects an iterable of team IDs"""
+		return [LeaderboardInstance(x) for x in self._leaderboard if x['faction']['id'] in teams]
+	
+	def filter_users(self, users):
+		"""Expects an interable of User IDs ints"""
+		return [LeaderboardInstance(x) for x in self._leaderboard if x['user_id'] in users]
+	
+	def filter_trainers(self, trainers):
+		"""Expects an interable of Trainer IDs ints"""
+		return [LeaderboardInstance(x) for x in self._leaderboard if x['id'] in trainers]
+
+class WorldwideLeaderboard:
+	
+	def __init__(self, r):
+		self._get = r
+		self._leaderboard = r
 	
 	@property
 	def top_25(cls):

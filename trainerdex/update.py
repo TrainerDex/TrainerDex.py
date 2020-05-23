@@ -1,6 +1,10 @@
-# -*- coding: utf-8 -*-
-import maya
 from .utils import level_parser
+
+try:
+	from maya import MayaDT
+except ModuleNotFoundError:
+	import dateutil.parser
+	MayaDT = None
 
 class Update:
 	"""Represents an Basic Update object on the API"""
@@ -8,7 +12,10 @@ class Update:
 	def __init__(self, r):
 		self._get = r
 		self.uuid = r['uuid']
-		self.update_time = maya.MayaDT.from_iso8601(r['update_time']).datetime()
+		if MayaDT:
+			self.update_time = MayaDT.from_iso8601(r['update_time']).datetime()
+		else:
+			self.update_time = dateutil.parser.parse(r['update_time'])
 		self.xp = r['xp']
 	
 	def level(self):
