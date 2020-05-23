@@ -41,7 +41,7 @@ def level_parser(xp=None, level=None):
 	LevelTuple(level=20,total_xp=210000,xp_required=50000),
 	LevelTuple(level=21,total_xp=260000,xp_required=75000),
 	LevelTuple(level=22,total_xp=335000,xp_required=100000),
-	LevelTuple(level=23,total_xp=456000,xp_required=125000),
+	LevelTuple(level=23,total_xp=435000,xp_required=125000),
 	LevelTuple(level=24,total_xp=560000,xp_required=150000),
 	LevelTuple(level=25,total_xp=710000,xp_required=190000),
 	LevelTuple(level=26,total_xp=900000,xp_required=200000),
