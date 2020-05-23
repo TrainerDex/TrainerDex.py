@@ -40,7 +40,7 @@ setup(
 	packages=['trainerdex'],
 	zip_safe=True,
 	install_requires=[
-		'maya==0.6.0',
+		'maya==0.6.1',
 		'requests==2.23.0',
 	],
 )
