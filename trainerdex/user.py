@@ -1,5 +1,4 @@
-import requests
-from .http import request_status, api_url
+from trainerdex.http import request_status, api_url
 
 class User:
 	"""Represents a user"""

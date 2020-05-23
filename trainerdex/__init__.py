@@ -13,12 +13,13 @@ __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2017 JayTurnr'
-__version__ = '2.1.2'
+__version__ = '3.0.0 alpha'
 
-from .client import Client
-from .trainer import Trainer
-from .utils import level_parser, get_team
-from .update import Update
-from .cached import DiscordUser
-from .user import User
-from .leaderboard import DiscordLeaderboard, WorldwideLeaderboard
+from trainerdex.client import Client
+from trainerdex.trainer import Trainer
+from trainerdex.utils import level_parser, get_team
+from trainerdex.update import Update
+from trainerdex.cached import DiscordUser
+from trainerdex.user import User
+from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
+from trainerdex.exceptions import *

@@ -1,91 +1,191 @@
-import requests
-import json
 import datetime
-from .trainer import Trainer
-from .update import Update
-from .cached import DiscordUser
-from .http import request_status, api_url
-from .user import User
-from .leaderboard import DiscordLeaderboard, WorldwideLeaderboard
+import json
+from typing import Iterable, List, Union
+import re.fullmatch
+
+import requests
+
+from trainerdex.trainer import Trainer
+from trainerdex.update import Update
+from trainerdex.cached import DiscordUser
+from trainerdex.http import request_status, api_url
+from trainerdex.user import User
+from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
+from trainerdex.exceptions import *
 
 class Client:
-	"""Interact with the TrainerDex API
+	"""The core class to trainerdex.py.
+		
+	Attributes
+	----------
+	token : str, optional
+		a token required for writing to the database and some read operations, if blank, many functions will be disabled
 	
-	Supply an api token when calling the class.
+	Methods
+	-------
+	search_trainer(nickname)
+		Searches the database for a trainer that may currently or previous donned a certain nickname
+	discord_to_users(memberlist)
+		Convenience method for getting a large number of users at once
 	"""
 	
-	def __init__(self, token=None, identifier=None):
-		headers = {'content-type':'application/json'}
-		if token!=None:
-			headers['authorization'] = 'Token '+token
-		self.headers = headers
-		if identifier:
-			self.identifier = str(identifier)
-	
-	def get_trainer_from_username(self, username, detail=False):
-		"""Returns a Trainer object from a Trainers username"""
-		params = {
-			'detail': '1' if detail is True else '0',
-			'q': username
-		}
-		r = requests.get(api_url+'trainers/', params=params, headers=self.headers)
-		print(request_status(r))
-		try:
-			r = r.json()[0]
-		except IndexError:
-			return None
-		return Trainer(r) if r else None
-	
-	def discord_to_users(self, memberlist):
-		"""
-		expects a list of discord.py user objects
-		returns a list of TrainerDex.py user objects
-		"""
-		_memberlist = self.get_discord_user(x.id for x in memberlist)
-		return list(set(x.owner() for x in _memberlist))
-	
-	def create_trainer(self, username, team, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=True, daily_goal=None, total_goal=None, prefered=True, account=None, verified=False):
-		"""Add a trainer to the database"""
-		args = locals()
-		url = api_url+'trainers/'
-		payload = {
-			'username': username,
-			'faction': team,
-			'statistics': statistics,
-			'prefered': prefered,
-			'last_modified': datetime.datetime.utcnow().isoformat(),
-			'owner': account,
-			'verified': verified
-		}
+	def __init__(self, token: str = None):
+		self.token = token
 		
-		for i in args:
-			if args[i] is not None and i not in ['self', 'username', 'team', 'account', 'start_date']:
-				payload[i] = args[i]
-			elif args[i] is not None and i=='start_date':
-				payload[i] = args[i].date().isoformat()
+		self._headers = {'content-type':'application/json'}
+		if self.token:
+			self._headers['authorization'] = 'Token {}'.format(self.token)
+	
+	def search_trainer(self, nickname:str) -> Trainer:
+		"""Searches the database for a trainer that may currently or previous donned a certain nickname
 		
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
-		print(request_status(r))
+		Parameters
+		----------
+		nickname: str
+			The nickname of the trainer you want to search for. This search is case insensitive so go wild.
+			
+		Returns
+		-------
+		trainerdex.Trainer
+			
+			
+		Raises
+		------
+		trainerdex.exceptions.MutlipleResultsFound
+			Found more than one result, this would be due to an API error and we can't help you.
+		trainerdex.exceptions.NoResultsFound
+			No... results.. found. Honestly, documenting feels like training a puppy to sh*t on the floor.
+		
+		"""
+		
+		url = '{}trainers/'.format(api_url)
+		query = {
+			'detail': '1',
+			'q': nickname
+		}
+		response = requests.get(url, params=query, headers=self._headers)
+		print(request_status(response))
+			
+		if len(response.json()) == 1:
+			return Trainer(response.json()[0])
+		elif len(response.json()) > 1:
+			raise MutlipleResultsFound
+		else:
+			raise NoResultsFound
+	
+	def discord_to_users(self, memberlist: Iterable) -> List[User]:
+		"""Convenience function which collects user IDs en mass
+		
+		Parameters
+		----------
+		memberlist : iterable
+			Expects an iterable of int or discord.Member compatible objects, where the int would represent the a Discord Members UID
+		
+		Returns
+		-------
+		list
+			a list of trainerdex.User objects
+		"""
+		
+		users = ()
+		
+		for x in memberlist:
+			if isinstance(x, int):
+				try:
+					users.add(self.get_discord_user(x))
+				except NoResultsFound:
+					pass
+			else:
+				try:
+					users.add(self.get_discord_user(x.id))
+				except NoResultsFound:
+					pass
+				except AttributeError:
+					# Not a compatible type, ignore silently
+					pass
+		
+		return list(users)
+	
+	def create_trainer(self, username: str, faction: int, start_date: datetime.date = None, has_cheated: bool = None, last_cheated: datetime.date = None, currently_cheats: bool = None, daily_goal: int = None, total_goal: int = None, account: User = None, verified: bool = False) -> Trainer:
+		"""Add a trainer to the database
+		
+		Parameters
+		----------
+		account : trainerdex.User
+			
+		faction : int
+		start_date : datetime.date, optional
+		has_cheated: bool, optional
+		last_cheated: datetime.date, optional
+		currently_cheats: bool, optional
+		daily_goal: int, optional
+		total_goal: int, optional
+		verified: bool, optional
+		
+		Returns
+		-------
+		trainerdex.Trainer
+		
+		"""
+		
+		url = '{}trainers/'.format(api_url)
+		
+		# Clone parameters, delete self, we don't want that
+		parameters = locals().copy()
+		del parameters['self']
+		
+		parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
+		
+		for key, value in parameters.items():
+			if isinstance(value, datetime.date):
+				value = value.isoformat()
+		
+		response = requests.post(url, data=json.dumps(parameters), headers=self._headers)
+		print(request_status(response))
+		
 		r.raise_for_status()
-		return Trainer(r.json())
 		
-	def update_trainer(self, trainer, username=None, start_date=None, has_cheated=None, last_cheated=None, currently_cheats=None, statistics=None, daily_goal=None, total_goal=None, prefered=None):
-		"""Update parts of a trainer in a database"""
-		args = locals()
-		if not isinstance(trainer, Trainer):
-			raise ValueError
-		url = api_url+'trainers/'+str(trainer.id)+'/'
-		payload = {
-			'last_modified': datetime.datetime.utcnow().isoformat()
-		}
+		return Trainer(response.json())
 		
-		for i in args:
-			if args[i] is not None and i not in ['self', 'trainer', 'start_date']:
-				payload[i] = args[i]
-			elif args[i] is not None and i=='start_date':
-				payload[i] = args[i].date().isoformat()
+	def update_trainer(self, trainer: Trainer, start_date: datetime.date = None, faction: int = None, trainer_code: str = None, has_cheated: bool = None, last_cheated: datetime.date = None, currently_cheats: bool = None, daily_goal: int = None, total_goal: int = None, verified: bool = None) -> Trainer:
+		"""Update parts of a trainer in a database
 		
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		Parameters
+		----------
+		trainer : trainerdex.Trainer
+		start_date: datetime.date, optional
+		faction : int, optional
+		trainer_code: str, optional
+		has_cheated: bool, optional
+		last_cheated: datetime.date, optional
+		currently_cheats: bool, optional
+		daily_goal: int, optional
+		total_goal: int, optional
+		verified: bool, optional
+		
+		Returns
+		-------
+		trainerdex.Trainer
+		
+		"""
+		# Clone parameters, delete self and anything with None, we don't want that
+		parameters = {k:v for k, v in locals().items() if v is not None}
+		del parameters['self']
+		
+		assert type(trainer) == Trainer
+		
+		url = '{}trainers/{}/'.format(api_url, trainer.id)
+		
+		parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
+		
+		for key, value in parameters.items():
+			if isinstance(value, datetime.date):
+				value = value.isoformat()
+		
+		if isinstance(parameters['trainer_code'], str) == True and re.fullmatch(r'((?:\d{4}\s?){3})', parameters['trainer_code']) == False:
+			del parameters['trainer_code']
+		
+		r = requests.patch(url, data=json.dumps(payload), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
@@ -120,10 +220,12 @@ class Client:
 				else:
 					raise
 		
-		if self.identifier:
-			payload['meta_source'] = self.identifier
+		## We're scraping the identifier attribute, please call that each time you need it.
 		
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		# if self.identifier:
+		# 	payload['meta_source'] = self.identifier
+		
+		r = requests.post(url, data=json.dumps(payload), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Update(r.json())
@@ -137,7 +239,7 @@ class Client:
 			'uid': str(uid)
 		}
 		print(json.dumps(payload))
-		r = requests.put(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.put(url, data=json.dumps(payload), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return DiscordUser(r.json())
@@ -156,7 +258,7 @@ class Client:
 			payload['first_name'] = first_name
 		if last_name:
 			payload['last_name'] = last_name
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.post(url, data=json.dumps(payload), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
@@ -172,7 +274,7 @@ class Client:
 		for i in args:
 			if args[i] is not None and i not in ['self', 'user']:
 				payload[i] = args[i]
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.patch(url, data=json.dumps(payload), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
@@ -186,7 +288,7 @@ class Client:
 		if detail is False:
 			parameters['detail'] = 'low'
 			
-		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self.headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params=parameters, headers=self.headers)
+		r = requests.get(api_url+'trainers/'+str(id_)+'/', headers=self._headers) if respect_privacy is True else requests.get(api_url+'trainers/'+str(id_)+'/', params=parameters, headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
@@ -194,7 +296,7 @@ class Client:
 	def get_detailed_update(self, uid, uuid):
 		"""Returns the update object for the ID"""
 		
-		r = requests.get(api_url+'users/'+str(uid)+'/update/'+str(uuid)+'/', headers=self.headers)
+		r = requests.get(api_url+'users/'+str(uid)+'/update/'+str(uuid)+'/', headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Update(r.json())
@@ -202,7 +304,7 @@ class Client:
 	def get_user(self, uid):
 		"""Returns the User object for the ID"""
 		
-		r = requests.get(api_url+'users/'+str(uid)+'/', headers=self.headers)
+		r = requests.get(api_url+'users/'+str(uid)+'/', headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
@@ -221,7 +323,7 @@ class Client:
 			'user': users,
 			'trainer': trainers
 		}
-		r = requests.get(api_url+'users/social/', params=params, headers=self.headers)
+		r = requests.get(api_url+'users/social/', params=params, headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		output = r.json()
@@ -233,7 +335,7 @@ class Client:
 	def get_all_users(self):
 		"""Returns all the users"""
 		
-		r = requests.get(api_url+'users/', headers=self.headers)
+		r = requests.get(api_url+'users/', headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		output = r.json()
@@ -248,7 +350,7 @@ class Client:
 		Returns: `trainerdex.DiscordLeaderboard`
 		"""
 		
-		r = requests.get(api_url+'leaderboard/discord/'+str(guild)+'/', headers=self.headers)
+		r = requests.get(api_url+'leaderboard/discord/'+str(guild)+'/', headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return DiscordLeaderboard(r.json())
@@ -259,7 +361,7 @@ class Client:
 		Returns: `trainerdex.WorldwideLeaderboard`
 		"""
 		
-		r = requests.get(api_url+'leaderboard/', headers=self.headers)
+		r = requests.get(api_url+'leaderboard/', headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return WorldwideLeaderboard(r.json())

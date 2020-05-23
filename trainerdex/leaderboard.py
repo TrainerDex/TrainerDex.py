@@ -1,11 +1,12 @@
-from .trainer import Trainer
-from warnings import warn
+import warnings.warn
 
 try:
 	from maya import MayaDT
-except ModuleNotFoundError:
+except ImportError:
 	import dateutil.parser
 	MayaDT = None
+
+from trainerdex.trainer import Trainer
 
 class LeaderboardInstance:
 	
@@ -102,7 +103,7 @@ class DiscordLeaderboard:
 		try:
 			return LeaderboardInstance(self._leaderboard[position-1])
 		except IndexError:
-			warn("{} outside leaderboard length".format(position))
+			warnings.warn("{} outside leaderboard length".format(position))
 			return None
 	
 	def get_positions(self, positions):
@@ -153,11 +154,11 @@ class WorldwideLeaderboard:
 	def top_25(cls):
 		return [LeaderboardInstance(x) for x in cls._leaderboard[:25]]
 	
-	def get_postion(self, postion):
+	def get_postion(self, position):
 		try:
 			return LeaderboardInstance(self._leaderboard[position-1])
 		except IndexError:
-			warn("{} outside leaderboard length".format(position))
+			warnings.warn("{} outside leaderboard length".format(position))
 			return None
 	
 	def get_positions(self, positions):

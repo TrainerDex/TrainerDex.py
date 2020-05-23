@@ -1,10 +1,10 @@
-from .update import Update
-
 try:
 	from maya import MayaDT
-except ModuleNotFoundError:
+except ImportError:
 	import dateutil.parser
 	MayaDT = None
+
+from trainerdex.update import Update
 
 class Trainer:
 	"""Reprsents a Trainer Profile"""

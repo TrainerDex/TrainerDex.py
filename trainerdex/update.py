@@ -1,10 +1,10 @@
-from .utils import level_parser
-
 try:
 	from maya import MayaDT
-except ModuleNotFoundError:
+except ImportError:
 	import dateutil.parser
 	MayaDT = None
+
+from trainedex.utils import level_parser
 
 class Update:
 	"""Represents an Basic Update object on the API"""
@@ -21,6 +21,6 @@ class Update:
 	def level(self):
 		return level_parser(xp=self.xp)
 	
-	def trainer(cls):
+	def trainer(self):
 		from .client import Client
 		return Client().get_trainer(self._get['trainer'])
