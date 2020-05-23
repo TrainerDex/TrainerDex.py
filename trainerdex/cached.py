@@ -1,4 +1,4 @@
-from ast import literal_eval
+from json import loads
 
 class DiscordUser:
 	"""Represents a cached Discord user"""
@@ -6,7 +6,7 @@ class DiscordUser:
 	def __init__(self, r):
 		self._get = r
 		self.id = r['uid']
-		self._extra_data = literal_eval(r['extra_data'])
+		self._extra_data = loads(r['extra_data'].replace("True", "true").replace("False", "false")) # Compensates for invalid JSON in API
 		try:
 			self.username = self._extra_data['username'] or None
 		except KeyError:

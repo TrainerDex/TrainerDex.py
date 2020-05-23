@@ -1,7 +1,6 @@
 import requests
 import json
 import datetime
-import maya
 from .trainer import Trainer
 from .update import Update
 from .cached import DiscordUser
@@ -54,7 +53,7 @@ class Client:
 			'faction': team,
 			'statistics': statistics,
 			'prefered': prefered,
-			'last_modified': maya.now().iso8601(),
+			'last_modified': datetime.datetime.utcnow().isoformat(),
 			'owner': account,
 			'verified': verified
 		}
@@ -77,7 +76,7 @@ class Client:
 			raise ValueError
 		url = api_url+'trainers/'+str(trainer.id)+'/'
 		payload = {
-			'last_modified': maya.now().iso8601()
+			'last_modified': datetime.datetime.utcnow().isoformat()
 		}
 		
 		for i in args:
@@ -106,10 +105,21 @@ class Client:
 		url = api_url+'trainers/'+str(trainer)+'/updates/'
 		payload = {'trainer' : int(trainer), 'xp' : int(xp)}
 		
-		if time_updated is None:
-			payload['update_time'] = maya.now().iso8601()
+		if isinstance(time_updated, datetime.datetime):
+			payload['update_time'] = time_updated.isoformat()
+		elif isinstance(time_updated, type(None)):
+			payload['update_time'] = datetime.datetime.utcnow().isoformat()
 		else:
-			payload['update_time'] = time_updated.iso8601()
+			try:
+				import maya
+			except ModuleNotFoundError:
+				pass
+			else:
+				if isinstance(time_updated, maya.MayaDT):
+					payload['update_time'] = time_updated.iso8601()
+				else:
+					raise
+		
 		if self.identifier:
 			payload['meta_source'] = self.identifier
 		
