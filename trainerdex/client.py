@@ -2,6 +2,7 @@ import datetime
 import decimal
 import json
 import re
+import uuid
 from typing import Iterable, List, Union
 
 import requests
@@ -29,10 +30,12 @@ class Client:
         Searches the database for a trainer that may currently or previous donned a certain nickname
     discord_to_users(memberlist)
         Convenience method for getting a large number of users at once
-    create_trainer(username, faction, start_date, has_cheated, last_cheated, currently_cheats, daily_goal, total_goal, account, verified)
-        Still due to change
     update_trainer(trainer, start_date, faction, trainer_code, has_cheated, last_cheated, currently_cheats, daily_goal, total_goal, verified)
         Update parts of a trainer profile
+    create_update(trainer, update_time, total_xp, data_source, ...)
+        Please see help(create_update) for more detail. Lots of optional parameters!
+    assign_discord_to_user(uid, user)
+        Get or create the assigned connection between the Discord User/Member uid the TrainerDex User
     """
     
     def __init__(self, token: str = None):
@@ -112,7 +115,64 @@ class Client:
         
         return list(users)
     
-    def create_trainer(
+    def _get_user(self, uid: int):
+        """Returns the User object for the ID"""
+        
+        url = '{}users/{}'.format(API_BASE_URL, uid)
+        
+        r = requests.get(url, headers=self._headers)
+        print(request_status(r))
+        r.raise_for_status()
+        return User(r.json())
+    
+    def _create_user(self, username: str, first_name: str = None, last_name: str = None) -> User:
+        """Creates a new user object on database
+        
+        Must have consent to run this. Consent is assumed gathered from the user with the API key.
+        """
+        
+        url = '{}users/'.format(API_BASE_URL)
+        
+        # Clone parameters, delete self, we don't want that
+        parameters = locals().copy()
+        del parameters['self']
+        
+        r = requests.post(url, data=json.dumps(payload), headers=self._headers)
+        print(request_status(r))
+        r.raise_for_status()
+        return User(r.json())
+    
+    def _patch_user(self, user: Union[int, User], first_name: str = None, last_name: str = None) -> User:
+        """Patch user info
+        
+        Due to the nature of how usernames now work in the database, there still isn't an API to reliably update them.
+        """
+        
+        if isinstance(user, User):
+            user = user.id
+        
+        url = '{}users/{}'.format(API_BASE_URL, user)
+        
+        # Clone parameters, delete self, we don't want that
+        parameters = {k:v for k, v in locals().items() if v is not None}
+        del parameters['self']
+        
+        r = requests.patch(url, data=json.dumps(parameters), headers=self._headers)
+        print(request_status(r))
+        r.raise_for_status()
+        return User(r.json())
+    
+    def get_trainer(self, uid: int) -> Trainer:
+        """Returns the Trainer object for the ID"""
+        
+        url = '{}trainer/{}/'.format(API_BASE_URL, uid)
+            
+        r = requests.get(url, headers=self._headers)
+        print(request_status(r))
+        r.raise_for_status()
+        return Trainer(r.json())
+    
+    def _create_trainer(
         self,
         username: str,
         faction: int,
@@ -181,6 +241,21 @@ class Client:
         print(request_status(r))
         r.raise_for_status()
         return Trainer(r.json())
+    
+    def get_update(self, trainer: Union[int, Trainer], uuid: Union[str, uuid.UUID]):
+        """Returns the update object for the ID"""
+        
+        if isinstance(trainer, Trainer):
+            trainer = trainer.id
+        
+        if isinstance(uuid, uuid.UUID):
+            uuid = uuid.hex
+        
+        url = '{}trainers/{}/updates/{}/'.format(API_BASE_URL, trainer, uuid)
+        r = requests.get(url, headers=self._headers)
+        print(request_status(r))
+        r.raise_for_status()
+        return Update(r.json())
     
     def create_update(
         self,
@@ -262,119 +337,53 @@ class Client:
         r.raise_for_status()
         return Update(r.json())
         
-    def import_discord_user(self, uid, user):
-        """Add a discord user to the database if not already present, get if is present. """
-        url = API_BASE_URL+'users/social/'
-        payload = {
-            'user': int(user),
-            'provider': 'discord',
-            'uid': str(uid)
-        }
-        print(json.dumps(payload))
-        r = requests.put(url, data=json.dumps(payload), headers=self._headers)
+    def assign_discord_to_user(self, uid: Union[int,str], user: Union[int, User, Trainer]) -> DiscordUser:
+        """Get or create the assigned connection between the Discord User/Member uid the TrainerDex User"""
+        
+        url = '{}users/social/'.format(API_BASE_URL)
+        
+        parameters = {'provider': 'discord'}
+        parameters['uid'] = str(uid)
+        if isinstance(user, User):
+            parameters['user'] = user.id
+        elif isinstance(user, Trainer):
+            parameters['user'] = user._get['owner']
+        else:
+            parameters['user'] = user
+        
+        r = requests.put(url, data=json.dumps(parameters), headers=self._headers)
         print(request_status(r))
         r.raise_for_status()
         return DiscordUser(r.json())
     
-    def create_user(self, username, first_name=None, last_name=None):
+    def get_discord_users(self, users: Union[str, int, User, Trainer, List[Union[str, int, User, Trainer]]]) -> List[DiscordUser]:
+        """Retrieves information about Discord connections in the database
+        
+        Parameters
+        ----------
+        users: list, int, str, trainerdex.User, trainerdex.Trainer
+            Expects either a single or list of any of the types mentioned above, if the type is str or int, it assumes you want to grab the Discord user with that Discord UID
+        
+        Returns
+        -------
+        list of trainerdex.DiscordUser, may be empty
         """
-        Creates a new user object on database
-        Returns the User Object. Must be linked to a new trainer soon after
-        """
         
-        url = API_BASE_URL+'users/'
-        payload = {
-            'username':username
-        }
-        if first_name:
-            payload['first_name'] = first_name
-        if last_name:
-            payload['last_name'] = last_name
-        r = requests.post(url, data=json.dumps(payload), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
-    
-    def update_user(self, user, username=None, first_name=None, last_name=None):
-        """Update user info"""
+        url = '{}users/social/'.format(API_BASE_URL)
         
-        if not isinstance(user, User):
-            raise ValueError
-        args = locals()
-        url = API_BASE_URL+'users/'+str(user.id)+'/'
-        payload = {}
-        for i in args:
-            if args[i] is not None and i not in ['self', 'user']:
-                payload[i] = args[i]
-        r = requests.patch(url, data=json.dumps(payload), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
-    
-    def get_trainer(self, id_, respect_privacy=True, detail=True):
-        """Returns the Trainer object for the ID"""
+        if not isinstance(users, list):
+            users = [users]
         
-        parameters = {}
-        if respect_privacy is False:
-            parameters['statistics'] = 'force'
-        if detail is False:
-            parameters['detail'] = 'low'
-            
-        r = requests.get(API_BASE_URL+'trainers/'+str(id_)+'/', headers=self._headers) if respect_privacy is True else requests.get(API_BASE_URL+'trainers/'+str(id_)+'/', params=parameters, headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Trainer(r.json())
-    
-    def get_detailed_update(self, uid, uuid):
-        """Returns the update object for the ID"""
-        
-        r = requests.get(API_BASE_URL+'users/'+str(uid)+'/update/'+str(uuid)+'/', headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Update(r.json())
-    
-    def get_user(self, uid):
-        """Returns the User object for the ID"""
-        
-        r = requests.get(API_BASE_URL+'users/'+str(uid)+'/', headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
-    
-    def get_discord_user(self, uid=None, user=None, trainer=None):
-        """Returns the DiscordUsers object for the ID
-        Expects list of string representions discord IDs, trainer IDs or user IDs
-        Returns DiscordUser objects
-        """
-        uids = ','.join(uid) if uid else None
-        users =','.join(user) if user else None
-        trainers = ','.join(trainer) if trainer else None
-        params = {
+        parameters = {
             'provider': 'discord',
-            'uid': uids,
-            'user': users,
-            'trainer': trainers
+            'uid': ','.join(str(d) for d in users if type(d) in (int, str)),  # If string or int, assume discord ID
+            'user': ','.join(u.id for u in users if type(u) == User),
+            'trainer': ','.join(t.id for t in users if type(t) == Trainer),
         }
-        r = requests.get(API_BASE_URL+'users/social/', params=params, headers=self._headers)
+        r = requests.get(url, params=parameters, headers=self._headers)
         print(request_status(r))
         r.raise_for_status()
-        output = r.json()
-        result = []
-        for x in output:
-            result.append(DiscordUser(x))
-        return result
-    
-    def get_all_users(self):
-        """Returns all the users"""
-        
-        r = requests.get(API_BASE_URL+'users/', headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        output = r.json()
-        result = []
-        for x in output:
-            result.append(User(x))
-        return result
+        return [DiscordUser(x) for x in r.json()]
     
     def get_discord_leaderboard(self, guild):
         """
