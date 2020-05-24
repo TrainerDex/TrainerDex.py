@@ -1,7 +1,8 @@
 import datetime
+import decimal
 import json
+import re
 from typing import Iterable, List, Union
-import re.fullmatch
 
 import requests
 
@@ -27,6 +28,10 @@ class Client:
 		Searches the database for a trainer that may currently or previous donned a certain nickname
 	discord_to_users(memberlist)
 		Convenience method for getting a large number of users at once
+	create_trainer(username, faction, start_date, has_cheated, last_cheated, currently_cheats, daily_goal, total_goal, account, verified)
+		Still due to change
+	update_trainer(trainer, start_date, faction, trainer_code, has_cheated, last_cheated, currently_cheats, daily_goal, total_goal, verified)
+		Update parts of a trainer profile
 	"""
 	
 	def __init__(self, token: str = None):
@@ -106,7 +111,19 @@ class Client:
 		
 		return list(users)
 	
-	def create_trainer(self, username: str, faction: int, start_date: datetime.date = None, has_cheated: bool = None, last_cheated: datetime.date = None, currently_cheats: bool = None, daily_goal: int = None, total_goal: int = None, account: User = None, verified: bool = False) -> Trainer:
+	def create_trainer(
+		self,
+		username: str,
+		faction: int,
+		start_date: datetime.date = None,
+		has_cheated: bool = None,
+		last_cheated: datetime.date = None,
+		currently_cheats: bool = None,
+		daily_goal: int = None,
+		total_goal: int = None,
+		account: User = None,
+		verified: bool = False
+		) -> Trainer:
 		"""Add a trainer to the database
 		
 		Parameters
@@ -147,8 +164,20 @@ class Client:
 		
 		return Trainer(response.json())
 		
-	def update_trainer(self, trainer: Trainer, start_date: datetime.date = None, faction: int = None, trainer_code: str = None, has_cheated: bool = None, last_cheated: datetime.date = None, currently_cheats: bool = None, daily_goal: int = None, total_goal: int = None, verified: bool = None) -> Trainer:
-		"""Update parts of a trainer in a database
+	def update_trainer(
+		self,
+		trainer: Trainer,
+		start_date: datetime.date = None,
+		faction: int = None,
+		trainer_code: str = None,
+		has_cheated: bool = None,
+		last_cheated: datetime.date = None,
+		currently_cheats: bool = None,
+		daily_goal: int = None,
+		total_goal: int = None,
+		verified: bool = None
+		) -> Trainer:
+		"""Update parts of a trainer profile
 		
 		Parameters
 		----------
@@ -190,42 +219,145 @@ class Client:
 		r.raise_for_status()
 		return Trainer(r.json())
 	
-	def create_update(self, trainer, xp, time_updated=None):
+	def create_update(
+		self,
+		trainer: Union[int,Trainer],
+		update_time: datetime.datetime = None,
+		total_xp: int = None,
+		pokedex_caught: int = None,
+		pokedex_seen: int = None,
+		gymbadges_total: int = None,
+		gymbadges_gold: int = None,
+		pokemon_info_stardust: int = None,
+		badge_travel_km: Union[decimal.Decimal, float] = None,
+		badge_pokedex_entries: int = None,
+		badge_capture_total: int = None,
+		badge_evolved_total: int = None,
+		badge_hatched_total: int = None,
+		badge_pokestops_visited: int = None,
+		badge_big_magikarp: int = None,
+		badge_battle_attack_won: int = None,
+		badge_battle_training_won: int = None,
+		badge_small_rattata: int = None,
+		badge_pikachu: int = None,
+		badge_unown: int = None,
+		badge_pokedex_entries_gen2: int = None,
+		badge_raid_battle_won: int = None,
+		badge_legendary_battle_won: int = None,
+		badge_berries_fed: int = None,
+		badge_hours_defended: int = None,
+		badge_pokedex_entries_gen3: int = None,
+		badge_challenge_quests: int = None,
+		badge_max_level_friends: int = None,
+		badge_trading: int = None,
+		badge_trading_distance: int = None,
+		badge_pokedex_entries_gen4: int = None,
+		badge_great_league: int = None,
+		badge_ultra_league: int = None,
+		badge_master_league: int = None,
+		badge_photobomb: int = None,
+		badge_pokemon_purified: int = None,
+		badge_photobombadge_rocket_grunts_defeated: int = None,
+		badge_pokedex_entries_gen5: int = None,
+		badge_pokedex_entries_gen8: int = None,
+		badge_type_normal: int = None,
+		badge_type_fighting: int = None,
+		badge_type_flying: int = None,
+		badge_type_poison: int = None,
+		badge_type_ground: int = None,
+		badge_type_rock: int = None,
+		badge_type_bug: int = None,
+		badge_type_ghost: int = None,
+		badge_type_steel: int = None,
+		badge_type_fire: int = None,
+		badge_type_water: int = None,
+		badge_type_grass: int = None,
+		badge_type_electric: int = None,
+		badge_type_psychic: int = None,
+		badge_type_ice: int = None,
+		badge_type_dragon: int = None,
+		badge_type_dark: int = None,
+		badge_type_fairy: int = None,
+		data_source: str = '?',
+		) -> Update:
 		"""Add a Update object to the database
 		
-		Arguments:
-		trainer - expects a int of trainer's id or a trainer object
-		xp
-		time_updated - expects datetime.datetime
+		Parameters
+		----------
 		
+		trainer: int or trainerdex.Trainer
+		update_time: datetime.datetime, optional
+		total_xp: int, optional
+		pokedex_caught: int, optional
+		pokedex_seen: int, optional
+		gymbadges_total: int, optional
+		gymbadges_gold: int, optional
+		pokemon_info_stardust: int, optional
+		badge_travel_km: Union[decimal.Decimal, float], optional
+		badge_pokedex_entries: int, optional
+		badge_capture_total: int, optional
+		badge_evolved_total: int, optional
+		badge_hatched_total: int, optional
+		badge_pokestops_visited: int, optional
+		badge_big_magikarp: int, optional
+		badge_battle_attack_won: int, optional
+		badge_battle_training_won: int, optional
+		badge_small_rattata: int, optional
+		badge_pikachu: int, optional
+		badge_unown: int, optional
+		badge_pokedex_entries_gen2: int, optional
+		badge_raid_battle_won: int, optional
+		badge_legendary_battle_won: int, optional
+		badge_berries_fed: int, optional
+		badge_hours_defended: int, optional
+		badge_pokedex_entries_gen3: int, optional
+		badge_challenge_quests: int, optional
+		badge_max_level_friends: int, optional
+		badge_trading: int, optional
+		badge_trading_distance: int, optional
+		badge_pokedex_entries_gen4: int, optional
+		badge_great_league: int, optional
+		badge_ultra_league: int, optional
+		badge_master_league: int, optional
+		badge_photobomb: int, optional
+		badge_pokemon_purified: int, optional
+		badge_photobombadge_rocket_grunts_defeated: int, optional
+		badge_pokedex_entries_gen5: int, optional
+		badge_pokedex_entries_gen8: int, optional
+		badge_type_normal: int, optional
+		badge_type_fighting: int, optional
+		badge_type_flying: int, optional
+		badge_type_poison: int, optional
+		badge_type_ground: int, optional
+		badge_type_rock: int, optional
+		badge_type_bug: int, optional
+		badge_type_ghost: int, optional
+		badge_type_steel: int, optional
+		badge_type_fire: int, optional
+		badge_type_water: int, optional
+		badge_type_grass: int, optional
+		badge_type_electric: int, optional
+		badge_type_psychic: int, optional
+		badge_type_ice: int, optional
+		badge_type_dragon: int, optional
+		badge_type_dark: int, optional
+		badge_type_fairy: int, optional
+		data_source: str, optional
 		"""
 		
-		if isinstance(trainer, Trainer):
-			trainer = trainer.id
-		url = api_url+'trainers/'+str(trainer)+'/updates/'
-		payload = {'trainer' : int(trainer), 'xp' : int(xp)}
+		parameters = {k:v for k, v in locals().items() if v is not None}
+		del parameters['self']
 		
-		if isinstance(time_updated, datetime.datetime):
-			payload['update_time'] = time_updated.isoformat()
-		elif isinstance(time_updated, type(None)):
-			payload['update_time'] = datetime.datetime.utcnow().isoformat()
-		else:
-			try:
-				import maya
-			except ModuleNotFoundError:
-				pass
-			else:
-				if isinstance(time_updated, maya.MayaDT):
-					payload['update_time'] = time_updated.iso8601()
-				else:
-					raise
+		if isinstance(parameters['trainer'], Trainer):
+			parameters['trainer'] = parameters['trainer'].id
 		
-		## We're scraping the identifier attribute, please call that each time you need it.
+		url = '{}trainers/{}/updates/'.format(api_url, parameters['trainer'])
 		
-		# if self.identifier:
-		# 	payload['meta_source'] = self.identifier
+		for key, value in parameters.items():
+			if isinstance(value, datetime.date):
+				value = value.isoformat()
 		
-		r = requests.post(url, data=json.dumps(payload), headers=self._headers)
+		r = requests.post(url, data=json.dumps(parameters), headers=self._headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Update(r.json())

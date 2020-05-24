@@ -4,7 +4,7 @@ except ImportError:
 	import dateutil.parser
 	MayaDT = None
 
-from trainedex.utils import level_parser
+from trainerdex.utils import level_parser
 
 class Update:
 	"""Represents an Basic Update object on the API"""

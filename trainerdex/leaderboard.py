@@ -1,4 +1,4 @@
-import warnings.warn
+import warnings
 
 try:
 	from maya import MayaDT
