@@ -1,23 +1,29 @@
-﻿import requests
+import requests
 
-api_url = 'https://www.trainerdex.co.uk/api/v1/'
+API_BASE_URL = 'https://www.trainerdex.co.uk/api/v1/'
 
-def request_status(r, detailed=False):
-	"""Returns a formatted string about the status, useful for logging.
-	
-	args:
-	r - takes requests.models.Response
-	"""
-	
-	base_string = "HTTP {r.request.method} {r.request.url}: {r.status_code}"
-	
-	if r.status_code in range(200,99):
-		string = base_string
-		if detailed is True:
-			string += " - {r.json()}"
-		else:
-			string += " - 👍"
-		return string.format(r=r)
-	else:
-		string = base_string
-		return string.format(r=r)
+
+def request_status(response: requests.models.Response, detailed: bool = False) -> str:
+    """Returns a formatted string about the status, useful for logging.
+    
+    Parameters
+    ----------
+    r: requests.models.Response
+    
+    Returns
+    -------
+    string
+    """
+    
+    base_string = "HTTP {response.request.method} {response.request.url}: {response.status_code}"
+    
+    if response.status_code in range(200, 99):
+        string = base_string
+        if detailed:
+            string += " - {response.json()}"
+        else:
+            string += " - 👍"
+        return string.format(response=response)
+    else:
+        string = base_string
+        return string.format(response=response)

@@ -1,5 +1,5 @@
-class MutlipleResultsFound(Exception):
-	pass
+class MutlipleResultsFoundError(Exception):
+    pass
 
-class NoResultsFound(Exception):
-	pass
+class NoResultsFoundError(Exception):
+    pass

@@ -1,10 +1,10 @@
 """
 Official TrainerDex API Wrapper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------
 
 A basic wrapper for the TrianerDex API.
 
-:copyright: (c) 2017 JayTurnr
+:copyright: (c) 2020 JayTurnr
 :licence: GNU-GPL3, see LICENSE for more details
 
 """
@@ -12,7 +12,7 @@ A basic wrapper for the TrianerDex API.
 __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
-__copyright__ = 'Copyright 2017 JayTurnr'
+__copyright__ = 'Copyright 2020 JayTurnr'
 __version__ = '3.0.0 alpha'
 
 from trainerdex.client import Client
