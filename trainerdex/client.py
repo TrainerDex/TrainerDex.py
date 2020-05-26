@@ -1,6 +1,5 @@
 import datetime
 import decimal
-import json
 import re
 import uuid
 from typing import Iterable, List, Union
@@ -10,7 +9,7 @@ import requests
 from trainerdex.trainer import Trainer
 from trainerdex.update import Update
 from trainerdex.cached import DiscordUser
-from trainerdex.http import request_status, API_BASE_URL
+from trainerdex.http import Route, HTTPClient
 from trainerdex.user import User
 from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
 from trainerdex.exceptions import *
@@ -35,15 +34,11 @@ class Client:
     create_update(trainer, update_time, total_xp, data_source, ...)
         Please see help(create_update) for more detail. Lots of optional parameters!
     assign_discord_to_user(uid, user)
-        Get or create the assigned connection between the Discord User/Member uid the TrainerDex User
+        Get or create the assigned connection between the Discord™ User/Member uid the TrainerDex User
     """
     
     def __init__(self, token: str = None):
-        self.token = token
-        
-        self._headers = {'content-type':'application/json'}
-        if self.token:
-            self._headers['authorization'] = 'Token {}'.format(self.token)
+        self.client = HTTPClient(token)
     
     def search_trainer(self, nickname:str) -> Trainer:
         """Searches the database for a trainer that may currently or previous donned a certain nickname
@@ -57,7 +52,6 @@ class Client:
         -------
         trainerdex.Trainer
             
-            
         Raises
         ------
         trainerdex.exceptions.MutlipleResultsFoundError
@@ -67,16 +61,15 @@ class Client:
         
         """
         
-        url = '{}trainers/'.format(API_BASE_URL)
+        route = Route('GET', '/trainers/')
         query = {
             'detail': '1',
             'q': nickname,
         }
-        response = requests.get(url, params=query, headers=self._headers)
-        print(request_status(response))
+        response = self.client.request(route, params=query)
             
         if len(response.json()) == 1:
-            return Trainer(response.json()[0])
+            return Trainer(response[0])
         elif len(response.json()) > 1:
             raise MutlipleResultsFoundError
         else:
@@ -88,7 +81,7 @@ class Client:
         Parameters
         ----------
         memberlist: iterable
-            Expects an iterable of int or discord.Member compatible objects, where the int would represent the a Discord Members UID
+            Expects an iterable of int or discord.Member compatible objects, where the int would represent the a Discord™ Members UID
         
         Returns
         -------
@@ -118,12 +111,9 @@ class Client:
     def _get_user(self, uid: int):
         """Returns the User object for the ID"""
         
-        url = '{}users/{}'.format(API_BASE_URL, uid)
-        
-        r = requests.get(url, headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
+        route = Route('GET', '/users/{uid}', uid=uid)
+        response = self.client.request(route)
+        return User(response)
     
     def _create_user(self, username: str, first_name: str = None, last_name: str = None) -> User:
         """Creates a new user object on database
@@ -131,16 +121,14 @@ class Client:
         Must have consent to run this. Consent is assumed gathered from the user with the API key.
         """
         
-        url = '{}users/'.format(API_BASE_URL)
+        route = Route('POST', '/users/')
         
         # Clone parameters, delete self, we don't want that
         parameters = locals().copy()
         del parameters['self']
         
-        r = requests.post(url, data=json.dumps(payload), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
+        response = self.client.request(route, params=parameters)
+        return User(response)
     
     def _patch_user(self, user: Union[int, User], first_name: str = None, last_name: str = None) -> User:
         """Patch user info
@@ -151,26 +139,21 @@ class Client:
         if isinstance(user, User):
             user = user.id
         
-        url = '{}users/{}'.format(API_BASE_URL, user)
+        route = Route('PATCH', '/users/{user}', user=user)
         
         # Clone parameters, delete self, we don't want that
         parameters = {k:v for k, v in locals().items() if v is not None}
         del parameters['self']
         
-        r = requests.patch(url, data=json.dumps(parameters), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return User(r.json())
+        response = self.client.request(route, json=parameters)
+        return User(response)
     
     def get_trainer(self, uid: int) -> Trainer:
         """Returns the Trainer object for the ID"""
         
-        url = '{}trainer/{}/'.format(API_BASE_URL, uid)
-            
-        r = requests.get(url, headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Trainer(r.json())
+        route = Route('GET', '/trainer/{uid}/', uid=uid)
+        response = self.client.request(route)
+        return Trainer(response)
     
     def _create_trainer(
         self,
@@ -187,7 +170,7 @@ class Client:
         ) -> Trainer:
         """Add a trainer to the database"""
         
-        url = '{}trainers/'.format(API_BASE_URL)
+        route = Route('POST', '/trainers/')
         
         # Clone parameters, delete self, we don't want that
         parameters = locals().copy()
@@ -199,12 +182,8 @@ class Client:
             if isinstance(value, datetime.date):
                 value = value.isoformat()
         
-        response = requests.post(url, data=json.dumps(parameters), headers=self._headers)
-        print(request_status(response))
-        
-        r.raise_for_status()
-        
-        return Trainer(response.json())
+        response = self.client.request(route, json=parameters)
+        return Trainer(response)
         
     def update_trainer(
         self,
@@ -220,13 +199,13 @@ class Client:
         verified: bool = None
         ) -> Trainer:
         """Update parts of a trainer profile"""
+        
+        assert type(trainer) == Trainer
+        route = Route('PATCH', '/trainers/{uid}', uid=trainer.id)
+        
         # Clone parameters, delete self and anything with None, we don't want that
         parameters = {k:v for k, v in locals().items() if v is not None}
         del parameters['self']
-        
-        assert type(trainer) == Trainer
-        
-        url = '{}trainers/{}/'.format(API_BASE_URL, trainer.id)
         
         parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
         
@@ -237,10 +216,8 @@ class Client:
         if isinstance(parameters['trainer_code'], str) == True and re.fullmatch(r'((?:\d{4}\s?){3})', parameters['trainer_code']) == False:
             del parameters['trainer_code']
         
-        r = requests.patch(url, data=json.dumps(payload), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Trainer(r.json())
+        response = self.client.request(route, json=parameters)
+        return Trainer(response)
     
     def get_update(self, trainer: Union[int, Trainer], uuid: Union[str, uuid.UUID]):
         """Returns the update object for the ID"""
@@ -251,11 +228,9 @@ class Client:
         if isinstance(uuid, uuid.UUID):
             uuid = uuid.hex
         
-        url = '{}trainers/{}/updates/{}/'.format(API_BASE_URL, trainer, uuid)
-        r = requests.get(url, headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Update(r.json())
+        route = Route('GET', '/trainers/{trainer}/updates/{update}/', trainer=trainer, update=uuid)
+        response = self.client.request(route)
+        return Update(response)
     
     def create_update(
         self,
@@ -320,27 +295,52 @@ class Client:
         ) -> Update:
         """Add a Update object to the database"""
         
+        if isinstance(trainer, Trainer):
+            trainer = trainer.id
+        
+        route = Route('POST', '/trainers/{trainer}/updates/', trainer=trainer)
+        
         parameters = {k:v for k, v in locals().items() if v is not None}
         del parameters['self']
-        
-        if isinstance(parameters['trainer'], Trainer):
-            parameters['trainer'] = parameters['trainer'].id
-        
-        url = '{}trainers/{}/updates/'.format(API_BASE_URL, parameters['trainer'])
         
         for key, value in parameters.items():
             if isinstance(value, datetime.date):
                 value = value.isoformat()
         
-        r = requests.post(url, data=json.dumps(parameters), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return Update(r.json())
+        response = self.client.request(route, json=parameters)
+        return Update(response)
+    
+    def get_discord_users(self, users: Union[str, int, User, Trainer, List[Union[str, int, User, Trainer]]]) -> List[DiscordUser]:
+        """Retrieves information about Discord™ connections in the database
+        
+        Parameters
+        ----------
+        users: list, int, str, trainerdex.User, trainerdex.Trainer
+            Expects either a single or list of any of the types mentioned above, if the type is str or int, it assumes you want to grab the Discord™ user with that Discord™ UID
+        
+        Returns
+        -------
+        list of trainerdex.DiscordUser, may be empty
+        """
+        
+        route = Route('GET', '/users/social')
+        
+        if not isinstance(users, list):
+            users = [users]
+        
+        parameters = {
+            'provider': 'discord',
+            'uid': ','.join(str(d) for d in users if type(d) in (int, str)),  # If string or int, assume Discord™ ID
+            'user': ','.join(u.id for u in users if type(u) == User),
+            'trainer': ','.join(t.id for t in users if type(t) == Trainer),
+        }
+        response = self.client.request(route, params=parameters)
+        return [DiscordUser(x) for x in response]
         
     def assign_discord_to_user(self, uid: Union[int,str], user: Union[int, User, Trainer]) -> DiscordUser:
-        """Get or create the assigned connection between the Discord User/Member uid the TrainerDex User"""
+        """Get or create the assigned connection between the Discord™ User/Member uid the TrainerDex User"""
         
-        url = '{}users/social/'.format(API_BASE_URL)
+        route = Route('PUT', '/users/social')
         
         parameters = {'provider': 'discord'}
         parameters['uid'] = str(uid)
@@ -351,58 +351,16 @@ class Client:
         else:
             parameters['user'] = user
         
-        r = requests.put(url, data=json.dumps(parameters), headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return DiscordUser(r.json())
+        response = self.client.request(route, json=parameters)
+        return DiscordUser(response)
     
-    def get_discord_users(self, users: Union[str, int, User, Trainer, List[Union[str, int, User, Trainer]]]) -> List[DiscordUser]:
-        """Retrieves information about Discord connections in the database
+    def get_discord_leaderboard(self, guild: int) -> DiscordLeaderboard:
+        """Returns a leaderboard for a Discord™ Guild"""
         
-        Parameters
-        ----------
-        users: list, int, str, trainerdex.User, trainerdex.Trainer
-            Expects either a single or list of any of the types mentioned above, if the type is str or int, it assumes you want to grab the Discord user with that Discord UID
-        
-        Returns
-        -------
-        list of trainerdex.DiscordUser, may be empty
-        """
-        
-        url = '{}users/social/'.format(API_BASE_URL)
-        
-        if not isinstance(users, list):
-            users = [users]
-        
-        parameters = {
-            'provider': 'discord',
-            'uid': ','.join(str(d) for d in users if type(d) in (int, str)),  # If string or int, assume discord ID
-            'user': ','.join(u.id for u in users if type(u) == User),
-            'trainer': ','.join(t.id for t in users if type(t) == Trainer),
-        }
-        r = requests.get(url, params=parameters, headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return [DiscordUser(x) for x in r.json()]
-    
-    def get_discord_leaderboard(self, guild):
-        """
-        Expects: `int` - Discord Guild ID
-        Returns: `trainerdex.DiscordLeaderboard`
-        """
-        
-        r = requests.get(API_BASE_URL+'leaderboard/discord/'+str(guild)+'/', headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return DiscordLeaderboard(r.json())
+        route = Route('GET', '/leaderboard/discord/{guild}/', guild=guild)
+        response = self.client.request(route)
+        return DiscordLeaderboard(response)
     
     
-    def get_worldwide_leaderboard(self):
-        """
-        Returns: `trainerdex.WorldwideLeaderboard`
-        """
-        
-        r = requests.get(API_BASE_URL+'leaderboard/', headers=self._headers)
-        print(request_status(r))
-        r.raise_for_status()
-        return WorldwideLeaderboard(r.json())
+    def get_worldwide_leaderboard(self) -> WorldwideLeaderboard:
+        return WorldwideLeaderboard(self.client.request(Route('GET', '/leaderboard/')))
