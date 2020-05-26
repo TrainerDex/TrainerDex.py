@@ -6,13 +6,11 @@ from typing import Iterable, List, Union
 
 import requests
 
-from trainerdex.trainer import Trainer
-from trainerdex.update import Update
 from trainerdex.cached import DiscordUser
-from trainerdex.http import Route, HTTPClient
-from trainerdex.user import User
+from trainerdex.exceptions import MutlipleResultsFoundError, NoResultsFoundError
+from trainerdex.http import HTTPClient, Route
 from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
-from trainerdex.exceptions import *
+from trainerdex.models import Trainer, Update, User
 
 
 class Client:
@@ -69,7 +67,7 @@ class Client:
         response = self.client.request(route, params=query)
             
         if len(response.json()) == 1:
-            return Trainer(response[0])
+            return Trainer(self.client, **response[0])
         elif len(response.json()) > 1:
             raise MutlipleResultsFoundError
         else:
@@ -113,7 +111,7 @@ class Client:
         
         route = Route('GET', '/users/{uid}', uid=uid)
         response = self.client.request(route)
-        return User(response)
+        return User(self.client, **response)
     
     def _create_user(self, username: str, first_name: str = None, last_name: str = None) -> User:
         """Creates a new user object on database
@@ -128,7 +126,7 @@ class Client:
         del parameters['self']
         
         response = self.client.request(route, params=parameters)
-        return User(response)
+        return User(self.client, **response)
     
     def _patch_user(self, user: Union[int, User], first_name: str = None, last_name: str = None) -> User:
         """Patch user info
@@ -146,14 +144,14 @@ class Client:
         del parameters['self']
         
         response = self.client.request(route, json=parameters)
-        return User(response)
+        return User(self.client, **response)
     
     def get_trainer(self, uid: int) -> Trainer:
         """Returns the Trainer object for the ID"""
         
-        route = Route('GET', '/trainer/{uid}/', uid=uid)
+        route = Route('GET', '/trainers/{uid}/', uid=uid)
         response = self.client.request(route)
-        return Trainer(response)
+        return Trainer(self.client, **response)
     
     def _create_trainer(
         self,
@@ -217,7 +215,7 @@ class Client:
             del parameters['trainer_code']
         
         response = self.client.request(route, json=parameters)
-        return Trainer(response)
+        return Trainer(self.client, **response)
     
     def get_update(self, trainer: Union[int, Trainer], uuid: Union[str, uuid.UUID]):
         """Returns the update object for the ID"""
@@ -230,7 +228,7 @@ class Client:
         
         route = Route('GET', '/trainers/{trainer}/updates/{update}/', trainer=trainer, update=uuid)
         response = self.client.request(route)
-        return Update(response)
+        return Update(self.client, **response)
     
     def create_update(
         self,
@@ -308,7 +306,7 @@ class Client:
                 value = value.isoformat()
         
         response = self.client.request(route, json=parameters)
-        return Update(response)
+        return Update(self.client, **response)
     
     def get_discord_users(self, users: Union[str, int, User, Trainer, List[Union[str, int, User, Trainer]]]) -> List[DiscordUser]:
         """Retrieves information about Discord™ connections in the database

@@ -20,7 +20,5 @@ from trainerdex.client import Client
 from trainerdex.exceptions import *
 from trainerdex.http import Route, HTTPClient
 from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
-from trainerdex.trainer import Trainer
-from trainerdex.update import Update
-from trainerdex.user import User
+from trainerdex.models import Trainer, Update, User
 from trainerdex.utils import level_parser, get_team

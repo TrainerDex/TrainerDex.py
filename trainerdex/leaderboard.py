@@ -2,9 +2,8 @@ from typing import Iterable, List
 
 import dateutil.parser
 
-from trainerdex.http import Route, HTTPClient
-from trainerdex.trainer import Trainer
-from trainerdex.user import User
+from trainerdex.http import HTTPClient, Route
+from trainerdex.models import Trainer, User
 from trainerdex.utils import get_team
 
 
@@ -30,15 +29,15 @@ class LeaderboardInstance:
         if detail:
             route = Route('GET', '/trainer/{uid}/', uid=self._trainer.get('id'))
             response = self.client.request(route)
-            return Trainer(response)
+            return Trainer(self.client, **response)
         else:
-            return Trainer(**self._trainer)
+            return Trainer(self.client, **self._trainer)
     
     @property
     def owner(self):
         route = Route('GET', '/users/{uid}', uid=self._user_id)
         response = self.client.request(route)
-        return User(response)
+        return User(self.client, **response)
     
     @property
     def team(self):
