@@ -359,8 +359,8 @@ class Client:
         
         route = Route('GET', '/leaderboard/discord/{guild}/', guild=guild)
         response = self.client.request(route)
-        return DiscordLeaderboard(response)
+        return DiscordLeaderboard(self.client, response)
     
     
     def get_worldwide_leaderboard(self) -> WorldwideLeaderboard:
-        return WorldwideLeaderboard(self.client.request(Route('GET', '/leaderboard/')))
+        return WorldwideLeaderboard(self.client, self.client.request(Route('GET', '/leaderboard/')))

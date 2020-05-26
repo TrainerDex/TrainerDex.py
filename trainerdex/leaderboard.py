@@ -1,200 +1,134 @@
-import warnings
+from typing import Iterable, List
 
-try:
-    from maya import MayaDT
-except ImportError:
-    import dateutil.parser
-    MayaDT = None
+import dateutil.parser
 
+from trainerdex.http import Route, HTTPClient
 from trainerdex.trainer import Trainer
+from trainerdex.user import User
+from trainerdex.utils import get_team
+
 
 class LeaderboardInstance:
     
-    def __init__(self, r):
-        self._get = r
-        self._position = r['position']
-        self._trainer_id = r['id']
-        self._trainer_username = r['username']
-        self._user_id = r['user_id']
-        self._xp = int(r['xp'])
-        if MayaDT:
-            self._time = MayaDT.from_iso8601(r['last_updated']).datetime()
+    def __init__(self, client: HTTPClient = HTTPClient(), **kwargs):
+        self.client = client
+        self.position = kwargs.get('position')
+        self._user_id = kwargs.get('user_id')
+        self.total_xp = kwargs.get('total_xp')
+        self.time = dateutil.parser.parse(kwargs.get('last_updated'))
+        self.level = kwargs.get('level')
+        self._faction = kwargs.get('faction')
+        self._trainer = {
+            'id': kwargs.get('id'),
+            'username': kwargs.get('username'),
+            'faction': kwargs.get('faction').get('id'),
+            'owner': kwargs.get('user_id'),
+            }
+    
+    @property
+    def trainer(self, detail=False):
+        if detail:
+            route = Route('GET', '/trainer/{uid}/', uid=self._trainer.get('id'))
+            response = self.client.request(route)
+            return Trainer(response)
         else:
-            self._time = dateutil.parser.parse(r['last_updated'])
-        self._level = int(r['level'])
-        self._faction = r['faction']
+            return Trainer(**self._trainer)
     
     @property
-    def position(cls):
-        return cls._position
+    def owner(self):
+        route = Route('GET', '/users/{uid}', uid=self._user_id)
+        response = self.client.request(route)
+        return User(response)
     
     @property
-    def trainer(cls, detail=False):
-        from .client import Client
-        
-        if detail == False:
-            return Trainer(
-                {
-                    'id': cls._trainer_id,
-                    'username': cls._trainer_username,
-                    'start_date': None,
-                    'currently_cheats': None,
-                    'has_cheated': None,
-                    'last_cheated': None,
-                    'daily_goal': None,
-                    'total_goal': None,
-                    'prefered': True,
-                    'update_set': None,
-                    'faction': cls._faction['id'],
-                    'owner': cls._user_id
-                })
-        elif detail == True:
-            return Client().get_trainer(id_=cls._trainer_id, respect_privacy=False)
+    def team(self):
+        return get_team(self._faction.get('id'))
     
-    @property
-    def owner(cls):
-        from .client import Client
-        
-        return Client().get_user(cls._user_id)
+    def __index__(self):
+        return self.position-1 # Python Indexes start at 0, but the leaderboard starts at 1
     
-    @property
-    def xp(cls):
-        return cls._xp
-    
-    @property
-    def time(cls):
-        return cls._time
-    
-    @property
-    def level(cls):
-        from .utils import level_parser
-        return level_parser(level=cls._level)
-    
-    @property
-    def team(cls):
-        from .utils import get_team
-        
-        return get_team(cls._get['faction']['id'])
-    
-class DiscordLeaderboard:
-    
-    def __init__(self, r):
-        self._get = r
-        if MayaDT:
-            self._time = MayaDT.from_iso8601(r['generated']).datetime()
-        else:
-            self._time = dateutil.parser.parse(r['generated'])
-        self._title = r['title']
-        self._leaderboard = r['leaderboard']
-    
-    @property
-    def title(cls):
-        return cls._title
-    
-    @property
-    def time(cls):
-        return cls._time
-    
-    @property
-    def top_25(cls):
-        return [LeaderboardInstance(x) for x in cls._leaderboard[:25]]
-    
-    def get_postion(self, position):
-        try:
-            return LeaderboardInstance(self._leaderboard[position-1])
-        except IndexError:
-            warnings.warn("{} outside leaderboard length".format(position))
-            return None
-    
-    def get_positions(self, positions):
-        return [self.get_postion(x) for x in positions]
-    
-    @property
-    def top(cls):
-        return LeaderboardInstance(cls._leaderboard[0])
-    
-    @property
-    def bottom(cls):
-        return LeaderboardInstance(cls._leaderboard[-1])
-    
-    def get_lower_levels(self, min=1, max=39):
-        return [LeaderboardInstance(x) for x in self._leaderboard if min <= x['level'] <= max]
-    
-    @property
-    def mystic(cls):
-        return cls.filter_teams((1,))
-    
-    @property
-    def valor(cls):
-        return cls.filter_teams((2,))
-    
-    @property
-    def instinct(cls):
-        return cls.filter_teams((3,))
-    
-    def filter_teams(self, teams):
-        """Expects an iterable of team IDs"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['faction']['id'] in teams]
-    
-    def filter_users(self, users):
-        """Expects an interable of User IDs ints"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['user_id'] in users]
-    
-    def filter_trainers(self, trainers):
-        """Expects an interable of Trainer IDs ints"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['id'] in trainers]
+    def __bool__(self):
+        return True
 
-class WorldwideLeaderboard:
+
+class BaseLeaderboard:
     
-    def __init__(self, r):
-        self._get = r
-        self._leaderboard = r
+    def __init__(self,  data: List[dict], client: HTTPClient = HTTPClient()):
+        self.client = client
+        self._data = data
     
-    @property
-    def top_25(cls):
-        return [LeaderboardInstance(x) for x in cls._leaderboard[:25]]
+    def __iter__(self):
+        for x in self._data:
+            yield LeaderboardInstance(self.client, **x)
     
-    def get_postion(self, position):
-        try:
-            return LeaderboardInstance(self._leaderboard[position-1])
-        except IndexError:
-            warnings.warn("{} outside leaderboard length".format(position))
-            return None
+    def __reversed__(self):
+        for x in reversed(self._data):
+            yield LeaderboardInstance(self.client, **x)
     
-    def get_positions(self, positions):
-        return [self.get_postion(x) for x in positions]
+    def __len__(self):
+        return len(self._data)
     
-    @property
-    def top(cls):
-        return LeaderboardInstance(cls._leaderboard[0])
+    def get_postion(self, position: int) -> LeaderboardInstance:
+        return self.__getitem__(position-1)
     
-    @property
-    def bottom(cls):
-        return LeaderboardInstance(cls._leaderboard[-1])
+    def get_positions(self, positions: Iterable[int]):
+        for x in positions:
+            yield self.get_postion(x)
     
-    def get_lower_levels(self, min=1, max=39):
-        return [LeaderboardInstance(x) for x in self._leaderboard if min <= x['level'] <= max]
+    def __getitem__(self, key) -> LeaderboardInstance:
+        return LeaderboardInstance(self.client, **self._data[key])
     
-    @property
-    def mystic(cls):
-        return cls.filter_teams((1,))
+    def __contains__(self, item: Trainer) -> bool:
+        return bool([x for x in self._data if x.get('id') == item.id])
     
     @property
-    def valor(cls):
-        return cls.filter_teams((2,))
+    def top(self):
+        return self.get_postion(1)
     
     @property
-    def instinct(cls):
-        return cls.filter_teams((3,))
+    def bottom(self):
+        return self.get_postion(0)
     
-    def filter_teams(self, teams):
-        """Expects an iterable of team IDs"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['faction']['id'] in teams]
+    def filter_levels(self, min: int = 1, max: int = 40):
+        for x in self._data:
+            if min <= x.get('level') <= max:
+                yield LeaderboardInstance(self.client, **x)
     
-    def filter_users(self, users):
-        """Expects an interable of User IDs ints"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['user_id'] in users]
+    @property
+    def mystic(self):
+        return self.filter_teams({1})
     
-    def filter_trainers(self, trainers):
-        """Expects an interable of Trainer IDs ints"""
-        return [LeaderboardInstance(x) for x in self._leaderboard if x['id'] in trainers]
+    @property
+    def valor(self):
+        return self.filter_teams({2})
+    
+    @property
+    def instinct(self):
+        return self.filter_teams({3})
+    
+    def filter_teams(self, teams: Iterable[int]):
+        for x in self._data:
+            if x.get('faction').get('id') in teams:
+                yield LeaderboardInstance(self.client, **x)
+    
+    def filter_users(self, users: Iterable[int]):
+        for x in self._data:
+            if x.get('user_id') in users:
+                yield LeaderboardInstance(self.client, **x)
+    
+    def filter_trainers(self, trainers: Iterable[int]):
+        for x in self._data:
+            if x.get('id') in trainers:
+                yield LeaderboardInstance(self.client, **x)
+
+
+class WorldwideLeaderboard(BaseLeaderboard):
+    pass
+
+
+class DiscordLeaderboard(BaseLeaderboard):
+    
+    def __init__(self, data: List[dict], client: HTTPClient = HTTPClient()):
+        self.time = dateutil.parser.parse(data.get('generated'))
+        self.title = data.get('title')
+        self._data = data.get('leaderboard')
