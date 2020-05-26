@@ -34,7 +34,7 @@ class User:
         }
         response = self.client.request(route, params=parameters)
         for x in response:
-            yield DiscordUser(x)
+            yield DiscordUser(self.client, **x)
     
     def __hash__(self):
         return self.id

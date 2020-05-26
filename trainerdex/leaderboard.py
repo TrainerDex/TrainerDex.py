@@ -11,6 +11,7 @@ class LeaderboardInstance:
     
     def __init__(self, client: HTTPClient = HTTPClient(), **kwargs):
         self.client = client
+        self.__kwargs = kwargs
         self.position = kwargs.get('position')
         self._user_id = kwargs.get('user_id')
         self.total_xp = kwargs.get('total_xp')

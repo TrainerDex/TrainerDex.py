@@ -181,7 +181,7 @@ class Client:
                 value = value.isoformat()
         
         response = self.client.request(route, json=parameters)
-        return Trainer(response)
+        return Trainer(self.client, **response)
         
     def update_trainer(
         self,
@@ -333,7 +333,7 @@ class Client:
             'trainer': ','.join(t.id for t in users if type(t) == Trainer),
         }
         response = self.client.request(route, params=parameters)
-        return [DiscordUser(x) for x in response]
+        return [DiscordUser(self.client, **x) for x in response]
         
     def assign_discord_to_user(self, uid: Union[int,str], user: Union[int, User, Trainer]) -> DiscordUser:
         """Get or create the assigned connection between the Discord™ User/Member uid the TrainerDex User"""
@@ -350,15 +350,15 @@ class Client:
             parameters['user'] = user
         
         response = self.client.request(route, json=parameters)
-        return DiscordUser(response)
+        return DiscordUser(self.client, **response)
     
     def get_discord_leaderboard(self, guild: int) -> DiscordLeaderboard:
         """Returns a leaderboard for a Discord™ Guild"""
         
         route = Route('GET', '/leaderboard/discord/{guild}/', guild=guild)
         response = self.client.request(route)
-        return DiscordLeaderboard(self.client, response)
+        return DiscordLeaderboard(client=self.client, data=response)
     
     
     def get_worldwide_leaderboard(self) -> WorldwideLeaderboard:
-        return WorldwideLeaderboard(self.client, self.client.request(Route('GET', '/leaderboard/')))
+        return WorldwideLeaderboard(client=self.client, data=self.client.request(Route('GET', '/leaderboard/')))
