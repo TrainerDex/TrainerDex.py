@@ -13,7 +13,7 @@ __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2020 JayTurnr'
-__version__ = '3.0.0rc1'
+__version__ = '3.0.0'
 
 from trainerdex.client import Client
 from trainerdex.exceptions import *
