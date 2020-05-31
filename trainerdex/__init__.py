@@ -15,10 +15,9 @@ __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2020 JayTurnr'
 __version__ = '3.0.0 alpha'
 
-from trainerdex.cached import DiscordUser
 from trainerdex.client import Client
 from trainerdex.exceptions import *
 from trainerdex.http import Route, HTTPClient
 from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
-from trainerdex.models import Trainer, Update, User
-from trainerdex.utils import level_parser, get_team
+from trainerdex.models import DiscordUser, Trainer, Update, User, Level, levels
+from trainerdex.utils import get_team

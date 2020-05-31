@@ -6,11 +6,10 @@ from typing import Iterable, List, Union
 
 import requests
 
-from trainerdex.cached import DiscordUser
 from trainerdex.exceptions import MutlipleResultsFoundError, NoResultsFoundError
 from trainerdex.http import HTTPClient, Route
 from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
-from trainerdex.models import Trainer, Update, User
+from trainerdex.models import DiscordUser, Trainer, Update, User
 
 
 class Client:
@@ -66,9 +65,9 @@ class Client:
         }
         response = self.client.request(route, params=query)
             
-        if len(response.json()) == 1:
+        if len(response) == 1:
             return Trainer(self.client, **response[0])
-        elif len(response.json()) > 1:
+        elif len(response) > 1:
             raise MutlipleResultsFoundError
         else:
             raise NoResultsFoundError
