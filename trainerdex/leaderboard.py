@@ -3,8 +3,7 @@ from typing import Iterable, List
 import dateutil.parser
 
 from trainerdex.http import HTTPClient, Route
-from trainerdex.models import Trainer, User
-from trainerdex.utils import get_team
+from trainerdex.models import Trainer, User, Teams
 
 
 class LeaderboardInstance:
@@ -42,7 +41,7 @@ class LeaderboardInstance:
     
     @property
     def team(self):
-        return get_team(self._faction.get('id'))
+        return list(Teams())[self._faction.get('id')]
     
     def __index__(self):
         return self.position-1 # Python Indexes start at 0, but the leaderboard starts at 1

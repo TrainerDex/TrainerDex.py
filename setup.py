@@ -33,7 +33,7 @@ setup(
     keywords='pokemon pokemongo trainer trainerdex',
     packages=['trainerdex'],
     package_dir={'trainerdex': 'trainerdex'},
-    package_data={'trainerdex': ['data/levels.json']},
+    package_data={'trainerdex': ['data/levels.json', 'data/factions.json']},
     zip_safe=True,
     install_requires=requirements,
     extras_require={"legacy": ["maya==0.6.0"]}

@@ -1,0 +1,35 @@
+[
+    {
+        "faction": 0,
+        "name": "No Team",
+        "color": null,
+        "leader": "Willow"
+    },
+    {
+        "faction": 1,
+        "name": "Team Mystic",
+        "color": {
+            "name": "blue",
+            "hex": 723964
+        },
+        "leader": "Blanche"
+    },
+    {
+        "faction": 2,
+        "name": "Team Valor",
+        "color": {
+            "name": "red",
+            "hex": 16715793
+        },
+        "leader": "Candela"
+    },
+    {
+        "faction": 3,
+        "name": "Team Instinct",
+        "color": {
+            "name": "yellow",
+            "hex": 16711431
+        },
+        "leader": "Spark"
+    }
+]

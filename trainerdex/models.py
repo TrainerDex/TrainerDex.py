@@ -6,9 +6,9 @@ import uuid
 import dateutil.parser
 
 from trainerdex.http import HTTPClient, Route
-from trainerdex.utils import get_team
 
 LEVELS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/levels.json')
+FACTIONS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/factions.json')
 
 
 class User:
@@ -97,7 +97,7 @@ class Trainer:
     
     @property
     def team(self):
-        return get_team(self._faction)
+        return list(Teams())[self._faction]
     
     @property
     def owner(self):
@@ -178,15 +178,6 @@ class Update:
         response = self.client.request(route)
         return Trainer(self.client, **response)
 
-def levels():
-    with open(LEVELS_JSON_PATH) as file:
-        levels = load(file)
-        for x in levels:
-            if x:
-                yield Level(**x)
-            else:
-                yield x
-
 
 class Level:
     # This model doesn't need to call the API
@@ -198,6 +189,12 @@ class Level:
         self.requirements = kwargs.get('requirements') # dict: {'total_xp': 0}
         self.rewards = kwargs.get('rewards')
         self.unlocks = kwargs.get('unlocks')
+    
+    def __str__(self):
+        return "Level {}".format(self.level)
+    
+    def __repr__(self):
+        return "Level(**{})".format(self.__kwargs)
     
     def __index__(self):
         return self.level
@@ -211,12 +208,6 @@ class Level:
             else:
                 raise StopIteration
     
-    def __str__(self):
-        return "Level {}".format(self.level)
-    
-    def __repr__(self):
-        return "Level(**{})".format(self.__kwargs)
-    
     @property
     def requirements_to_complete(self):
         """Returns the requirements to reach the next level. Useful for progress bars and such!
@@ -227,6 +218,53 @@ class Level:
             return next(self).requirements
         except StopIteration:
             return None
+
+def Levels():
+    with open(LEVELS_JSON_PATH) as file:
+        levels = load(file)
+        for x in levels:
+            if x:
+                yield Level(**x)
+            else:
+                yield x
+
+
+class Team:
+    
+    def __init__(self, **kwargs):
+        self.__kwargs = kwargs
+        self.name = kwargs.get('name')
+        self.color = kwargs.get('color')
+        self.colour = self.color
+        self.leader = kwargs.get('leader')
+    
+    def __str__(self):
+        return self.name
+    
+    def __repr__(self):
+        return "Team(**{})".format(self.__kwargs)
+    
+    def __index__(self):
+        return self.__kwargs.get('faction')
+    
+    def __next__(self):
+        with open(FACTIONS_JSON_PATH) as file:
+            factions = load(file)
+            try:
+                return self.__class__(**factions[self.__index__()+1])
+            except IndexError:
+                raise StopIteration
+    
+    def hex(self) -> str:
+        """Returns the hex as a string"""
+        if self.color:
+            return "#{0:06X}".format(self.color.get('hex'))
+
+def Teams():
+    with open(FACTIONS_JSON_PATH) as file:
+        factions = load(file)
+        for x in factions:
+            yield Team(**x)
 
 
 class DiscordUser:
