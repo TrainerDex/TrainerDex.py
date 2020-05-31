@@ -113,7 +113,7 @@ class Trainer:
     
     @property
     def level(self):
-        for x in reversed(list(levels())):
+        for x in reversed(list(Levels())):
             qualifying_factors = 0
             
             if x.requirements is None:
@@ -157,7 +157,7 @@ class Update:
     
     @property
     def level(self):
-        for x in reversed(list(levels())):
+        for x in reversed(list(Levels())):
             qualifying_factors = 0
             
             if x.requirements is None:

@@ -1,9 +1,9 @@
-from trainerdex import Level, levels
+from trainerdex import Level, Levels
 
 import pytest
 
 def func(level, stat):
-    return list(levels())[level].requirements.get(stat)
+    return list(Levels())[level].requirements.get(stat)
 
 options = [
     (40, 'total_xp', 20000000),
