@@ -20,15 +20,13 @@ setup(
     url='https://github.com/TrainerDex/TrainerDex.py',
     license='GPL-3.0',
     classifiers=[
-        'Intended Audience :: Developers',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Topic :: Database',
-        'Topic :: Games/Entertainment'
         ],
     keywords='pokemon pokemongo trainer trainerdex',
     packages=['trainerdex'],
