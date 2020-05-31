@@ -1,0 +1,556 @@
+[
+    null,
+    {
+        "level": 1,
+        "requirements": null,
+        "rewards": null,
+        "unlocks": null
+    },
+    {
+        "level": 2,
+        "requirements": {
+            "total_xp": 1000
+        },
+        "rewards": {
+            "pokeball": 10
+        },
+        "unlocks": null
+    },
+    {
+        "level": 3,
+        "requirements": {
+            "total_xp": 3000
+        },
+        "rewards": {
+            "pokeball": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 4,
+        "requirements": {
+            "total_xp": 6000
+        },
+        "rewards": {
+            "pokeball": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 5,
+        "requirements": {
+            "total_xp": 10000
+        },
+        "rewards": {
+            "pokeball": 20,
+            "potion": 10,
+            "revive": 10,
+            "incense": 1
+        },
+        "unlocks": [
+            "fort",
+            "potion",
+            "revive"
+        ]
+    },
+    {
+        "level": 6,
+        "requirements": {
+            "total_xp": 15000
+        },
+        "rewards": {
+            "pokeball": 15,
+            "potion": 10,
+            "revive": 5,
+            "incubator": 1
+        },
+        "unlocks": null
+    },
+    {
+        "level": 7,
+        "requirements": {
+            "total_xp": 21000
+        },
+        "rewards": {
+            "pokeball": 15,
+            "potion": 10,
+            "revive": 5,
+            "incense": 1
+        },
+        "unlocks": null
+    },
+    {
+        "level": 8,
+        "requirements": {
+            "total_xp": 28000
+        },
+        "rewards": {
+            "pokeball": 15,
+            "potion": 10,
+            "revive": 5,
+            "razz_berry": 10,
+            "lure_module": 1
+        },
+        "unlocks": [
+            "razz_berry"
+        ]
+    },
+    {
+        "level": 9,
+        "requirements": {
+            "total_xp": 36000
+        },
+        "rewards": {
+            "pokeball": 15,
+            "potion": 10,
+            "revive": 5,
+            "razz_berry": 3,
+            "lucky_egg": 1
+        },
+        "unlocks": null
+    },
+    {
+        "level": 10,
+        "requirements": {
+            "total_xp": 45000
+        },
+        "rewards": {
+            "pokeball": 20,
+            "super_potion": 20,
+            "revive": 10,
+            "razz_berry": 10,
+            "incense": 1,
+            "lucky_egg": 1,
+            "egg_incubator": 1,
+            "lure_module": 1
+        },
+        "unlocks": [
+            "super_potion"
+        ]
+    },
+    {
+        "level": 11,
+        "requirements": {
+            "total_xp": 55000
+        },
+        "rewards": {
+            "pokeball": 15,
+            "super_potion": 10,
+            "revive": 3,
+            "razz_berry": 3
+        },
+        "unlocks": null
+    },
+    {
+        "level": 12,
+        "requirements": {
+            "total_xp": 65000
+        },
+        "rewards": {
+            "great_ball": 20,
+            "super_potion": 10,
+            "revive": 3,
+            "razz_berry": 3
+        },
+        "unlocks": [
+            "great_ball"
+        ]
+    },
+    {
+        "level": 13,
+        "requirements": {
+            "total_xp": 75000
+        },
+        "rewards": {
+            "great_ball": 10,
+            "super_potion": 10,
+            "revive": 3,
+            "razz_berry": 3
+        },
+        "unlocks": null
+    },
+    {
+        "level": 14,
+        "requirements": {
+            "total_xp": 85000
+        },
+        "rewards": {
+            "great_ball": 10,
+            "super_potion": 10,
+            "revive": 3,
+            "razz_berry": 3
+        },
+        "unlocks": null
+    },
+    {
+        "level": 15,
+        "requirements": {
+            "total_xp": 100000
+        },
+        "rewards": {
+            "great_ball": 15,
+            "hyper_potion": 20,
+            "revive": 10,
+            "razz_berry": 10,
+            "incense": 1,
+            "lucky_egg": 1,
+            "egg_incubator": 1,
+            "lure_module": 1
+        },
+        "unlocks": [
+            "hyper_potion"
+        ]
+    },
+    {
+        "level": 16,
+        "requirements": {
+            "total_xp": 120000
+        },
+        "rewards": {
+            "great_ball": 10,
+            "hyper_potion": 10,
+            "revive": 5,
+            "razz_berry": 5
+        },
+        "unlocks": null
+    },
+    {
+        "level": 17,
+        "requirements": {
+            "total_xp": 140000
+        },
+        "rewards": {
+            "great_ball": 10,
+            "hyper_potion": 10,
+            "revive": 5,
+            "razz_berry": 5
+        },
+        "unlocks": null
+    },
+    {
+        "level": 18,
+        "requirements": {
+            "total_xp": 160000
+        },
+        "rewards": {
+            "great_ball": 10,
+            "hyper_potion": 10,
+            "revive": 5,
+            "razz_berry": 5
+        },
+        "unlocks": null
+    },
+    {
+        "level": 19,
+        "requirements": {
+            "total_xp": 185000
+        },
+        "rewards": {
+            "great_ball": 15,
+            "hyper_potion": 10,
+            "revive": 5,
+            "razz_berry": 5
+        },
+        "unlocks": null
+    },
+    {
+        "level": 20,
+        "requirements": {
+            "total_xp": 210000
+        },
+        "rewards": {
+            "ultra_ball": 20,
+            "hyper_potion": 20,
+            "revive": 20,
+            "razz_berry": 20,
+            "incense": 2,
+            "lucky_egg": 2,
+            "egg_incubator": 2,
+            "lure_module": 2
+        },
+        "unlocks": [
+            "ultra_ball"
+        ]
+    },
+    {
+        "level": 21,
+        "requirements": {
+            "total_xp": 260000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "hyper_potion": 10,
+            "revive": 10,
+            "pinap_berry": 10
+        },
+        "unlocks": null
+    },
+    {
+        "level": 22,
+        "requirements": {
+            "total_xp": 335000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "hyper_potion": 10,
+            "revive": 10,
+            "razz_berry": 10
+        },
+        "unlocks": null
+    },
+    {
+        "level": 23,
+        "requirements": {
+            "total_xp": 435000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "hyper_potion": 10,
+            "revive": 10,
+            "nanab_berry": 10
+        },
+        "unlocks": null
+    },
+    {
+        "level": 24,
+        "requirements": {
+            "total_xp": 560000
+        },
+        "rewards": {
+            "ultra_ball": 15,
+            "hyper_potion": 10,
+            "revive": 10,
+            "razz_berry": 10
+        },
+        "unlocks": null
+    },
+    {
+        "level": 25,
+        "requirements": {
+            "total_xp": 710000
+        },
+        "rewards": {
+            "ultra_ball": 25,
+            "max_potion": 20,
+            "revive": 15,
+            "pinap_berry": 15,
+            "incense": 1,
+            "lucky_egg": 1,
+            "egg_incubator": 1,
+            "lure_module": 1
+        },
+        "unlocks": [
+            "max_potion"
+        ]
+    },
+    {
+        "level": 26,
+        "requirements": {
+            "total_xp": 900000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "revive": 10,
+            "razz_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 27,
+        "requirements": {
+            "total_xp": 1100000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "revive": 10,
+            "nanab_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 28,
+        "requirements": {
+            "total_xp": 1350000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "revive": 10,
+            "razz_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 29,
+        "requirements": {
+            "total_xp": 1650000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "revive": 10,
+            "pinap_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 30,
+        "requirements": {
+            "total_xp": 2000000
+        },
+        "rewards": {
+            "ultra_ball": 30,
+            "max_potion": 20,
+            "max_revive": 20,
+            "razz_berry": 20,
+            "incense": 3,
+            "lucky_egg": 3,
+            "egg_incubator": 3,
+            "lure_module": 3
+        },
+        "unlocks": [
+            "max_revive"
+        ]
+    },
+    {
+        "level": 31,
+        "requirements": {
+            "total_xp": 2500000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "max_revive": 10,
+            "nanab_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 32,
+        "requirements": {
+            "total_xp": 3000000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "max_revive": 10,
+            "razz_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 33,
+        "requirements": {
+            "total_xp": 3750000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "max_revive": 10,
+            "pinap_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 34,
+        "requirements": {
+            "total_xp": 4750000
+        },
+        "rewards": {
+            "ultra_ball": 10,
+            "max_potion": 15,
+            "max_revive": 10,
+            "razz_berry": 15
+        },
+        "unlocks": null
+    },
+    {
+        "level": 35,
+        "requirements": {
+            "total_xp": 6000000
+        },
+        "rewards": {
+            "ultra_ball": 30,
+            "max_potion": 20,
+            "max_revive": 20,
+            "nanab_berry": 20,
+            "incense": 2,
+            "lucky_egg": 1,
+            "lure_module": 1
+        },
+        "unlocks": null
+    },
+    {
+        "level": 36,
+        "requirements": {
+            "total_xp": 7500000
+        },
+        "rewards": {
+            "ultra_ball": 20,
+            "max_potion": 20,
+            "max_revive": 10,
+            "razz_berry": 20
+        },
+        "unlocks": null
+    },
+    {
+        "level": 37,
+        "requirements": {
+            "total_xp": 9500000
+        },
+        "rewards": {
+            "ultra_ball": 20,
+            "max_potion": 20,
+            "max_revive": 10,
+            "pinap_berry": 20
+        },
+        "unlocks": null
+    },
+    {
+        "level": 38,
+        "requirements": {
+            "total_xp": 12000000
+        },
+        "rewards": {
+            "ultra_ball": 20,
+            "max_potion": 20,
+            "max_revive": 10,
+            "razz_berry": 20
+        },
+        "unlocks": null
+    },
+    {
+        "level": 39,
+        "requirements": {
+            "total_xp": 15000000
+        },
+        "rewards": {
+            "ultra_ball": 20,
+            "max_potion": 20,
+            "max_revive": 10,
+            "nanab_berry": 20
+        },
+        "unlocks": null
+    },
+    {
+        "level": 40,
+        "requirements": {
+            "total_xp": 20000000
+        },
+        "rewards": {
+            "ultra_ball": 40,
+            "max_potion": 40,
+            "max_revive": 40,
+            "razz_berry": 40,
+            "incense": 4,
+            "lucky_egg": 4,
+            "egg_incubator": 4,
+            "lure_module": 4
+        },
+        "unlocks": [
+            "wayfinder"
+        ]
+    }
+]
