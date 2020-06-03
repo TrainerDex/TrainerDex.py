@@ -15,6 +15,7 @@ setup(
     version=version,
     description='An API to interact with TrainerDex - a online database of Pokemon Go trainers',
     long_description=readme,
+    long_description_content_type='text/markdown',
     author='JayTurnr',
     author_email='jaynicholasturner@gmail.com',
     url='https://github.com/TrainerDex/TrainerDex.py',
