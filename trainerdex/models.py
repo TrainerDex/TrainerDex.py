@@ -1,4 +1,5 @@
 from json import load, loads
+import logging
 import os
 import re
 import uuid
@@ -6,6 +7,8 @@ import uuid
 import dateutil.parser
 
 from trainerdex.http import HTTPClient, Route
+
+log = logging.getLogger("trainerdex.models")
 
 LEVELS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/levels.json')
 FACTIONS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/factions.json')
@@ -137,6 +140,7 @@ class Update:
         self.__kwargs = kwargs
         self.uuid = uuid.UUID(hex=kwargs.get('uuid'))
         self.__trainer = kwargs.get('trainer')
+        self.update_time = dateutil.parser.parse(kwargs.get('update_time'))
         self._modified_extra_fields = kwargs.get('modified_extra_fields')
 
     def refresh(self):
@@ -165,7 +169,7 @@ class Update:
                 # Aka, level 1
                 return x
             
-            for stat, value in x.requirements:
+            for stat, value in x.requirements.items():
                 if getattr(self, stat) >= value:
                     qualifying_factors += 1
             

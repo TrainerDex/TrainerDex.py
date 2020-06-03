@@ -1,9 +1,12 @@
+import logging
 from typing import Iterable, List
 
 import dateutil.parser
 
 from trainerdex.http import HTTPClient, Route
 from trainerdex.models import Trainer, User, Teams
+
+log = logging.getLogger("trainerdex.leaderboard")
 
 
 class LeaderboardInstance:
