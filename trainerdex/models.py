@@ -169,7 +169,7 @@ class Update:
                 # Aka, level 1
                 return x
             
-            for stat, value in x.requirements:
+            for stat, value in x.requirements.items():
                 if getattr(self, stat) >= value:
                     qualifying_factors += 1
             
