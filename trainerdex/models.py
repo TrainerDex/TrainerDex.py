@@ -95,7 +95,8 @@ class Trainer:
     
     @property
     def updates(self):
-        for x in sorted(self.__update_set, key=lambda x: dateutil.parser.parse(x.get('update_time'))):
+        """Iterate over the Updates, sorted newest first"""
+        for x in sorted(self.__update_set, key=lambda x: dateutil.parser.parse(x.get('update_time')), reverse=True):
             yield Update(self.client, **x)
     
     @property
