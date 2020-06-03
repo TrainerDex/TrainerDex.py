@@ -1,4 +1,5 @@
 from json import load, loads
+import logging
 import os
 import re
 import uuid
@@ -6,6 +7,8 @@ import uuid
 import dateutil.parser
 
 from trainerdex.http import HTTPClient, Route
+
+log = logging.getLogger("trainerdex.models")
 
 LEVELS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/levels.json')
 FACTIONS_JSON_PATH = os.path.join(os.path.dirname(__file__), 'data/factions.json')

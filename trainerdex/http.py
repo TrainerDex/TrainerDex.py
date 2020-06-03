@@ -1,10 +1,13 @@
 import json
+import logging
 import requests
 import sys
 from typing import Union
 from urllib.parse import quote
 
 from trainerdex import __version__
+
+log = logging.getLogger("trainerdex.http")
 
 def json_or_text(response: requests.Response) -> Union[dict, str]:
     try:
@@ -103,12 +106,12 @@ class HTTPClient:
         kwargs['headers'] = headers
         
         with requests.request(method, url, **kwargs) as r:
-            print('{} {} with {} has returned {}'.format(method, url, kwargs.get('data'), r.status_code))
+            log.debug('{} {} with {} has returned {}'.format(method, url, kwargs.get('data'), r.status_code))
             
             data = json_or_text(r)
             
             if 200 <= r.status_code < 300:
-                print('{} {} has received {}'.format(method, url, data))
+                log.debug('{} {} has received {}'.format(method, url, data))
                 return data
             elif 400<= r.status_code < 600:
                 r.raise_for_status()
