@@ -140,6 +140,7 @@ class Update:
         self.__kwargs = kwargs
         self.uuid = uuid.UUID(hex=kwargs.get('uuid'))
         self.__trainer = kwargs.get('trainer')
+        self.update_time = dateutil.parser.parse(kwargs.get('update_time'))
         self._modified_extra_fields = kwargs.get('modified_extra_fields')
 
     def refresh(self):
