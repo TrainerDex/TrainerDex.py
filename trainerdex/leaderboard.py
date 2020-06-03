@@ -131,6 +131,7 @@ class WorldwideLeaderboard(BaseLeaderboard):
 class DiscordLeaderboard(BaseLeaderboard):
     
     def __init__(self, data: List[dict], client: HTTPClient = HTTPClient()):
+        self.client = client
         self.time = dateutil.parser.parse(data.get('generated'))
         self.title = data.get('title')
         self._data = data.get('leaderboard')
