@@ -238,6 +238,7 @@ class Team:
     
     def __init__(self, **kwargs):
         self.__kwargs = kwargs
+        self.id = kwargs.get('faction')
         self.name = kwargs.get('name')
         self.color = kwargs.get('color')
         self.colour = self.color
