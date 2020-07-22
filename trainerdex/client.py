@@ -154,6 +154,7 @@ class Client:
     
     def _create_trainer(
         self,
+        account: User,
         username: str,
         faction: int,
         start_date: datetime.date = None,
@@ -162,7 +163,6 @@ class Client:
         currently_cheats: bool = None,
         daily_goal: int = None,
         total_goal: int = None,
-        account: User = None,
         verified: bool = False
         ) -> Trainer:
         """Add a trainer to the database"""
@@ -174,6 +174,7 @@ class Client:
         del parameters['self']
         
         parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
+        parameters['user'] = parameters['user'].id
         
         for key, value in parameters.items():
             if isinstance(value, datetime.date):
@@ -203,6 +204,7 @@ class Client:
         # Clone parameters, delete self and anything with None, we don't want that
         parameters = {k:v for k, v in locals().items() if v is not None}
         del parameters['self']
+        del parameters['trainer']
         
         parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
         
