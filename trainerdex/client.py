@@ -177,8 +177,8 @@ class Client:
         parameters['user'] = parameters['user'].id
         
         for key, value in parameters.items():
-            if isinstance(value, datetime.date):
-                value = value.isoformat()
+            if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
+                parameters[key] = value.isoformat()
         
         response = self.client.request(route, json=parameters)
         return Trainer(self.client, **response)
@@ -209,8 +209,8 @@ class Client:
         parameters['last_modified'] = datetime.datetime.utcnow().isoformat()
         
         for key, value in parameters.items():
-            if isinstance(value, datetime.date):
-                value = value.isoformat()
+            if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
+                parameters[key] = value.isoformat()
         
         if isinstance(parameters.get('trainer_code'), str) == True and re.fullmatch(r'((?:\d{4}\s?){3})', parameters.get('trainer_code')) == False:
             del parameters['trainer_code']
@@ -303,8 +303,8 @@ class Client:
         del parameters['self']
         
         for key, value in parameters.items():
-            if isinstance(value, datetime.date):
-                value = value.isoformat()
+            if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
+                parameters[key] = value.isoformat()
         
         response = self.client.request(route, json=parameters)
         return Update(self.client, **response)
