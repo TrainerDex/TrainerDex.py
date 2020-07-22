@@ -13,7 +13,7 @@ __title__ = 'trainerdex'
 __author__ = 'JayTurnr'
 __licence__ = 'GNU-GPL'
 __copyright__ = 'Copyright 2017 JayTurnr'
-__version__ = '2.1.3'
+__version__ = '2.2.0'
 
 from .client import Client
 from .trainer import Trainer
