@@ -210,7 +210,7 @@ class Client:
             if isinstance(value, datetime.date):
                 value = value.isoformat()
         
-        if isinstance(parameters['trainer_code'], str) == True and re.fullmatch(r'((?:\d{4}\s?){3})', parameters['trainer_code']) == False:
+        if isinstance(parameters.get('trainer_code'), str) == True and re.fullmatch(r'((?:\d{4}\s?){3})', parameters.get('trainer_code')) == False:
             del parameters['trainer_code']
         
         response = self.client.request(route, json=parameters)
