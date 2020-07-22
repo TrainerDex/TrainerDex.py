@@ -1,5 +1,4 @@
 import requests
-import json
 import datetime
 from .trainer import Trainer
 from .update import Update
@@ -64,7 +63,7 @@ class Client:
 			elif args[i] is not None and i=='start_date':
 				payload[i] = args[i].date().isoformat()
 		
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.post(url, json=payload, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
@@ -85,7 +84,7 @@ class Client:
 			elif args[i] is not None and i=='start_date':
 				payload[i] = args[i].date().isoformat()
 		
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.patch(url, json=payload, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Trainer(r.json())
@@ -103,7 +102,7 @@ class Client:
 		if isinstance(trainer, Trainer):
 			trainer = trainer.id
 		url = api_url+'trainers/'+str(trainer)+'/updates/'
-		payload = {'trainer' : int(trainer), 'xp' : int(xp)}
+		payload = {'trainer' : int(trainer), 'total_xp' : int(xp)}
 		
 		if isinstance(time_updated, datetime.datetime):
 			payload['update_time'] = time_updated.isoformat()
@@ -123,7 +122,7 @@ class Client:
 		if self.identifier:
 			payload['meta_source'] = self.identifier
 		
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.post(url, json=payload, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return Update(r.json())
@@ -136,9 +135,7 @@ class Client:
 			'provider': 'discord',
 			'uid': str(uid)
 		}
-		print(json.dumps(payload))
-		r = requests.put(url, data=json.dumps(payload), headers=self.headers)
-		print(request_status(r))
+		r = requests.put(url, json=payload, headers=self.headers)
 		r.raise_for_status()
 		return DiscordUser(r.json())
 	
@@ -156,7 +153,7 @@ class Client:
 			payload['first_name'] = first_name
 		if last_name:
 			payload['last_name'] = last_name
-		r = requests.post(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.post(url, json=payload, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
@@ -172,7 +169,7 @@ class Client:
 		for i in args:
 			if args[i] is not None and i not in ['self', 'user']:
 				payload[i] = args[i]
-		r = requests.patch(url, data=json.dumps(payload), headers=self.headers)
+		r = requests.patch(url, json=payload, headers=self.headers)
 		print(request_status(r))
 		r.raise_for_status()
 		return User(r.json())
