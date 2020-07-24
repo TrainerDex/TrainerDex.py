@@ -35,5 +35,5 @@ setup(
     package_data={'trainerdex': ['data/levels.json', 'data/factions.json']},
     zip_safe=True,
     install_requires=requirements,
-    extras_require={"legacy": ["maya==0.6.0"]}
+    extras_require={"legacy": ["maya==0.6.1"]}
 )
