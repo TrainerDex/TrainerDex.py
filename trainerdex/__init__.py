@@ -2,21 +2,24 @@
 Official TrainerDex API Wrapper
 -------------------------------
 
-A basic wrapper for the TrianerDex API.
+A basic wrapper for the TrainerDex API.
 
-:copyright: (c) 2020 JayTurnr
+:copyright: (c) 2020 TurnrDev
 :licence: GNU-GPL3, see LICENSE for more details
 
 """
 
-__title__ = 'trainerdex'
-__author__ = 'JayTurnr'
-__licence__ = 'GNU-GPL'
-__copyright__ = 'Copyright 2020 JayTurnr'
-__version__ = '3.0.6'
+__title__ = "trainerdex"
+__author__ = "JayTurnr"
+__licence__ = "GNU-GPL"
+__copyright__ = "Copyright 2020 TurnrDev"
+__version__ = "3.5.0"
 
-from trainerdex.client import Client
-from trainerdex.exceptions import *
-from trainerdex.http import Route, HTTPClient
-from trainerdex.leaderboard import DiscordLeaderboard, WorldwideLeaderboard
-from trainerdex.models import DiscordUser, Trainer, Update, User, Level, Levels, Team, Teams
+from .client import Client
+from .http import Route, HTTPClient
+from .leaderboard import Leaderboard, GuildLeaderboard
+from .faction import Faction
+from .trainer import Trainer
+from .update import Update, Level
+from .user import User
+from .socialconnection import SocialConnection
