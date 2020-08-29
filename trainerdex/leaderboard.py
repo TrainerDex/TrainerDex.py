@@ -105,7 +105,9 @@ class BaseLeaderboard:
 
         """
         self._entries = [
-            x for x in self._entries if predicate(LeaderboardEntry(conn=self.http, data=x))
+            x
+            for x in self._entries
+            if predicate(LeaderboardEntry(conn=self.http, data=x))
         ]
         return self
 
