@@ -58,9 +58,12 @@ UPDATE_KEYS_ENUM_OUT = {
     "master_league": "badge_master_league",
     "photobomb": "badge_photobomb",
     "pokemon_purified": "badge_pokemon_purified",
-    "rocket_grunts_defeated": "badge_photobombadge_rocket_grunts_defeated",
-    "buddy_best": None,
-    "wayfarer": None,
+    "rocket_grunts_defeated": "badge_rocket_grunts_defeated",
+    "rocket_giovanni_defeated": "badge_rocket_giovanni_defeated",
+    "buddy_best": "badge_buddy_best",
+    "wayfarer": "badge_wayfarer",
+    "total_mega_evos": "badge_total_mega_evos",
+    "unique_mega_evos": "badge_unique_mega_evos",
     "type_normal": "badge_type_normal",
     "type_fighting": "badge_type_fighting",
     "type_flying": "badge_type_flying",
@@ -131,7 +134,10 @@ class Route:
         url = self.BASE + self.path
         if parameters:
             self.url = url.format(
-                **{k: _uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()}
+                **{
+                    k: _uriquote(v) if isinstance(v, str) else v
+                    for k, v in parameters.items()
+                }
             )
         else:
             self.url = url
@@ -153,7 +159,9 @@ class HTTPClient:
             "Python/{1[0]}.{1[1]} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
+        self.user_agent = user_agent.format(
+            __version__, sys.version_info, aiohttp.__version__
+        )
 
     async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
         method = route.method
@@ -240,7 +248,9 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
+    def edit_update(
+        self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs
+    ) -> Dict:
         r = Route(
             "POST",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
@@ -331,7 +341,9 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
+    def edit_user(
+        self, user_id, username: str, first_name: Optional[str] = None
+    ) -> Dict:
         r = Route("PATCH", "/users/{user_id}/", user_id=user_id)
 
         payload = {"username": username}
@@ -341,7 +353,9 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def get_social_connections(self, provider: str, uid: Union[str, Iterable[str]]) -> List[Dict]:
+    def get_social_connections(
+        self, provider: str, uid: Union[str, Iterable[str]]
+    ) -> List[Dict]:
         r = Route("GET", "/users/social/")
 
         params = {"provider": provider}
@@ -365,10 +379,14 @@ class HTTPClient:
 
     # Leaderboard requests
 
-    def get_leaderboard(self, guild_id: Optional[int] = None, **options) -> Dict:
-        if isinstance(guild_id, int):
-            r = Route("GET", "/leaderboard/discord/{guild_id}/", guild_id=guild_id)
-        else:
-            r = Route("GET", "/leaderboard/")
+    def get_leaderboard(self, stat: str = None, guild_id: Optional[int] = None) -> Dict:
+        endpoint = "/leaderboard/"
 
+        if guild_id:
+            endpoint += "discord/{guild_id}/".format(guild_id=guild_id)
+
+        if stat:
+            endpoint += "{stat}/".format(stat=stat)
+
+        r = Route("GET", endpoint)
         return self.request(r)

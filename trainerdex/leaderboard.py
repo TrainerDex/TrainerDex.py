@@ -105,7 +105,9 @@ class BaseLeaderboard:
 
         """
         self._entries = [
-            x for x in self._entries if predicate(LeaderboardEntry(conn=self.http, data=x))
+            x
+            for x in self._entries
+            if predicate(LeaderboardEntry(conn=self.http, data=x))
         ]
         return self
 
@@ -153,3 +155,11 @@ class GuildLeaderboard(BaseLeaderboard):
         super().__init__(conn, data)
         self._entries = data.get("leaderboard")
         self.title = data.get("title")
+        self.stat = data.get("stat")
+        self.guild_id = data.get("guild")
+        self._aggregations = data.get("aggregations", dict())
+        self.avg = self._aggregations.get("avg")
+        self.count = self._aggregations.get("count")
+        self.min = self._aggregations.get("min")
+        self.max = self._aggregations.get("max")
+        self.sum = self._aggregations.get("sum")
