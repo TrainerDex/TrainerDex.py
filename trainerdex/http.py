@@ -379,10 +379,14 @@ class HTTPClient:
 
     # Leaderboard requests
 
-    def get_leaderboard(self, guild_id: Optional[int] = None, **options) -> Dict:
-        if isinstance(guild_id, int):
-            r = Route("GET", "/leaderboard/discord/{guild_id}/", guild_id=guild_id)
-        else:
-            r = Route("GET", "/leaderboard/")
+    def get_leaderboard(self, stat: str = None, guild_id: Optional[int] = None) -> Dict:
+        endpoint = "/leaderboard/"
 
+        if guild_id:
+            endpoint += "discord/{guild_id}/".format(guild_id=guild_id)
+
+        if stat:
+            endpoint += "{stat}/".format(stat=stat)
+
+        r = Route("GET", endpoint)
         return self.request(r)

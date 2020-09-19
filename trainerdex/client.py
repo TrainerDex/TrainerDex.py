@@ -83,7 +83,9 @@ class Client:
         data = await self.http.get_social_connections(provider, uid)
         return [SocialConnection(conn=self.http, data=x) for x in data]
 
-    async def get_leaderboard(self, guild=None) -> Union[GuildLeaderboard, Leaderboard]:
+    async def get_leaderboard(
+        self, stat: str = "total_xp", guild=None
+    ) -> Union[GuildLeaderboard, Leaderboard]:
         if guild is not None:
             if isinstance(guild, int):
                 guild_id = guild
@@ -93,7 +95,7 @@ class Client:
         else:
             guild_id = None
             leaderboard_class = Leaderboard
-        data = await self.http.get_leaderboard(guild_id=guild_id)
+        data = await self.http.get_leaderboard(stat=stat, guild_id=guild_id)
         return leaderboard_class(conn=self.http, data=data)
 
     async def search_trainer(self, nickname: str) -> Trainer:
