@@ -21,6 +21,7 @@ class LeaderboardEntry(abc.BaseClass):
         self.username = data.get("username")
         self._faction = data.get("faction", {"id": 0, "name_en": "No Team"})
         self.total_xp = data.get("total_xp", 0)
+        self.value = data.get("value", 0)
         self.last_updated = con(parse, data.get("last_updated"))
         self._user_id = data.get("user_id", None)
 
