@@ -9,6 +9,7 @@ from urllib.parse import quote as _uriquote
 from uuid import UUID
 
 import aiohttp
+import aiohttp.web
 from discord.errors import HTTPException, Forbidden, NotFound
 
 from . import __version__
