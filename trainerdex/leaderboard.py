@@ -1,4 +1,5 @@
 from typing import Callable, Dict, List, Iterator, Optional, Union
+from warnings import warn
 
 from dateutil.parser import parse
 from . import abc
@@ -10,17 +11,19 @@ from .utils import con, maybe_coroutine
 
 
 class LeaderboardEntry(abc.BaseClass):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
+    def __init__(
+        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
+    ) -> None:
         super().__init__(conn, data)
         self._trainer = None
 
-    def _update(self, data: Dict[str, Union[str, int]]) -> None:
+    def _update(self, data: Dict[str, Union[str, int, float]]) -> None:
         self.level = get_level(level=data.get("level", 1))
         self.position = data.get("position", None)
         self._trainer_id = data.get("id", None)
         self.username = data.get("username")
         self._faction = data.get("faction", {"id": 0, "name_en": "No Team"})
-        self.total_xp = data.get("total_xp", 0)
+        self._total_xp = data.get("total_xp")
         self.value = data.get("value", 0)
         self.last_updated = con(parse, data.get("last_updated"))
         self._user_id = data.get("user_id", None)
@@ -28,6 +31,15 @@ class LeaderboardEntry(abc.BaseClass):
     @property
     def faction(self) -> Faction:
         return Faction(self._faction.get("id"))
+
+    @property
+    def total_xp(self) -> Optional[int]:
+        warn(
+            "LeaderboardEntry.total_xp is deprecated. It will be removed in version 4.0",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._total_xp
 
     async def trainer(self) -> Trainer:
         if self._trainer:
@@ -176,6 +188,26 @@ class Leaderboard(BaseLeaderboard):
 
 
 class GuildLeaderboard(BaseLeaderboard):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
+    def __init__(
+        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
+    ) -> None:
         super().__init__(conn, data)
         self.guild_id = data.get("guild")
+
+
+class CommunityLeaderboard(BaseLeaderboard):
+    def __init__(
+        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
+    ) -> None:
+        super().__init__(conn, data)
+        self.community = data.get("community")
+
+
+class CountryLeaderboard(BaseLeaderboard):
+    def __init__(
+        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
+    ) -> None:
+        super().__init__(conn, data)
+        self.country = data.get("country")
+        self.country_code = self.country
+        self.country_name = self.title.replace(" Leaderboard", "")

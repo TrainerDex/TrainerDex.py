@@ -380,11 +380,21 @@ class HTTPClient:
 
     # Leaderboard requests
 
-    def get_leaderboard(self, stat: str = None, guild_id: Optional[int] = None) -> Dict:
+    def get_leaderboard(
+        self,
+        stat: str = None,
+        guild_id: Optional[int] = None,
+        community: Optional[str] = None,
+        country: Optional[str] = None,
+    ) -> Dict:
         endpoint = "/leaderboard/"
 
         if guild_id:
-            endpoint += "discord/{guild_id}/".format(guild_id=guild_id)
+            endpoint += "discord/{}/".format(guild_id)
+        elif community:
+            endpoint += "community/{}/".format(community)
+        elif country:
+            endpoint += "country/{}/".format(country)
         else:
             endpoint += "v1.1/"
 

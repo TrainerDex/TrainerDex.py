@@ -9,7 +9,12 @@ from .http import HTTPClient
 from .trainer import Trainer
 from .user import User
 from .update import Update
-from .leaderboard import Leaderboard, GuildLeaderboard
+from .leaderboard import (
+    Leaderboard,
+    GuildLeaderboard,
+    CommunityLeaderboard,
+    CountryLeaderboard,
+)
 from .socialconnection import SocialConnection
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -84,14 +89,22 @@ class Client:
         return [SocialConnection(conn=self.http, data=x) for x in data]
 
     async def get_leaderboard(
-        self, stat: str = "total_xp", guild=None
-    ) -> Union[GuildLeaderboard, Leaderboard]:
-        if guild is not None:
+        self,
+        stat: str = "total_xp",
+        guild=None,
+        community: Optional[str] = None,
+        country: Optional[str] = None,
+    ) -> Union[Leaderboard, GuildLeaderboard, CommunityLeaderboard, CountryLeaderboard]:
+        if guild:
             if isinstance(guild, int):
                 guild_id = guild
             else:
                 guild_id = guild.id
             leaderboard_class = GuildLeaderboard
+        elif community:
+            leaderboard_class = CommunityLeaderboard
+        elif country:
+            leaderboard_class = CountryLeaderboard
         else:
             guild_id = None
             leaderboard_class = Leaderboard
