@@ -385,6 +385,8 @@ class HTTPClient:
 
         if guild_id:
             endpoint += "discord/{guild_id}/".format(guild_id=guild_id)
+        else:
+            endpoint += "v1.1/"
 
         if stat:
             endpoint += "{stat}/".format(stat=stat)

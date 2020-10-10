@@ -39,12 +39,35 @@ class LeaderboardEntry(abc.BaseClass):
         return self._trainer
 
 
+class Aggregations:
+    def __init__(self, data: Dict[str, Union[int, float]]) -> None:
+        self.avg = data.get("avg")
+        self.count = data.get("count")
+        self.min = data.get("min")
+        self.max = data.get("max")
+        self.sum = data.get("sum")
+
+    def __len__(self) -> int:
+        return self.count
+
+    def __length_hint__(self) -> int:
+        return self.__len__()
+
+
 class BaseLeaderboard:
     def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
         self.http = conn
-        self._entries = data
-        self.title = None
         self.i = 0
+        self._entries = data.get("leaderboard")
+        self.title = data.get("title", "Global Leaderboard")
+        self.stat = data.get("stat")
+        self._aggregations = data.get("aggregations", dict())
+        self.aggregations = Aggregations(self._aggregations)
+        self.avg = self._aggregations.get("avg")
+        self.count = self._aggregations.get("count")
+        self.min = self._aggregations.get("min")
+        self.max = self._aggregations.get("max")
+        self.sum = self._aggregations.get("sum")
 
     def __aiter__(self):
         return self
@@ -57,7 +80,10 @@ class BaseLeaderboard:
         return LeaderboardEntry(conn=self.http, data=self._entries[i])
 
     def __len__(self) -> int:
-        return len(self._entries)
+        return self.aggregations.count
+
+    def __length_hint__(self) -> int:
+        return self.__len__()
 
     def __getitem__(self, key) -> List[LeaderboardEntry]:
         """Retrieves a list of :class:`.LeaderboardEntry` in a position.
@@ -146,21 +172,10 @@ class BaseLeaderboard:
 
 
 class Leaderboard(BaseLeaderboard):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
-        super().__init__(conn, data)
-        self.title = "Global Leaderboard"
+    pass
 
 
 class GuildLeaderboard(BaseLeaderboard):
     def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
         super().__init__(conn, data)
-        self._entries = data.get("leaderboard")
-        self.title = data.get("title")
-        self.stat = data.get("stat")
         self.guild_id = data.get("guild")
-        self._aggregations = data.get("aggregations", dict())
-        self.avg = self._aggregations.get("avg")
-        self.count = self._aggregations.get("count")
-        self.min = self._aggregations.get("min")
-        self.max = self._aggregations.get("max")
-        self.sum = self._aggregations.get("sum")
