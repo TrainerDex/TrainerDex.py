@@ -10,9 +10,9 @@ from uuid import UUID
 
 import aiohttp
 import aiohttp.web
-from discord.errors import HTTPException, Forbidden, NotFound
 
 from . import __version__
+from .exceptions import HTTPException, Forbidden, NotFound
 
 log: logging.Logger = logging.getLogger(__name__)
 
