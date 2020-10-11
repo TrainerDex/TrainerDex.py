@@ -135,10 +135,7 @@ class Route:
         url = self.BASE + self.path
         if parameters:
             self.url = url.format(
-                **{
-                    k: _uriquote(v) if isinstance(v, str) else v
-                    for k, v in parameters.items()
-                }
+                **{k: _uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()}
             )
         else:
             self.url = url
@@ -160,9 +157,7 @@ class HTTPClient:
             "Python/{1[0]}.{1[1]} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(
-            __version__, sys.version_info, aiohttp.__version__
-        )
+        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
     async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
         method = route.method
@@ -249,9 +244,7 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_update(
-        self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs
-    ) -> Dict:
+    def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
         r = Route(
             "POST",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
@@ -342,9 +335,7 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_user(
-        self, user_id, username: str, first_name: Optional[str] = None
-    ) -> Dict:
+    def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
         r = Route("PATCH", "/users/{user_id}/", user_id=user_id)
 
         payload = {"username": username}
@@ -354,9 +345,7 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def get_social_connections(
-        self, provider: str, uid: Union[str, Iterable[str]]
-    ) -> List[Dict]:
+    def get_social_connections(self, provider: str, uid: Union[str, Iterable[str]]) -> List[Dict]:
         r = Route("GET", "/users/social/")
 
         params = {"provider": provider}

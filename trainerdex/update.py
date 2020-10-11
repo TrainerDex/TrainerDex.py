@@ -81,9 +81,7 @@ def get_level(xp: int = None, level: int = None) -> int:
 
 
 class BaseUpdate(abc.BaseClass):
-    def __init__(
-        self, conn: HTTPClient, data: Dict[str, Union[str, int]], trainer=None
-    ) -> None:
+    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]], trainer=None) -> None:
         super().__init__(conn, data)
         self._trainer = trainer
 

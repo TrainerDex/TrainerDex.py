@@ -28,9 +28,7 @@ class Trainer(abc.BaseClass):
         self.old_id = int(data.get("old_id"))
         self.last_modified = odt(data.get("last_modified"))
         self.nickname = data.get("nickname")
-        self.start_date = (
-            odt(data.get("start_date")).date() if data.get("start_date") else None
-        )
+        self.start_date = odt(data.get("start_date")).date() if data.get("start_date") else None
         self.faction = data.get("faction", 0)
         self.trainer_code = data.get("trainer_code")
         self.is_banned = data.get("is_banned", False)

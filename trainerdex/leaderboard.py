@@ -11,9 +11,7 @@ from .utils import con, maybe_coroutine
 
 
 class LeaderboardEntry(abc.BaseClass):
-    def __init__(
-        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
-    ) -> None:
+    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
         super().__init__(conn, data)
         self._trainer = None
 
@@ -144,9 +142,7 @@ class BaseLeaderboard:
 
         """
         self._entries = [
-            x
-            for x in self._entries
-            if predicate(LeaderboardEntry(conn=self.http, data=x))
+            x for x in self._entries if predicate(LeaderboardEntry(conn=self.http, data=x))
         ]
         return self
 
@@ -188,25 +184,19 @@ class Leaderboard(BaseLeaderboard):
 
 
 class GuildLeaderboard(BaseLeaderboard):
-    def __init__(
-        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
-    ) -> None:
+    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
         super().__init__(conn, data)
         self.guild_id = data.get("guild")
 
 
 class CommunityLeaderboard(BaseLeaderboard):
-    def __init__(
-        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
-    ) -> None:
+    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
         super().__init__(conn, data)
         self.community = data.get("community")
 
 
 class CountryLeaderboard(BaseLeaderboard):
-    def __init__(
-        self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]
-    ) -> None:
+    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
         super().__init__(conn, data)
         self.country = data.get("country")
         self.country_code = self.country
