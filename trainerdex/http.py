@@ -127,7 +127,7 @@ async def json_or_text(response: aiohttp.web.Response) -> Union[Dict, str]:
 
 
 class Route:
-    BASE = "https://www.trainerdex.co.uk/api/v1"
+    BASE = "https://trainerdex.app/api/v1"
 
     def __init__(self, method: str, path: str, **parameters) -> None:
         self.path = path
