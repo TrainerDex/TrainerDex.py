@@ -153,7 +153,7 @@ class HTTPClient:
         self.token = token
 
         user_agent = (
-            "TrainerDex.py (https://github.com/TrainerDex/DiscordBot {0}) "
+            "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
             "Python/{1[0]}.{1[1]} "
             "aiohttp/{2}"
         )
