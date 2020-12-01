@@ -6,7 +6,6 @@ from . import abc
 from .http import HTTPClient
 from .faction import Faction
 from .trainer import Trainer
-from .update import get_level
 from .utils import con, maybe_coroutine
 
 
@@ -16,7 +15,7 @@ class LeaderboardEntry(abc.BaseClass):
         self._trainer = None
 
     def _update(self, data: Dict[str, Union[str, int, float]]) -> None:
-        self.level = get_level(level=data.get("level", 1))
+        self.level = data.get("level")
         self.position = data.get("position", None)
         self._trainer_id = data.get("id", None)
         self.username = data.get("username")
