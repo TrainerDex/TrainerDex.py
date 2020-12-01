@@ -122,8 +122,8 @@ def get_possible_levels_from_total_xp(xp: int) -> List[Level]:
 
 
 def get_level(level: int) -> Level:
-    if level and level == len(LEVELS):
-        return LEVELS[level + 1]
+    if level <= len(LEVELS):
+        return LEVELS[level - 1]
     else:
         raise ValueError
 
