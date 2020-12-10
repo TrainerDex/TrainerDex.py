@@ -7,7 +7,7 @@ from dateutil.parser import parse
 from . import abc
 from .http import HTTPClient, TRAINER_KEYS_ENUM_IN
 from .faction import Faction
-from .update import PartialUpdate, Update, Level
+from .update import Update, Level
 from .utils import con
 
 odt = con(parse)
@@ -34,7 +34,7 @@ class Trainer(abc.BaseClass):
         self.is_banned = data.get("is_banned", False)
         self.is_verified = data.get("is_verified")
         self.is_visible = data.get("is_visible")
-        self._updates = data.get("updates", [])
+        self._updates = None
         self._user = data.get("_user")
 
     def __eq__(self, o) -> bool:
@@ -47,18 +47,31 @@ class Trainer(abc.BaseClass):
     def team(self) -> Faction:
         return Faction(self.faction)
 
+    def fetch_updates(self) -> None:
+        data = await self.http.get_updates_for_trainer(self.id)
+        if data:
+            self._updates = [Update(self.http, x) for x in data]
+
     @property
-    def updates(self) -> List[PartialUpdate]:
-        return [PartialUpdate(self.http, x) for x in self._updates]
+    def updates(self) -> List[Update]:
+        if not self._update:
+            self.fetch_updates()
+
+        return self._update
+
+    def get_latest_update_for_stat(self, stat):
+        subset = [x for x in self.updates if getattr(x, stat, None) is not None]
+        return max(subset, key=lambda x: x.update_time)
 
     @property
     def latest_update(self) -> Update:
-        if self.updates:
-            return max(self.updates, key=lambda x: x.update_time)
+        return max(self.updates, key=lambda x: x.update_time)
 
     @property
     def level(self) -> Level:
-        return self.latest_update.level if self.latest_update else None
+        update = self.get_latest_update_for_stat("total_xp")
+        if update:
+            return update.level
 
     async def user(self):
         if self._user:

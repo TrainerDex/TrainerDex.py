@@ -257,21 +257,3 @@ class Update(BaseUpdate):
 
         new_data = await self.http.edit_update(self._trainer_id, self.uuid, **options)
         self._update(new_data)
-
-
-class PartialUpdate(BaseUpdate):
-    def _update(self, data):
-        data = {
-            UPDATE_KEYS_ENUM_IN.get(k): v
-            for k, v in data.items()
-            if (UPDATE_KEYS_ENUM_IN.get(k) is not None)
-        }
-        self.uuid = UUID(data.get("uuid"))
-        self._trainer_id = data.get("trainer")
-        self.update_time = odt(data.get("update_time"))
-        self.total_xp = data.get("total_xp")
-        self.unloaded_data = data.get("modified_extra_fields")
-
-    async def upgrade(self) -> Update:
-        data = await self.http.get_update(self._trainer_id, self.uuid)
-        return Update(self.http, data)

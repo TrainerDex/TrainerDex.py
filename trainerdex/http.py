@@ -227,6 +227,15 @@ class HTTPClient:
 
         return self.request(r)
 
+    def get_updates_for_trainer(self, trainer_id: int) -> Dict:
+        r = Route(
+            "GET",
+            "/trainers/{trainer_id}/updates/",
+            trainer_id=trainer_id,
+        )
+
+        return self.request(r)
+
     def create_update(self, trainer_id: int, kwargs) -> Dict:
         r = Route("POST", "/trainers/{trainer_id}/updates/", trainer_id=trainer_id)
 

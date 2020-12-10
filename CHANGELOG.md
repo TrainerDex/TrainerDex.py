@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed dependency on Discord.py
 - Fixed Typo in UserAgent
 - Changed domain to `trainerdex.app`
+- `Trainer.fetch_updates` makes a seperate API call to get updates, now returning full data
+
+### Removed
+- Removed PartialUpdate class
 
 ## [3.6.2] - 2020-10-07
 ### Changed
