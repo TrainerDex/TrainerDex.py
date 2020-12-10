@@ -13,7 +13,7 @@ __title__ = "trainerdex"
 __author__ = "JayTurnr"
 __licence__ = "GNU-GPL"
 __copyright__ = "Copyright 2020 TurnrDev"
-__version__ = "3.6.2"
+__version__ = "3.7.0a"
 
 from .client import Client
 from .http import Route, HTTPClient
