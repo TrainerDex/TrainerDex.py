@@ -1,10 +1,11 @@
-from typing import Callable, Dict, List, Iterator, Optional, Union
+from typing import Callable, Dict, Iterator, List, Optional, Union
 from warnings import warn
 
 from dateutil.parser import parse
+
 from . import abc
-from .http import HTTPClient
 from .faction import Faction
+from .http import HTTPClient
 from .trainer import Trainer
 from .utils import con, maybe_coroutine
 

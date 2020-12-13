@@ -1,21 +1,16 @@
 import asyncio
 import datetime
 import logging
-from typing import Iterable, List, Union, Optional
+from typing import Iterable, List, Optional, Union
 from uuid import UUID
 
 from .faction import Faction
 from .http import HTTPClient
-from .trainer import Trainer
-from .user import User
-from .update import Update
-from .leaderboard import (
-    Leaderboard,
-    GuildLeaderboard,
-    CommunityLeaderboard,
-    CountryLeaderboard,
-)
+from .leaderboard import CommunityLeaderboard, CountryLeaderboard, GuildLeaderboard, Leaderboard
 from .socialconnection import SocialConnection
+from .trainer import Trainer
+from .update import Update
+from .user import User
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -27,7 +22,9 @@ class Client:
 
     async def get_trainer(self, trainer_id: int) -> Trainer:
         data = await self.http.get_trainer(trainer_id)
-        return Trainer(conn=self.http, data=data)
+        trainer = Trainer(conn=self.http, data=data)
+        await trainer.fetch_updates()
+        return trainer
 
     async def create_trainer(
         self,
@@ -64,7 +61,9 @@ class Client:
         }
         t_data = await self.http.create_trainer(**t_params)
         t_data["_user"] = User
-        return Trainer(conn=self.http, data=t_data)
+        trainer = Trainer(conn=self.http, data=t_data)
+        await trainer.fetch_updates()
+        return trainer
 
     async def get_trainers(self) -> Iterable[Trainer]:
         data = await self.http.get_trainers()

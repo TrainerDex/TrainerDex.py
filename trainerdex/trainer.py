@@ -5,9 +5,9 @@ from typing import Dict, List, Union
 from dateutil.parser import parse
 
 from . import abc
-from .http import HTTPClient, TRAINER_KEYS_ENUM_IN
 from .faction import Faction
-from .update import Update, Level
+from .http import TRAINER_KEYS_ENUM_IN, HTTPClient
+from .update import Level, Update
 from .utils import con
 
 odt = con(parse)
@@ -47,24 +47,21 @@ class Trainer(abc.BaseClass):
     def team(self) -> Faction:
         return Faction(self.faction)
 
-    def fetch_updates(self) -> None:
+    async def fetch_updates(self) -> None:
         data = await self.http.get_updates_for_trainer(self.id)
         if data:
-            self._updates = [Update(self.http, x) for x in data]
+            self._updates = {x.get("uuid"): Update(self.http, x) for x in data}
+        return list(self._updates.values())
 
     @property
     def updates(self) -> List[Update]:
-        if not self._update:
-            self.fetch_updates()
+        return list(self._updates.values())
 
-        return self._update
-
-    def get_latest_update_for_stat(self, stat):
+    def get_latest_update_for_stat(self, stat) -> Update:
         subset = [x for x in self.updates if getattr(x, stat, None) is not None]
         return max(subset, key=lambda x: x.update_time)
 
-    @property
-    def latest_update(self) -> Update:
+    def get_latest_update(self) -> Update:
         return max(self.updates, key=lambda x: x.update_time)
 
     @property

@@ -1,12 +1,12 @@
 import datetime
 from decimal import Decimal
+from typing import Dict, List, Optional, Union
 from uuid import UUID
-from typing import Dict, Union, List, Optional
 
 from dateutil.parser import parse
 
 from . import abc
-from .http import HTTPClient, UPDATE_KEYS_ENUM_IN
+from .http import UPDATE_KEYS_ENUM_IN, HTTPClient
 from .utils import con
 
 odt = con(parse)
@@ -159,6 +159,7 @@ class BaseUpdate(abc.BaseClass):
 
         data = await self.http.get_trainer(self._trainer_id)
         self._trainer = Trainer(data=data, conn=self.http)
+        await self._trainer.fetch_updates()
 
         return self._trainer
 

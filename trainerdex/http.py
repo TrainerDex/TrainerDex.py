@@ -12,7 +12,7 @@ import aiohttp
 import aiohttp.web
 
 from . import __version__
-from .exceptions import HTTPException, Forbidden, NotFound
+from .exceptions import Forbidden, HTTPException, NotFound
 
 log: logging.Logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-from typing import Dict, Union, Optional
+from typing import Dict, Optional, Union
 
 from . import abc
 from .http import HTTPClient
@@ -29,6 +29,7 @@ class User(abc.BaseClass):
 
         data = await self.http.get_trainer(self.old_id)
         self._trainer = Trainer(data=data, conn=self.http)
+        await self._trainer.fetch_updates()
 
         return self._trainer
 
