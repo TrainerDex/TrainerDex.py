@@ -34,7 +34,7 @@ class Trainer(abc.BaseClass):
         self.is_banned = data.get("is_banned", False)
         self.is_verified = data.get("is_verified")
         self.is_visible = data.get("is_visible")
-        self._updates = None
+        self._updates = dict()
         self._user = data.get("_user")
 
     def __eq__(self, o) -> bool:
@@ -51,7 +51,7 @@ class Trainer(abc.BaseClass):
         data = await self.http.get_updates_for_trainer(self.id)
         if data:
             self._updates = {x.get("uuid"): Update(self.http, x) for x in data}
-        return list(self._updates.values())
+            return list(self._updates.values())
 
     @property
     def updates(self) -> List[Update]:
