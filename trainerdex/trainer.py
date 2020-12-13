@@ -48,7 +48,8 @@ class Trainer(abc.BaseClass):
         return Faction(self.faction)
 
     async def fetch_updates(self) -> None:
-        data = await self.http.get_updates_for_trainer(self.id)
+        trainer_id = self.old_id
+        data = await self.http.get_updates_for_trainer(trainer_id)
         if data:
             self._updates = {x.get("uuid"): Update(self.http, x) for x in data}
             return list(self._updates.values())
@@ -142,11 +143,7 @@ class Trainer(abc.BaseClass):
         .. note::
             This will refresh the Trainer instance too
         """
-        API_VER = 1
-        if API_VER == 1:
-            trainer_id = self.old_id
-        else:
-            trainer_id = self.id
+        trainer_id = self.old_id
 
         options = {"trainer": trainer_id, "data_source": data_source}
         if update_time:
