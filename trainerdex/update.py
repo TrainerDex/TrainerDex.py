@@ -176,7 +176,12 @@ class Update(BaseUpdate):
         self.update_time = odt(data.get("update_time"))
         self.submission_date = odt(data.get("submission_date"))
         self.data_source = data.get("data_source")
+
         self.total_xp = data.get("total_xp")
+        self.gymbadges_total = data.get("gymbadges_total")
+        self.gymbadges_gold = data.get("gymbadges_gold")
+        self.stardust = data.get("stardust")
+
         self.pokedex_total_caught = data.get("pokedex_total_caught")
         self.pokedex_total_seen = data.get("pokedex_total_seen")
         self.pokedex_gen1 = data.get("pokedex_gen1")
@@ -187,11 +192,13 @@ class Update(BaseUpdate):
         self.pokedex_gen6 = data.get("pokedex_gen6")
         self.pokedex_gen7 = data.get("pokedex_gen7")
         self.pokedex_gen8 = data.get("pokedex_gen8")
+
         self.travel_km = con(Decimal, data.get("travel_km"))
         self.capture_total = data.get("capture_total")
         self.evolved_total = data.get("evolved_total")
         self.hatched_total = data.get("hatched_total")
         self.pokestops_visited = data.get("pokestops_visited")
+        self.unique_pokestops = data.get("unique_pokestops")
         self.big_magikarp = data.get("big_magikarp")
         self.battle_attack_won = data.get("battle_attack_won")
         self.battle_training_won = data.get("battle_training_won")
@@ -212,6 +219,15 @@ class Update(BaseUpdate):
         self.photobomb = data.get("photobomb")
         self.pokemon_purified = data.get("pokemon_purified")
         self.rocket_grunts_defeated = data.get("rocket_grunts_defeated")
+        self.buddy_best = data.get("buddy_best")
+        self.seven_day_streaks = data.get("seven_day_streaks")
+        self.unique_raid_bosses_defeated = data.get("unique_raid_bosses_defeated")
+        self.raids_with_friends = data.get("raids_with_friends")
+        self.pokemon_caught_at_your_lures = data.get("pokemon_caught_at_your_lures")
+        self.wayfarer = data.get("wayfarer")
+        self.total_mega_evos = data.get("total_mega_evos")
+        self.unique_mega_evos = data.get("unique_mega_evos")
+
         self.type_normal = data.get("type_normal")
         self.type_fighting = data.get("type_fighting")
         self.type_flying = data.get("type_flying")
@@ -230,9 +246,11 @@ class Update(BaseUpdate):
         self.type_dragon = data.get("type_dragon")
         self.type_dark = data.get("type_dark")
         self.type_fairy = data.get("type_fairy")
-        self.gymbadges_total = data.get("gymbadges_total")
-        self.gymbadges_gold = data.get("gymbadges_gold")
-        self.stardust = data.get("stardust")
+
+        self.battle_hub_stats_wins = data.get("battle_hub_stats_wins")
+        self.battle_hub_stats_battles = data.get("battle_hub_stats_battles")
+        self.battle_hub_stats_stardust = data.get("battle_hub_stats_stardust")
+        self.battle_hub_stats_streak = data.get("battle_hub_stats_streak")
 
     async def refresh_from_api(self) -> None:
         data = await self.http.get_update(self.uuid)

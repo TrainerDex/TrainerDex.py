@@ -22,9 +22,12 @@ UPDATE_KEYS_ENUM_OUT = {
     "uuid": "uuid",
     "trainer": "trainer",
     "update_time": "update_time",
-    "submission_date": None,
+    "submission_date": "submission_date",
     "data_source": "data_source",
     "total_xp": "total_xp",
+    "gymbadges_total": "gymbadges_total",
+    "gymbadges_gold": "gymbadges_gold",
+    "stardust": "pokemon_info_stardust",
     "pokedex_total_caught": "pokedex_caught",
     "pokedex_total_seen": "pokedex_seen",
     "pokedex_gen1": "badge_pokedex_entries",
@@ -40,6 +43,7 @@ UPDATE_KEYS_ENUM_OUT = {
     "evolved_total": "badge_evolved_total",
     "hatched_total": "badge_hatched_total",
     "pokestops_visited": "badge_pokestops_visited",
+    "unique_pokestops": "badge_unique_pokestops",
     "big_magikarp": "badge_big_magikarp",
     "battle_attack_won": "badge_battle_attack_won",
     "battle_training_won": "badge_battle_training_won",
@@ -62,6 +66,10 @@ UPDATE_KEYS_ENUM_OUT = {
     "rocket_grunts_defeated": "badge_rocket_grunts_defeated",
     "rocket_giovanni_defeated": "badge_rocket_giovanni_defeated",
     "buddy_best": "badge_buddy_best",
+    "seven_day_streaks": "badge_7_day_streaks",
+    "unique_raid_bosses_defeated": "badge_unique_raid_bosses_defeated",
+    "raids_with_friends": "badge_raids_with_friends",
+    "pokemon_caught_at_your_lures": "badge_pokemon_caught_at_your_lures",
     "wayfarer": "badge_wayfarer",
     "total_mega_evos": "badge_total_mega_evos",
     "unique_mega_evos": "badge_unique_mega_evos",
@@ -83,13 +91,13 @@ UPDATE_KEYS_ENUM_OUT = {
     "type_dragon": "badge_type_dragon",
     "type_dark": "badge_type_dark",
     "type_fairy": "badge_type_fairy",
-    "gymbadges_total": "gymbadges_total",
-    "gymbadges_gold": "gymbadges_gold",
-    "stardust": "pokemon_info_stardust",
-    "modified_extra_fields": "modified_extra_fields",
+    "battle_hub_stats_wins": "battle_hub_stats_wins",
+    "battle_hub_stats_battles": "battle_hub_stats_battles",
+    "battle_hub_stats_stardust": "battle_hub_stats_stardust",
+    "battle_hub_stats_streak": "battle_hub_stats_streak",
 }
 UPDATE_KEYS_ENUM_IN = {v: k for k, v in UPDATE_KEYS_ENUM_OUT.items() if v is not None}
-UPDATE_KEYS_READ_ONLY = ("uuid", "trainer")
+UPDATE_KEYS_READ_ONLY = ("uuid", "trainer", "submission_date")
 
 TRAINER_KEYS_ENUM_OUT = {
     "old_id": "id",
