@@ -178,9 +178,7 @@ class Update(BaseUpdate):
         self.data_source = data.get("data_source")
 
         self.total_xp = data.get("total_xp")
-        self.gymbadges_total = data.get("gymbadges_total")
         self.gymbadges_gold = data.get("gymbadges_gold")
-        self.stardust = data.get("stardust")
 
         self.pokedex_total_caught = data.get("pokedex_total_caught")
         self.pokedex_total_seen = data.get("pokedex_total_seen")
