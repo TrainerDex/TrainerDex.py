@@ -261,7 +261,7 @@ class HTTPClient:
 
     def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
         r = Route(
-            "POST",
+            "PATCH",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
             trainer_id=trainer_id,
             update_uuid=update_uuid,
@@ -273,6 +273,7 @@ class HTTPClient:
             if (UPDATE_KEYS_ENUM_OUT.get(k) is not None)
             and (UPDATE_KEYS_ENUM_OUT.get(k) not in UPDATE_KEYS_READ_ONLY)
         }
+        payload["trainer"] = trainer_id
 
         for k, v in payload.items():
             if isinstance(v, Decimal):
