@@ -9,17 +9,8 @@ A basic wrapper for the TrainerDex API.
 
 """
 
-__title__ = "trainerdex"
-__author__ = "JayTurnr"
-__licence__ = "GNU-GPL"
-__copyright__ = "Copyright 2020 TurnrDev"
-__version__ = "3.7.0a1"
+from .version import get_version
 
-from .client import Client
-from .faction import Faction
-from .http import HTTPClient, Route
-from .leaderboard import GuildLeaderboard, Leaderboard
-from .socialconnection import SocialConnection
-from .trainer import Trainer
-from .update import Level, Update
-from .user import User
+VERSION = (3, 7, 0, "alpha", 0)
+
+__version__ = get_version(VERSION)

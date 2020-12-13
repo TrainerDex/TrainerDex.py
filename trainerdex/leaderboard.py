@@ -1,3 +1,4 @@
+import datetime
 from typing import Callable, Dict, Iterator, List, Optional, Union
 from warnings import warn
 
@@ -21,9 +22,8 @@ class LeaderboardEntry(abc.BaseClass):
         self._trainer_id = data.get("id", None)
         self.username = data.get("username")
         self._faction = data.get("faction", {"id": 0, "name_en": "No Team"})
-        self._total_xp = data.get("total_xp")
         self.value = data.get("value", 0)
-        self.last_updated = con(parse, data.get("last_updated"))
+        self.update_time = con(parse, data.get("last_updated"))
         self._user_id = data.get("user_id", None)
 
     @property
@@ -38,6 +38,10 @@ class LeaderboardEntry(abc.BaseClass):
             stacklevel=2,
         )
         return self._total_xp
+
+    @property
+    def last_updated(self) -> Optional[datetime.datetime]:
+        return self.update_time
 
     async def trainer(self) -> Trainer:
         if self._trainer:
