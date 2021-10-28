@@ -10,9 +10,9 @@ from uuid import UUID
 
 import aiohttp
 import aiohttp.web
-from discord.errors import HTTPException, Forbidden, NotFound
 
 from . import __version__
+from .exceptions import Forbidden, HTTPException, NotFound
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -22,9 +22,10 @@ UPDATE_KEYS_ENUM_OUT = {
     "uuid": "uuid",
     "trainer": "trainer",
     "update_time": "update_time",
-    "submission_date": None,
+    "submission_date": "submission_date",
     "data_source": "data_source",
     "total_xp": "total_xp",
+    "gymbadges_gold": "gymbadges_gold",
     "pokedex_total_caught": "pokedex_caught",
     "pokedex_total_seen": "pokedex_seen",
     "pokedex_gen1": "badge_pokedex_entries",
@@ -40,6 +41,7 @@ UPDATE_KEYS_ENUM_OUT = {
     "evolved_total": "badge_evolved_total",
     "hatched_total": "badge_hatched_total",
     "pokestops_visited": "badge_pokestops_visited",
+    "unique_pokestops": "badge_unique_pokestops",
     "big_magikarp": "badge_big_magikarp",
     "battle_attack_won": "badge_battle_attack_won",
     "battle_training_won": "badge_battle_training_won",
@@ -62,6 +64,10 @@ UPDATE_KEYS_ENUM_OUT = {
     "rocket_grunts_defeated": "badge_rocket_grunts_defeated",
     "rocket_giovanni_defeated": "badge_rocket_giovanni_defeated",
     "buddy_best": "badge_buddy_best",
+    "seven_day_streaks": "badge_7_day_streaks",
+    "unique_raid_bosses_defeated": "badge_unique_raid_bosses_defeated",
+    "raids_with_friends": "badge_raids_with_friends",
+    "pokemon_caught_at_your_lures": "badge_pokemon_caught_at_your_lures",
     "wayfarer": "badge_wayfarer",
     "total_mega_evos": "badge_total_mega_evos",
     "unique_mega_evos": "badge_unique_mega_evos",
@@ -83,13 +89,13 @@ UPDATE_KEYS_ENUM_OUT = {
     "type_dragon": "badge_type_dragon",
     "type_dark": "badge_type_dark",
     "type_fairy": "badge_type_fairy",
-    "gymbadges_total": "gymbadges_total",
-    "gymbadges_gold": "gymbadges_gold",
-    "stardust": "pokemon_info_stardust",
-    "modified_extra_fields": "modified_extra_fields",
+    "battle_hub_stats_wins": "battle_hub_stats_wins",
+    "battle_hub_stats_battles": "battle_hub_stats_battles",
+    "battle_hub_stats_stardust": "battle_hub_stats_stardust",
+    "battle_hub_stats_streak": "battle_hub_stats_streak",
 }
 UPDATE_KEYS_ENUM_IN = {v: k for k, v in UPDATE_KEYS_ENUM_OUT.items() if v is not None}
-UPDATE_KEYS_READ_ONLY = ("uuid", "trainer")
+UPDATE_KEYS_READ_ONLY = ("uuid", "trainer", "submission_date")
 
 TRAINER_KEYS_ENUM_OUT = {
     "old_id": "id",
@@ -127,7 +133,7 @@ async def json_or_text(response: aiohttp.web.Response) -> Union[Dict, str]:
 
 
 class Route:
-    BASE = "https://www.trainerdex.co.uk/api/v1"
+    BASE = "https://trainerdex.app/api/v1"
 
     def __init__(self, method: str, path: str, **parameters) -> None:
         self.path = path
@@ -135,10 +141,7 @@ class Route:
         url = self.BASE + self.path
         if parameters:
             self.url = url.format(
-                **{
-                    k: _uriquote(v) if isinstance(v, str) else v
-                    for k, v in parameters.items()
-                }
+                **{k: _uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()}
             )
         else:
             self.url = url
@@ -156,13 +159,11 @@ class HTTPClient:
         self.token = token
 
         user_agent = (
-            "TrainerDex.py (https://github.com/TrainerDex/DiscordBot {0}) "
+            "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
             "Python/{1[0]}.{1[1]} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(
-            __version__, sys.version_info, aiohttp.__version__
-        )
+        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
     async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
         method = route.method
@@ -232,6 +233,15 @@ class HTTPClient:
 
         return self.request(r)
 
+    def get_updates_for_trainer(self, trainer_id: int) -> Dict:
+        r = Route(
+            "GET",
+            "/trainers/{trainer_id}/updates/",
+            trainer_id=trainer_id,
+        )
+
+        return self.request(r)
+
     def create_update(self, trainer_id: int, kwargs) -> Dict:
         r = Route("POST", "/trainers/{trainer_id}/updates/", trainer_id=trainer_id)
 
@@ -249,11 +259,9 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_update(
-        self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs
-    ) -> Dict:
+    def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
         r = Route(
-            "POST",
+            "PATCH",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
             trainer_id=trainer_id,
             update_uuid=update_uuid,
@@ -265,6 +273,7 @@ class HTTPClient:
             if (UPDATE_KEYS_ENUM_OUT.get(k) is not None)
             and (UPDATE_KEYS_ENUM_OUT.get(k) not in UPDATE_KEYS_READ_ONLY)
         }
+        payload["trainer"] = trainer_id
 
         for k, v in payload.items():
             if isinstance(v, Decimal):
@@ -342,9 +351,7 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def edit_user(
-        self, user_id, username: str, first_name: Optional[str] = None
-    ) -> Dict:
+    def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
         r = Route("PATCH", "/users/{user_id}/", user_id=user_id)
 
         payload = {"username": username}
@@ -354,9 +361,7 @@ class HTTPClient:
 
         return self.request(r, json=payload)
 
-    def get_social_connections(
-        self, provider: str, uid: Union[str, Iterable[str]]
-    ) -> List[Dict]:
+    def get_social_connections(self, provider: str, uid: Union[str, Iterable[str]]) -> List[Dict]:
         r = Route("GET", "/users/social/")
 
         params = {"provider": provider}
@@ -380,11 +385,23 @@ class HTTPClient:
 
     # Leaderboard requests
 
-    def get_leaderboard(self, stat: str = None, guild_id: Optional[int] = None) -> Dict:
+    def get_leaderboard(
+        self,
+        stat: str = None,
+        guild_id: Optional[int] = None,
+        community: Optional[str] = None,
+        country: Optional[str] = None,
+    ) -> Dict:
         endpoint = "/leaderboard/"
 
         if guild_id:
-            endpoint += "discord/{guild_id}/".format(guild_id=guild_id)
+            endpoint += "discord/{}/".format(guild_id)
+        elif community:
+            endpoint += "community/{}/".format(community)
+        elif country:
+            endpoint += "country/{}/".format(country)
+        else:
+            endpoint += "v1.1/"
 
         if stat:
             endpoint += "{stat}/".format(stat=stat)
