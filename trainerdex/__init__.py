@@ -11,6 +11,6 @@ A basic wrapper for the TrainerDex API.
 
 from .version import get_version
 
-VERSION = (3, 7, 0, "alpha", 0)
+VERSION = (3, 7, 0, "beta", 1)
 
 __version__ = get_version(VERSION)

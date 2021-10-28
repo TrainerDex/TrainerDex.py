@@ -1,5 +1,2 @@
-aiohttp>=3.6.0,<3.7.0
-python-dateutil>=2.8.1
-black
-isort
-python-language-server[all]
+aiohttp>=3.6.0,<4.0.0
+python-dateutil
