@@ -4,18 +4,20 @@ import logging
 from typing import Iterable, List, Optional, Union
 from uuid import UUID
 
-from .faction import Faction
-from .http import HTTPClient
-from .leaderboard import (
+from promise import promisify
+
+from trainerdex.faction import Faction
+from trainerdex.http import HTTPClient
+from trainerdex.leaderboard import (
     CommunityLeaderboard,
     CountryLeaderboard,
     GuildLeaderboard,
     Leaderboard,
 )
-from .socialconnection import SocialConnection
-from .trainer import Trainer
-from .update import Update
-from .user import User
+from trainerdex.socialconnection import SocialConnection
+from trainerdex.trainer import Trainer
+from trainerdex.update import Update
+from trainerdex.user import User
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -25,12 +27,14 @@ class Client:
         self.loop = asyncio.get_event_loop() if loop is None else loop
         self.http = HTTPClient(token=token, loop=self.loop)
 
+    @promisify
     async def get_trainer(self, trainer_id: int) -> Trainer:
         data = await self.http.get_trainer(trainer_id)
         trainer = Trainer(conn=self.http, data=data)
         await trainer.fetch_updates()
         return trainer
 
+    @promisify
     async def create_trainer(
         self,
         username: str,
@@ -70,28 +74,34 @@ class Client:
         await trainer.fetch_updates()
         return trainer
 
+    @promisify
     async def get_trainers(self) -> Iterable[Trainer]:
         data = await self.http.get_trainers()
         return [Trainer(conn=self.http, data=x) for x in data]
 
+    @promisify
     async def get_user(self, user_id: int) -> User:
         data = await self.http.get_user(user_id)
         return User(conn=self.http, data=data)
 
+    @promisify
     async def get_users(self) -> Iterable[User]:
         data = await self.http.get_users()
         return tuple(User(conn=self.http, data=x) for x in data)
 
+    @promisify
     async def get_update(self, update_uuid: Union[str, UUID]) -> Update:
         data = await self.http.get_update(update_uuid)
         return Update(conn=self.http, data=data)
 
+    @promisify
     async def get_social_connections(
         self, provider: str, uid: Union[str, Iterable[str]]
     ) -> List[SocialConnection]:
         data = await self.http.get_social_connections(provider, uid)
         return [SocialConnection(conn=self.http, data=x) for x in data]
 
+    @promisify
     async def get_leaderboard(
         self,
         stat: str = "total_xp",
@@ -115,6 +125,7 @@ class Client:
         data = await self.http.get_leaderboard(stat=stat, guild_id=guild_id)
         return leaderboard_class(conn=self.http, data=data)
 
+    @promisify
     async def search_trainer(self, nickname: str) -> Trainer:
         """Searches for a trainer with a certain nickname
 

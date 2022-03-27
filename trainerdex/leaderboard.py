@@ -3,12 +3,13 @@ from typing import Callable, Dict, Iterator, List, Optional, Union
 from warnings import warn
 
 from dateutil.parser import parse
+from promise import promisify
 
-from . import abc
-from .faction import Faction
-from .http import HTTPClient
-from .trainer import Trainer
-from .utils import con, maybe_coroutine
+from trainerdex import abc
+from trainerdex.faction import Faction
+from trainerdex.http import HTTPClient
+from trainerdex.trainer import Trainer
+from trainerdex.utils import con, maybe_coroutine
 
 
 class LeaderboardEntry(abc.BaseClass):
@@ -43,6 +44,7 @@ class LeaderboardEntry(abc.BaseClass):
     def last_updated(self) -> Optional[datetime.datetime]:
         return self.update_time
 
+    @promisify
     async def trainer(self) -> Trainer:
         if self._trainer:
             return self._trainer
@@ -150,6 +152,7 @@ class BaseLeaderboard:
         ]
         return self
 
+    @promisify
     async def find(
         self, predicate: Callable, default: Optional[LeaderboardEntry] = None
     ) -> LeaderboardEntry:

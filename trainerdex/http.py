@@ -10,9 +10,10 @@ from uuid import UUID
 
 import aiohttp
 import aiohttp.web
+from promise import promisify
 
-from . import __version__
-from .exceptions import Forbidden, HTTPException, NotFound
+from trainerdex import __version__
+from trainerdex.exceptions import Forbidden, HTTPException, NotFound
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -125,6 +126,7 @@ TRAINER_KEYS_ENUM_IN = {
 TRAINER_KEYS_READ_ONLY = ("id", "owner", "username", "currently_cheats")
 
 
+@promisify
 async def json_or_text(response: aiohttp.web.Response) -> Union[Dict, str]:
     text = await response.text(encoding="utf-8")
     if response.headers.get("content-type") == "application/json":
@@ -165,6 +167,7 @@ class HTTPClient:
         )
         self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
+    @promisify
     async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
         method = route.method
         url = route.url
@@ -223,7 +226,8 @@ class HTTPClient:
 
     # Update management
 
-    def get_update(self, trainer_id: int, update_uuid: Union[str, UUID]) -> Dict:
+    @promisify
+    async def get_update(self, trainer_id: int, update_uuid: Union[str, UUID]) -> Dict:
         r = Route(
             "GET",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
@@ -231,18 +235,20 @@ class HTTPClient:
             update_uuid=update_uuid,
         )
 
-        return self.request(r)
+        return await self.request(r)
 
-    def get_updates_for_trainer(self, trainer_id: int) -> Dict:
+    @promisify
+    async def get_updates_for_trainer(self, trainer_id: int) -> Dict:
         r = Route(
             "GET",
             "/trainers/{trainer_id}/updates/",
             trainer_id=trainer_id,
         )
 
-        return self.request(r)
+        return await self.request(r)
 
-    def create_update(self, trainer_id: int, kwargs) -> Dict:
+    @promisify
+    async def create_update(self, trainer_id: int, kwargs) -> Dict:
         r = Route("POST", "/trainers/{trainer_id}/updates/", trainer_id=trainer_id)
 
         payload = {
@@ -257,9 +263,10 @@ class HTTPClient:
             elif isinstance(v, (datetime.date, datetime.datetime)):
                 payload[k] = v.isoformat()
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
-    def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
+    @promisify
+    async def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
         r = Route(
             "PATCH",
             "/trainers/{trainer_id}/updates/{update_uuid}/",
@@ -281,21 +288,24 @@ class HTTPClient:
             elif isinstance(v, (datetime.date, datetime.datetime)):
                 payload[k] = v.isoformat()
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
     # Trainer management
 
-    def get_trainer(self, trainer_id: int) -> Dict:
+    @promisify
+    async def get_trainer(self, trainer_id: int) -> Dict:
         r = Route("GET", "/trainers/{trainer_id}/", trainer_id=trainer_id)
 
-        return self.request(r)
+        return await self.request(r)
 
-    def get_trainers(self, **kwargs) -> List[Dict]:
+    @promisify
+    async def get_trainers(self, **kwargs) -> List[Dict]:
         r = Route("GET", "/trainers/")
 
-        return self.request(r, params=kwargs)
+        return await self.request(r, params=kwargs)
 
-    def create_trainer(self, **kwargs) -> Dict:
+    @promisify
+    async def create_trainer(self, **kwargs) -> Dict:
         r = Route("POST", "/trainers/")
 
         payload = {
@@ -311,9 +321,10 @@ class HTTPClient:
             elif isinstance(v, (datetime.date, datetime.datetime)):
                 payload[k] = v.isoformat()
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
-    def edit_trainer(self, trainer_id: int, **kwargs) -> Dict:
+    @promisify
+    async def edit_trainer(self, trainer_id: int, **kwargs) -> Dict:
         r = Route("PATCH", "/trainers/{trainer_id}/", trainer_id=trainer_id)
 
         payload = {
@@ -329,19 +340,22 @@ class HTTPClient:
             elif isinstance(v, (datetime.date, datetime.datetime)):
                 payload[k] = v.isoformat()
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
-    def get_user(self, user_id: int) -> Dict:
+    @promisify
+    async def get_user(self, user_id: int) -> Dict:
         r = Route("GET", "/users/{user_id}/", user_id=user_id)
 
-        return self.request(r)
+        return await self.request(r)
 
-    def get_users(self) -> List[Dict]:
+    @promisify
+    async def get_users(self) -> List[Dict]:
         r = Route("GET", "/users/")
 
-        return self.request(r)
+        return await self.request(r)
 
-    def create_user(self, username: str, first_name: Optional[str] = None) -> Dict:
+    @promisify
+    async def create_user(self, username: str, first_name: Optional[str] = None) -> Dict:
         r = Route("POST", "/users/")
 
         payload = {"username": username}
@@ -349,9 +363,10 @@ class HTTPClient:
         if first_name:
             payload["first_name"] = first_name
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
-    def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
+    @promisify
+    async def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
         r = Route("PATCH", "/users/{user_id}/", user_id=user_id)
 
         payload = {"username": username}
@@ -359,9 +374,12 @@ class HTTPClient:
         if first_name:
             payload["first_name"] = first_name
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
-    def get_social_connections(self, provider: str, uid: Union[str, Iterable[str]]) -> List[Dict]:
+    @promisify
+    async def get_social_connections(
+        self, provider: str, uid: Union[str, Iterable[str]]
+    ) -> List[Dict]:
         r = Route("GET", "/users/social/")
 
         params = {"provider": provider}
@@ -369,9 +387,10 @@ class HTTPClient:
             uid = (uid,)
         params["uid"] = ",".join(uid)
 
-        return self.request(r, params=params)
+        return await self.request(r, params=params)
 
-    def create_social_connection(
+    @promisify
+    async def create_social_connection(
         self, user: int, provider: str, uid: str, extra_data: Optional[Dict] = None
     ) -> Dict:
         r = Route("PUT", "/users/social/")
@@ -381,11 +400,12 @@ class HTTPClient:
         if extra_data:
             payload["extra_data"] = extra_data
 
-        return self.request(r, json=payload)
+        return await self.request(r, json=payload)
 
     # Leaderboard requests
 
-    def get_leaderboard(
+    @promisify
+    async def get_leaderboard(
         self,
         stat: str = None,
         guild_id: Optional[int] = None,
@@ -407,4 +427,4 @@ class HTTPClient:
             endpoint += "{stat}/".format(stat=stat)
 
         r = Route("GET", endpoint)
-        return self.request(r)
+        return await self.request(r)
