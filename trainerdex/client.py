@@ -6,7 +6,12 @@ from uuid import UUID
 
 from .faction import Faction
 from .http import HTTPClient
-from .leaderboard import CommunityLeaderboard, CountryLeaderboard, GuildLeaderboard, Leaderboard
+from .leaderboard import (
+    CommunityLeaderboard,
+    CountryLeaderboard,
+    GuildLeaderboard,
+    Leaderboard,
+)
 from .socialconnection import SocialConnection
 from .trainer import Trainer
 from .update import Update
