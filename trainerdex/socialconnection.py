@@ -1,11 +1,9 @@
 import json
 from typing import Dict, Union
 
-from promise import promisify
-
-from trainerdex import abc
-from trainerdex.trainer import Trainer
-from trainerdex.utils import con
+from . import abc
+from .trainer import Trainer
+from .utils import con
 
 
 class SocialConnection(abc.BaseClass):
@@ -24,7 +22,6 @@ class SocialConnection(abc.BaseClass):
     def __hash__(self):
         return hash((self.provider, self.uid))
 
-    @promisify
     async def user(self):
         if self._user:
             return self._user
@@ -36,7 +33,6 @@ class SocialConnection(abc.BaseClass):
 
         return self._user
 
-    @promisify
     async def trainer(self) -> Trainer:
         if self._trainer:
             return self._trainer
@@ -46,7 +42,6 @@ class SocialConnection(abc.BaseClass):
 
         return self._trainer
 
-    @promisify
     async def refresh_from_api(self) -> None:
         data = await self.http.get_social_connections(self.provider, self.uid)
         self._update(data[0])
@@ -68,7 +63,8 @@ class SocialConnection(abc.BaseClass):
         if self.provider == "discord":
             try:
                 return client.get_user(int(self.uid))
-            except:  # noqa: E722
+            except:
+                # Bare Except is bad but oh well
                 return None
         raise NotImplementedError
 
@@ -92,6 +88,7 @@ class SocialConnection(abc.BaseClass):
                 if ctx:
                     guild = ctx.guild
                 return guild.get_member(int(self.uid))
-            except:  # noqa: E722
+            except:
+                # Bare Except is bad but oh well
                 return None
         raise NotImplementedError
