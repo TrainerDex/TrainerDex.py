@@ -118,7 +118,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed `trainerdex.client.Client.import_discord_user` so that it only takes discord id and trainerdex id
 - Renamed `trainerdex.client.Client.get_update` to `trainerdex.client.Client.get_detailed_update` and require user id
 - Changed `trainerdex.client.Client.get_discord_user` so you could use uid, user or trainer as params
-- Changed API url to `https://www.trainerdex.co.uk/api/v1/`
+- Changed API url to `https://trainerdex.app/api/v1/`
 
 ### Removed
 - `trainerdex.cached.DiscordServer` class
@@ -136,7 +136,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.4.3] - 2017-12-12
 ### Changed
 - Fixed a bug when not supplying a `datetime.datetime` to `trainerdex.client.Client.create_update(time_updated=...)`
-- Changed API domain to `www.trainerdex.co.uk`
+- Changed API domain to `trainerdex.app`
 
 ## [1.4.2] - 2017-11-08
 ### Added
