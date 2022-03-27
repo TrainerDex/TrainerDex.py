@@ -1,6 +1,8 @@
 from typing import Dict, Union
 
-from .http import HTTPClient
+from promise import promisify
+
+from trainerdex.http import HTTPClient
 
 
 class BaseClass:
@@ -11,5 +13,6 @@ class BaseClass:
     def _update(self, data: Dict[str, Union[str, int]]) -> None:
         raise NotImplementedError
 
+    @promisify
     async def refresh_from_api(self) -> None:
         raise NotImplementedError

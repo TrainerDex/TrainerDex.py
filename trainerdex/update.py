@@ -4,10 +4,11 @@ from typing import Dict, List, Optional, Union
 from uuid import UUID
 
 from dateutil.parser import parse
+from promise import promisify
 
-from . import abc
-from .http import UPDATE_KEYS_ENUM_IN, HTTPClient
-from .utils import con
+from trainerdex import abc
+from trainerdex.http import UPDATE_KEYS_ENUM_IN, HTTPClient
+from trainerdex.utils import con
 
 odt = con(parse)
 
@@ -150,6 +151,7 @@ class BaseUpdate(abc.BaseClass):
             else:
                 return f"{min(possible_levels)}-{max(possible_levels)}"
 
+    @promisify
     async def trainer(self):
         if self._trainer:
             return self._trainer
@@ -250,10 +252,12 @@ class Update(BaseUpdate):
         self.battle_hub_stats_stardust = data.get("battle_hub_stats_stardust")
         self.battle_hub_stats_streak = data.get("battle_hub_stats_streak")
 
+    @promisify
     async def refresh_from_api(self) -> None:
         data = await self.http.get_update(self.uuid)
         self._update(data)
 
+    @promisify
     async def edit(self, **options) -> None:
         """|coro|
 

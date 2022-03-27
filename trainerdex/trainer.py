@@ -3,12 +3,13 @@ import re
 from typing import Dict, List, Union
 
 from dateutil.parser import parse
+from promise import promisify
 
-from . import abc
-from .faction import Faction
-from .http import TRAINER_KEYS_ENUM_IN, HTTPClient
-from .update import Level, Update
-from .utils import con
+from trainerdex import abc
+from trainerdex.faction import Faction
+from trainerdex.http import TRAINER_KEYS_ENUM_IN, HTTPClient
+from trainerdex.update import Level, Update
+from trainerdex.utils import con
 
 odt = con(parse)
 
@@ -47,6 +48,7 @@ class Trainer(abc.BaseClass):
     def team(self) -> Faction:
         return Faction(self.faction)
 
+    @promisify
     async def fetch_updates(self) -> None:
         trainer_id = self.old_id
         data = await self.http.get_updates_for_trainer(trainer_id)
@@ -71,6 +73,7 @@ class Trainer(abc.BaseClass):
         if update:
             return update.level
 
+    @promisify
     async def user(self):
         if self._user:
             return self._user
@@ -83,10 +86,12 @@ class Trainer(abc.BaseClass):
 
         return self._user
 
+    @promisify
     async def refresh_from_api(self) -> None:
         data = await self.http.get_trainer(self.old_id)
         self._update(data)
 
+    @promisify
     async def edit(self, **options) -> None:
         """|coro|
 
@@ -129,6 +134,7 @@ class Trainer(abc.BaseClass):
         new_data = await self.http.edit_trainer(self.old_id, **options)
         self._update(new_data)
 
+    @promisify
     async def post(
         self,
         data_source: str,
