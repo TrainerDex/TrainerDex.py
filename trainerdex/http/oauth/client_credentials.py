@@ -23,7 +23,7 @@ class OAuthCredentialsClient(iOAuthClient):
     token: ClientCredentialsToken = None
 
     def encode_credentials(self, client_id: str, client_secret: str) -> bytes:
-        return base64.b64encode(f"{client_id}:{client_secret}")
+        return base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8"))
 
     async def authenticate(
         self, client_id: str, client_secret: str, *args, **kwargs
