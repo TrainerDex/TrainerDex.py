@@ -149,8 +149,8 @@ class Route:
             self.url = url
 
 
-class HTTPClient:
-    """Represents an HTTP client sending HTTP requests to the TrainerDex API."""
+class BearerHTTPClient:
+    """Represents an HTTP client sending HTTP requests to the TrainerDex API v1"""
 
     SUCCESS_LOG = "{method} {url} has received {text}"
     REQUEST_LOG = "{method} {url} with {json} has returned {status}"
