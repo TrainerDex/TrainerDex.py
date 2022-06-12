@@ -47,7 +47,7 @@ class OAuthCredentialsClient(iOAuthClient):
                 try:
                     resp.raise_for_status()
                 except ClientResponseError as e:
-                    raise AuthenticationError from e
+                    raise AuthenticationError() from e
                 response = await resp.json()
                 self.token = ClientCredentialsToken(
                     expires_at=response_datetime + timedelta(seconds=response["expires_in"]),
