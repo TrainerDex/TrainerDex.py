@@ -15,9 +15,9 @@ import aiohttp
 import aiohttp.web
 from promise import promisify
 
-from trainerdex import __version__
 from trainerdex.exceptions import Forbidden, HTTPException, NotFound
 from trainerdex.http.interface import iHTTPClient
+from trainerdex.version import __version__
 
 log: logging.Logger = logging.getLogger(__name__)
 

@@ -9,6 +9,4 @@ A basic wrapper for the TrainerDex API.
 
 """
 
-import pkg_resources
-
-__version__ = pkg_resources.get_distribution("trainerdex").version
+from .version import __version__
