@@ -28,7 +28,7 @@ class OAuthCredentialsClient(iOAuthClient):
     async def authenticate(
         self, client_id: str, client_secret: str, *args, **kwargs
     ) -> bool | NoReturn:
-        href = self.ORIGIN + "/api/oauth/token"
+        href = "/api/oauth/token/"
         credentials = self.encode_credentials(client_id, client_secret)
 
         headers = {
