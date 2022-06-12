@@ -37,6 +37,6 @@ class iOAuthClient(iHTTPClient):
         )
         return user_agent.format(__version__, sys.version, aiohttp.__version__)
 
-    @abstractmethod()
+    @abstractmethod
     def authenticate(self, client_id: str, client_secret: str, *args, **kwargs):
         ...
