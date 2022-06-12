@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import logging
 from typing import Iterable, List, Optional, Union
@@ -7,7 +6,7 @@ from uuid import UUID
 from promise import promisify
 
 from trainerdex.faction import Faction
-from trainerdex.http import HTTPClient
+from trainerdex.http.bearer import BearerHTTPClient
 from trainerdex.leaderboard import (
     CommunityLeaderboard,
     CountryLeaderboard,
@@ -22,15 +21,11 @@ from trainerdex.user import User
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class Client:
-    def __init__(self, token: str = None, loop=None) -> None:
-        self.loop = asyncio.get_event_loop() if loop is None else loop
-        self.http = HTTPClient(token=token, loop=self.loop)
-
+class LegacyClient(BearerHTTPClient):
     @promisify
     async def get_trainer(self, trainer_id: int) -> Trainer:
-        data = await self.http.get_trainer(trainer_id)
-        trainer = Trainer(conn=self.http, data=data)
+        data = await self.get_trainer(trainer_id)
+        trainer = Trainer(conn=self, data=data)
         await trainer.fetch_updates()
         return trainer
 
@@ -53,8 +48,8 @@ class Client:
         """
         if user is None:
             u_params = {"username": username, "first_name": first_name}
-            u_data = await self.http.create_user(**u_params)
-            user = User(conn=self.http, data=u_data)
+            u_data = await self.create_user(**u_params)
+            user = User(conn=self, data=u_data)
 
         assert isinstance(user, User)
 
@@ -68,38 +63,38 @@ class Client:
             "is_verified": is_verified,
             "is_visible": is_visible,
         }
-        t_data = await self.http.create_trainer(**t_params)
+        t_data = await self.create_trainer(**t_params)
         t_data["_user"] = User
-        trainer = Trainer(conn=self.http, data=t_data)
+        trainer = Trainer(conn=self, data=t_data)
         await trainer.fetch_updates()
         return trainer
 
     @promisify
     async def get_trainers(self) -> Iterable[Trainer]:
-        data = await self.http.get_trainers()
-        return [Trainer(conn=self.http, data=x) for x in data]
+        data = await self.get_trainers()
+        return [Trainer(conn=self, data=x) for x in data]
 
     @promisify
     async def get_user(self, user_id: int) -> User:
-        data = await self.http.get_user(user_id)
-        return User(conn=self.http, data=data)
+        data = await self.get_user(user_id)
+        return User(conn=self, data=data)
 
     @promisify
     async def get_users(self) -> Iterable[User]:
-        data = await self.http.get_users()
-        return tuple(User(conn=self.http, data=x) for x in data)
+        data = await self.get_users()
+        return tuple(User(conn=self, data=x) for x in data)
 
     @promisify
     async def get_update(self, update_uuid: Union[str, UUID]) -> Update:
-        data = await self.http.get_update(update_uuid)
-        return Update(conn=self.http, data=data)
+        data = await self.get_update(update_uuid)
+        return Update(conn=self, data=data)
 
     @promisify
     async def get_social_connections(
         self, provider: str, uid: Union[str, Iterable[str]]
     ) -> List[SocialConnection]:
-        data = await self.http.get_social_connections(provider, uid)
-        return [SocialConnection(conn=self.http, data=x) for x in data]
+        data = await self.get_social_connections(provider, uid)
+        return [SocialConnection(conn=self, data=x) for x in data]
 
     @promisify
     async def get_leaderboard(
@@ -122,8 +117,8 @@ class Client:
         else:
             guild_id = None
             leaderboard_class = Leaderboard
-        data = await self.http.get_leaderboard(stat=stat, guild_id=guild_id)
-        return leaderboard_class(conn=self.http, data=data)
+        data = await self.get_leaderboard(stat=stat, guild_id=guild_id)
+        return leaderboard_class(conn=self, data=data)
 
     @promisify
     async def search_trainer(self, nickname: str) -> Trainer:
@@ -148,9 +143,9 @@ class Client:
 
         """
 
-        queryset = await self.http.get_trainers(q=nickname)
+        queryset = await self.get_trainers(q=nickname)
 
         if len(queryset) == 1:
-            return Trainer(conn=self.http, data=queryset[0])
+            return Trainer(conn=self, data=queryset[0])
         else:
             raise IndexError
