@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import asyncio
 import datetime
 import json
 import logging
+import os
 import sys
 from decimal import Decimal
 from typing import Dict, Iterable, List, Optional, Union
@@ -136,7 +139,8 @@ async def json_or_text(response: aiohttp.web.Response) -> Union[Dict, str]:
 
 
 class Route:
-    BASE = "https://trainerdex.app/api/v1"
+    ORIGIN = os.environ.get("TRAINERDEX_ORIGIN", "https://trainerdex.app")
+    BASE = ORIGIN + "/api/v1"
 
     def __init__(self, method: str, path: str, **parameters) -> None:
         self.path = path
