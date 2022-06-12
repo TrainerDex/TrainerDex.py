@@ -37,12 +37,12 @@ class OAuthCredentialsClient(iOAuthClient):
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
-        params = {
+        data = {
             "grant_type": "client_credentials",
         }
 
         async with self.session as session:
-            async with session.get(href, headers=headers, params=params) as resp:
+            async with session.post(href, headers=headers, data=data) as resp:
                 response_datetime = datetime.utcnow().astimezone(tz=ZoneInfo("UTC"))
                 try:
                     resp.raise_for_status()
