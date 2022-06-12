@@ -28,7 +28,7 @@ class OAuthCredentialsClient(iOAuthClient):
     async def authenticate(
         self, client_id: str, client_secret: str, *args, **kwargs
     ) -> bool | NoReturn:
-        href = "/api/oauth/token/"
+        path = "/api/oauth/token/"
         credentials = self.encode_credentials(client_id, client_secret)
 
         headers = {
@@ -41,25 +41,23 @@ class OAuthCredentialsClient(iOAuthClient):
             "grant_type": "client_credentials",
         }
 
-        async with self.session as session:
-            async with session.post(href, headers=headers, data=data) as resp:
-                response_datetime = datetime.utcnow().astimezone(tz=ZoneInfo("UTC"))
-                try:
-                    resp.raise_for_status()
-                except ClientResponseError as e:
-                    raise AuthenticationError() from e
-                response = await resp.json()
-                self.token = ClientCredentialsToken(
-                    expires_at=response_datetime + timedelta(seconds=response["expires_in"]),
-                    **response,
-                )
+        async with self.session.post(path, headers=headers, data=data) as resp:
+            response_datetime = datetime.utcnow().astimezone(tz=ZoneInfo("UTC"))
+            try:
+                resp.raise_for_status()
+            except ClientResponseError as e:
+                raise AuthenticationError() from e
+            response = await resp.json()
+            self.token = ClientCredentialsToken(
+                expires_at=response_datetime + timedelta(seconds=response["expires_in"]),
+                **response,
+            )
 
-                self.session.headers["Authorization"] = f"Bearer {self.token.access_token}"
+            self.session.headers["Authorization"] = f"Bearer {self.token.access_token}"
 
         return await self.test_authentication()
 
     async def test_authentication(self) -> bool:
-        href = self.ORIGIN + "/api/oauth/test"
-        async with self.session as session:
-            async with session.get(href) as resp:
-                return resp.ok
+        path = "/api/oauth/test/"
+        async with self.session.get(path) as resp:
+            return resp.ok
