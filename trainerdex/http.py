@@ -162,10 +162,10 @@ class HTTPClient:
 
         user_agent = (
             "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
-            "Python/{1[0]}.{1[1]} "
+            "Python/{1} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
+        self.user_agent = user_agent.format(__version__, sys.version, aiohttp.__version__)
 
     @promisify
     async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
