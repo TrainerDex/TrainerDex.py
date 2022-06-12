@@ -14,6 +14,7 @@ from promise import promisify
 
 from trainerdex import __version__
 from trainerdex.exceptions import Forbidden, HTTPException, NotFound
+from trainerdex.http.interface import iHTTPClient
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -149,7 +150,7 @@ class Route:
             self.url = url
 
 
-class BearerHTTPClient:
+class BearerHTTPClient(iHTTPClient):
     """Represents an HTTP client sending HTTP requests to the TrainerDex API v1"""
 
     SUCCESS_LOG = "{method} {url} has received {text}"
