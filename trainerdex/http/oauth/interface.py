@@ -3,13 +3,19 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
+import weakref
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 import aiohttp
+from promise import promisify
 import ujson
 
 from trainerdex.http.interface import iHTTPClient
 from trainerdex.version import __version__
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class iOAuthClient(iHTTPClient):
@@ -23,6 +29,23 @@ class iOAuthClient(iHTTPClient):
             headers={"User-Agent": self.user_agent},
             json_serialize=ujson.dumps,
         )
+        self._finalizer = weakref.finalize(self, self.close)
+
+    @promisify
+    async def close(self) -> None:
+        await self.session.close()
+
+    def __enter__(self) -> None:
+        return self
+
+    def __exit__(self, *args, **kwargs) -> None:
+        self.close()
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *args, **kwargs) -> None:
+        await self.close()
 
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
