@@ -19,9 +19,26 @@ class ClientCredentialsToken:
     token_type: str
     scope: str
 
+    def __repr__(self) -> str:
+        return super().__str__().replace(self.access_token, "*" * len(self.access_token))
+
 
 class OAuthCredentialsClient(iOAuthClient):
     token: ClientCredentialsToken = None
+
+    def __repr__(self) -> str:
+        if self.token is None:
+            return "OAuthCredentialsClient()"
+        else:
+            return f"OAuthCredentialsClient(token={self.token})"
+
+    def __str__(self) -> str:
+        if self.token is None:
+            return "<OAuthCredentialsClient: No token>"
+        else:
+            return (
+                f"<OAuthCredentialsClient: Token expires at {self.token.expires_at.isoformat()}>"
+            )
 
     @promisify
     async def __del__(self) -> None:
