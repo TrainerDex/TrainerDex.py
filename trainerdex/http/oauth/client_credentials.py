@@ -5,6 +5,7 @@ from typing import NoReturn
 from zoneinfo import ZoneInfo
 
 from aiohttp import ClientResponseError
+from promise import promisify
 from trainerdex.exceptions.auth import AuthenticationError
 
 from trainerdex.http.oauth.interface import iOAuthClient
@@ -21,6 +22,10 @@ class ClientCredentialsToken:
 
 class OAuthCredentialsClient(iOAuthClient):
     token: ClientCredentialsToken = None
+
+    @promisify
+    async def __del__(self) -> None:
+        await self.session.close()
 
     def encode_credentials(self, client_id: str, client_secret: str) -> str:
         return base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("utf-8")
