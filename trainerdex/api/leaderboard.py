@@ -1,65 +1,53 @@
 import datetime
-from typing import Callable, Dict, Iterator, List, Optional, Union
-from warnings import warn
+from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
 from dateutil.parser import parse
 
-from . import abc
+from .base import BaseClass
 from .faction import Faction
-from .http import HTTPClient
 from .trainer import Trainer
-from .utils import con, maybe_coroutine
+from .utils import convert, maybe_coroutine
 
 
-class LeaderboardEntry(abc.BaseClass):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
-        super().__init__(conn, data)
-        self._trainer = None
-
+class LeaderboardEntry(BaseClass):
     def _update(self, data: Dict[str, Union[str, int, float]]) -> None:
-        self.level = data.get("level")
-        self.position = data.get("position", None)
-        self._trainer_id = data.get("id", None)
-        self.username = data.get("username")
-        self._faction = data.get("faction", {"id": 0, "name_en": "No Team"})
-        self.value = data.get("value", 0)
-        self.update_time = con(parse, data.get("last_updated"))
-        self._user_id = data.get("user_id", None)
+        self.level: Optional[int] = data.get("level")
+        self.position: int = data["position"]
+        self.trainer_id: int = data["id"]
+        self.username: str = data["username"]
+        self.faction_id: Optional[int] = data.get("faction", {}).get("id")
+        self.value = data["value"]
+        self.update_time = convert(parse, data.get("last_updated"))
 
     @property
-    def faction(self) -> Faction:
-        return Faction(self._faction.get("id"))
-
-    @property
-    def total_xp(self) -> Optional[int]:
-        warn(
-            "LeaderboardEntry.total_xp is deprecated. It will be removed in version 4.0",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._total_xp
+    def faction(self) -> Union[Faction, None]:
+        if self.faction_id:
+            return Faction(self.faction_id)
 
     @property
     def last_updated(self) -> Optional[datetime.datetime]:
         return self.update_time
 
-    async def trainer(self) -> Trainer:
-        if self._trainer:
-            return self._trainer
-
-        data = await self.http.get_trainer(self._trainer_id)
-        self._trainer = Trainer(conn=self.http, data=data)
+    async def get_trainer(self) -> Trainer:
+        if getattr(self, "_trainer", None) is None:
+            self._trainer = await self.client.get_trainer(self.trainer_id)
 
         return self._trainer
+
+    def __eq__(self, other) -> bool:
+        raise object.__eq__(self, other)
+
+    def __hash__(self):
+        return object.__hash__(self)
 
 
 class Aggregations:
     def __init__(self, data: Dict[str, Union[int, float]]) -> None:
-        self.avg = data.get("avg")
-        self.count = data.get("count")
-        self.min = data.get("min")
-        self.max = data.get("max")
-        self.sum = data.get("sum")
+        self.avg = data.get("avg", 0)
+        self.count = data.get("count", 0)
+        self.min = data.get("min", 0)
+        self.max = data.get("max", 0)
+        self.sum = data.get("sum", 0)
 
     def __len__(self) -> int:
         return self.count
@@ -68,30 +56,24 @@ class Aggregations:
         return self.__len__()
 
 
-class BaseLeaderboard:
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
-        self.http = conn
-        self.i = 0
-        self._entries = data.get("leaderboard")
-        self.title = data.get("title", "Global Leaderboard")
-        self.stat = data.get("stat")
-        self._aggregations = data.get("aggregations", dict())
+class BaseLeaderboard(BaseClass):
+    def _update(self, data: Dict[str, Any]) -> None:
+        self.index = 0
+        self._entries: List[Dict] = data["leaderboard"]
+        self.title: str = data.get("title", "Global Leaderboard")
+        self.stat: str = data.get("stat")
+        self._aggregations: Dict = data.get("aggregations", {})
         self.aggregations = Aggregations(self._aggregations)
-        self.avg = self._aggregations.get("avg")
-        self.count = self._aggregations.get("count")
-        self.min = self._aggregations.get("min")
-        self.max = self._aggregations.get("max")
-        self.sum = self._aggregations.get("sum")
 
     def __aiter__(self):
         return self
 
     async def __anext__(self) -> LeaderboardEntry:
-        i = self.i
-        if i >= len(self._entries):
+        index = self.index
+        if index >= len(self._entries):
             raise StopAsyncIteration
-        self.i += 1
-        return LeaderboardEntry(conn=self.http, data=self._entries[i])
+        self.index += 1
+        return LeaderboardEntry(client=self.client, data=self._entries[index])
 
     def __len__(self) -> int:
         return self.aggregations.count
@@ -108,9 +90,9 @@ class BaseLeaderboard:
             This happens when they both have the same stat.
         """
         return [
-            LeaderboardEntry(conn=self.http, data=x)
-            for x in self._entries
-            if x.get("position") == key
+            LeaderboardEntry(client=self.client, data=entry)
+            for entry in self._entries
+            if entry.get("position") == key
         ]
 
     def filter(self, predicate) -> Iterator[LeaderboardEntry]:
@@ -146,7 +128,7 @@ class BaseLeaderboard:
 
         """
         self._entries = [
-            x for x in self._entries if predicate(LeaderboardEntry(conn=self.http, data=x))
+            x for x in self._entries if predicate(LeaderboardEntry(client=self.client, data=x))
         ]
         return self
 
@@ -182,26 +164,32 @@ class BaseLeaderboard:
             if ret:
                 return elem
 
+    def __eq__(self, other) -> bool:
+        raise object.__eq__(self, other)
+
+    def __hash__(self):
+        return object.__hash__(self)
+
 
 class Leaderboard(BaseLeaderboard):
     pass
 
 
 class GuildLeaderboard(BaseLeaderboard):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
-        super().__init__(conn, data)
+    def _update(self, data: Dict[str, Any]) -> None:
+        super()._update(data)
         self.guild_id = data.get("guild")
 
 
 class CommunityLeaderboard(BaseLeaderboard):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
-        super().__init__(conn, data)
+    def _update(self, data: Dict[str, Any]) -> None:
+        super()._update(data)
         self.community = data.get("community")
 
 
 class CountryLeaderboard(BaseLeaderboard):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
-        super().__init__(conn, data)
+    def _update(self, data: Dict[str, Any]) -> None:
+        super()._update(data)
         self.country = data.get("country")
         self.country_code = self.country
         self.country_name = self.title.replace(" Leaderboard", "")
