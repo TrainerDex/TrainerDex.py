@@ -11,6 +11,7 @@ from .utils import convert
 
 odt = convert(parse)
 
+
 class BaseUpdate(BaseClass):
     def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]], trainer=None) -> None:
         super().__init__(conn, data)
@@ -34,6 +35,7 @@ class BaseUpdate(BaseClass):
         await self._trainer.fetch_updates()
 
         return self._trainer
+
 
 class Update(NamedTuple):
     uuid: UUID
@@ -116,7 +118,7 @@ class Update(NamedTuple):
     type_dark: Optional[int]
     type_fairy: Optional[int]
     data_source: str
-        
+
     async def refresh_from_api(self) -> None:
         data = await self.http.get_update(self.uuid)
         self._update(data)

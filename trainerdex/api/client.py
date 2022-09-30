@@ -12,10 +12,10 @@ from .leaderboard import (
 )
 from .socialconnection import SocialConnection
 from .trainer import Trainer
+from .types.v1.trainer import CreateTrainer
+from .types.v1.user import CreateUser
 from .user import User
 from .utils import HasID
-from .types.v1.user import CreateUser
-from .types.v1.trainer import CreateTrainer
 
 
 class Client(HTTPClient):

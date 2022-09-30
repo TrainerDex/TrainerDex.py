@@ -21,15 +21,16 @@ from typing import (
 from urllib.request import Request
 from uuid import UUID
 
-from aiohttp import ContentTypeError, __version__ as aiohttp_version
-from aiohttp.typedefs import StrOrURL
+from aiohttp import ContentTypeError
+from aiohttp import __version__ as aiohttp_version
 from aiohttp.client import ClientSession
+from aiohttp.typedefs import StrOrURL
 
 if TYPE_CHECKING:
-    from .types.v1.trainer import ReadTrainer, CreateTrainer, EditTrainer
-    from .types.v1.update import ReadUpdate, CreateUpdate, EditUpdate
-    from .types.v1.user import ReadUser, CreateUser
-    from .types.v1.social_connection import ReadSocialConnection, CreateSocialConnection
+    from .types.v1.social_connection import CreateSocialConnection, ReadSocialConnection
+    from .types.v1.trainer import CreateTrainer, EditTrainer, ReadTrainer
+    from .types.v1.update import CreateUpdate, EditUpdate, ReadUpdate
+    from .types.v1.user import CreateUser, ReadUser
 
     T = TypeVar("T")
     Response = Coroutine[Any, Any, T]

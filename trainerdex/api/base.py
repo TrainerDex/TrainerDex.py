@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .client import Client
@@ -13,7 +13,7 @@ class BaseClass:
     @abstractmethod
     def _update(self, data: Any) -> None:
         ...
-    
+
     @abstractmethod
     async def refresh_from_api(self) -> None:
         ...

@@ -1,16 +1,21 @@
 from inspect import isawaitable
-from typing import Any, Callable, Union, TypeVar, ParamSpec, overload
+from typing import Any, Callable, ParamSpec, TypeVar, Union, overload
+
 from typing_extensions import Protocol, runtime_checkable
 
-P = ParamSpec('P')
-T = TypeVar('T')
-
-@overload
-def convert(cls: Callable[P, T]) -> Callable[P, T]:...
+P = ParamSpec("P")
+T = TypeVar("T")
 
 
 @overload
-def convert(cls: Callable[P, T], *args, **kwargs) -> Union[T, None]:...
+def convert(cls: Callable[P, T]) -> Callable[P, T]:
+    ...
+
+
+@overload
+def convert(cls: Callable[P, T], *args, **kwargs) -> Union[T, None]:
+    ...
+
 
 def convert(cls, *args, **kwargs):
     """This is very hacky!
@@ -45,6 +50,7 @@ async def maybe_coroutine(f, *args, **kwargs):
         return await value
     else:
         return value
+
 
 @runtime_checkable
 class HasID(Protocol):

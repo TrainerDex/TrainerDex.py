@@ -7,9 +7,10 @@ from dateutil.parser import parse
 
 from .base import BaseClass
 from .faction import Faction
+from .types.v1.update import CreateUpdate
+from .types.v1.update import Update as StatsPayload
 from .update import Update
 from .utils import convert
-from .types.v1.update import CreateUpdate, Update as StatsPayload
 
 if TYPE_CHECKING:
     from .types.v1.trainer import ReadTrainer

@@ -12,9 +12,11 @@ class Trainer(TypedDict):
     total_goal: Optional[int]
     verified: bool
     statistics: bool
-    
+
+
 class CreateTrainer(Trainer):
     owner: int
+
 
 class ReadTrainer(Trainer):
     id: int
@@ -28,6 +30,7 @@ class ReadTrainer(Trainer):
     username: str
     update_set: List[PartialUpdate]
     prefered: Literal[True]
-    
+
+
 class EditTrainer(Trainer):
     pass

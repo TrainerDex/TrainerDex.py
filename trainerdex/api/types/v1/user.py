@@ -6,7 +6,7 @@ class ReadUser(TypedDict):
     uuid: str
     username: str
     trainer: int
-    
+
+
 class CreateUser(TypedDict):
     username: str
-    
