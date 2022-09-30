@@ -8,11 +8,11 @@ if TYPE_CHECKING:
 
 class BaseClass:
     uuid: UUID
-    
+
     def __init__(self, client: Client, data: Any) -> None:
         self.client = client
         self._update(data)
-        
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return self.uuid == other.uuid

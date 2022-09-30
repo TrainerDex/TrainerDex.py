@@ -17,15 +17,6 @@ class User(BaseClass):
         self.username = data["username"]
         self.trainer_id = data["trainer"]
 
-    def __eq__(self, other) -> bool:
-        if isinstance(other, User):
-            return self.id == other.id
-        else:
-            raise TypeError("Cannot compare User with other types")
-
-    def __hash__(self):
-        return hash(self.id)
-
     async def get_trainer(self) -> Trainer:
         if not self._trainer:
             self._trainer = await self.client.get_trainer(self.trainer_id)

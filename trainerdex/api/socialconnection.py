@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
 from .base import BaseClass
 from .trainer import Trainer
@@ -8,16 +8,19 @@ from .utils import convert
 
 class SocialConnection(BaseClass):
     def _update(self, data: Dict[str, Union[str, int]]) -> None:
-        self._user_id = data.get("user")
+        self._user_id: int = data.get("user")
         self._user = None
-        self.provider = data.get("provider")
-        self.uid = data.get("uid")
-        self.extra_data = convert(json.loads, data.get("extra_data"))
-        self._trainer_id = data.get("trainer")
+        self.provider: str = data.get("provider")
+        self.uid: str = data.get("uid")
+        self.extra_data: Any = convert(json.loads, data.get("extra_data"))
+        self._trainer_id: int = data.get("trainer")
         self._trainer = None
 
-    def __eq__(self, o) -> bool:
-        return (self.provider, self.uid) == (o.provider, o.uid)
+    def __eq__(self, other) -> bool:
+        if isinstance(other, SocialConnection):
+            return self.provider == other.provider and self.uid == other.uid
+        else:
+            raise TypeError("Cannot compare SocialConnection with other types")
 
     def __hash__(self):
         return hash((self.provider, self.uid))

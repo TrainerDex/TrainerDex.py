@@ -45,15 +45,6 @@ class Trainer(BaseClass):
         self._updates = []
         self._user = None
 
-    def __eq__(self, other) -> bool:
-        if isinstance(other, Trainer):
-            return self.uuid == other.uuid
-        else:
-            raise TypeError("Cannot compare Trainer to non-Trainer")
-
-    def __hash__(self):
-        return hash(self.uuid)
-
     @property
     def team(self) -> Faction:
         return Faction(self.faction)
