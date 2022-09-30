@@ -1,49 +1,52 @@
-from typing import Dict, Optional, Union
+from typing import TYPE_CHECKING, Dict, Optional
 
 from .base import BaseClass
-from .http import HTTPClient
 from .socialconnection import SocialConnection
 from .trainer import Trainer
+from .types.v1.social_connection import CreateSocialConnection
+from .utils import HasID
+
+if TYPE_CHECKING:
+    from .types.v1.user import ReadUser
 
 
 class User(BaseClass):
-    def __init__(self, client: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
-        super().__init__(client, data)
-        self._trainer = None
+    def _update(self, data: ReadUser) -> None:
+        self.id = data["id"]
+        self.uuid = data["uuid"]
+        self.username = data["username"]
+        self.trainer_id = data["trainer"]
 
-    def _update(self, data: Dict[str, Union[str, int]]) -> None:
-        self.id = int(data.get("id"))
-        self.username = data.get("username")
-        self.first_name = data.get("first_name")
-        self.old_id = int(data.get("trainer"))
-
-    def __eq__(self, o) -> bool:
-        return self.id == o.id
+    def __eq__(self, other) -> bool:
+        if isinstance(other, User):
+            return self.id == other.id
+        else:
+            raise TypeError("Cannot compare User with other types")
 
     def __hash__(self):
         return hash(self.id)
 
-    async def trainer(self) -> Trainer:
-        if self._trainer:
-            return self._trainer
-
-        data = await self.client.get_trainer(self.old_id)
-        self._trainer = Trainer(data=data, conn=self.client)
-        await self._trainer.fetch_updates()
+    async def get_trainer(self) -> Trainer:
+        if not self._trainer:
+            self._trainer = await self.client.get_trainer(self.trainer_id)
 
         return self._trainer
 
     async def refresh_from_api(self) -> None:
-        data = await self.client.get_user(self.id)
+        data = await self.client._v1_get_user(self.id)
         self._update(data)
 
     async def add_social_connection(
         self, provider: str, uid: str, extra_data: Optional[Dict] = None
     ) -> SocialConnection:
-        data = await self.client.create_social_connection(
-            user=self.id, provider=provider, uid=uid, extra_data=extra_data
+        payload = CreateSocialConnection(
+            user=self.id,
+            provider=provider,
+            uid=uid,
+            extra_data=extra_data,
         )
+        data = await self.client._v1_create_social_connection(payload)
         return SocialConnection(data=data, client=self.client)
 
-    async def add_discord(self, discord) -> SocialConnection:
-        return await self.add_social_connection("discord", str(discord.id))
+    async def add_discord(self, discord: HasID) -> SocialConnection:
+        return await self.add_social_connection(provider="discord", uid=str(discord.id))

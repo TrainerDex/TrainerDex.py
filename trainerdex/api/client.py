@@ -56,7 +56,7 @@ class Client(HTTPClient):
 
         data = await self._v1_create_trainer(payload)
         trainer = Trainer(client=self, data=data)
-        trainer._user = user
+        user._trainer, trainer._user = trainer, user
         return trainer
 
     async def get_trainers(
