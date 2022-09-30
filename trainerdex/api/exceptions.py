@@ -1,13 +1,14 @@
-from aiohttp import ClientResponseError
-
-
-class HTTPException(ClientResponseError):
+class ValidationError(ValueError):
     pass
 
 
-class Forbidden(ClientResponseError):
+class HTTPException(Exception):
     pass
 
 
-class NotFound(ClientResponseError):
+class Forbidden(Exception):
+    pass
+
+
+class NotFound(Exception):
     pass

@@ -4,16 +4,16 @@ from warnings import warn
 
 from dateutil.parser import parse
 
-from . import abc
+from .base import BaseClass
 from .faction import Faction
 from .http import HTTPClient
 from .trainer import Trainer
-from .utils import con, maybe_coroutine
+from .utils import convert, maybe_coroutine
 
 
-class LeaderboardEntry(abc.BaseClass):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
-        super().__init__(conn, data)
+class LeaderboardEntry(BaseClass):
+    def __init__(self, client: HTTPClient, data: Dict[str, Union[str, int, float]]) -> None:
+        super().__init__(client, data)
         self._trainer = None
 
     def _update(self, data: Dict[str, Union[str, int, float]]) -> None:
@@ -23,7 +23,7 @@ class LeaderboardEntry(abc.BaseClass):
         self.username = data.get("username")
         self._faction = data.get("faction", {"id": 0, "name_en": "No Team"})
         self.value = data.get("value", 0)
-        self.update_time = con(parse, data.get("last_updated"))
+        self.update_time = convert(parse, data.get("last_updated"))
         self._user_id = data.get("user_id", None)
 
     @property
@@ -47,8 +47,8 @@ class LeaderboardEntry(abc.BaseClass):
         if self._trainer:
             return self._trainer
 
-        data = await self.http.get_trainer(self._trainer_id)
-        self._trainer = Trainer(conn=self.http, data=data)
+        data = await self.client.get_trainer(self._trainer_id)
+        self._trainer = Trainer(conn=self.client, data=data)
 
         return self._trainer
 
@@ -91,7 +91,7 @@ class BaseLeaderboard:
         if i >= len(self._entries):
             raise StopAsyncIteration
         self.i += 1
-        return LeaderboardEntry(conn=self.http, data=self._entries[i])
+        return LeaderboardEntry(client=self.http, data=self._entries[i])
 
     def __len__(self) -> int:
         return self.aggregations.count
@@ -108,7 +108,7 @@ class BaseLeaderboard:
             This happens when they both have the same stat.
         """
         return [
-            LeaderboardEntry(conn=self.http, data=x)
+            LeaderboardEntry(client=self.http, data=x)
             for x in self._entries
             if x.get("position") == key
         ]
@@ -146,7 +146,7 @@ class BaseLeaderboard:
 
         """
         self._entries = [
-            x for x in self._entries if predicate(LeaderboardEntry(conn=self.http, data=x))
+            x for x in self._entries if predicate(LeaderboardEntry(client=self.http, data=x))
         ]
         return self
 

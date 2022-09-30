@@ -1,410 +1,212 @@
+from __future__ import annotations
+
 import asyncio
-import datetime
-import json
-import logging
+import os
 import sys
-from decimal import Decimal
-from typing import Dict, Iterable, List, Optional, Union
-from urllib.parse import quote as _uriquote
+from types import TracebackType
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Coroutine,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
+from urllib.request import Request
 from uuid import UUID
 
-import aiohttp
-import aiohttp.web
+from aiohttp import ContentTypeError, __version__ as aiohttp_version
+from aiohttp.typedefs import StrOrURL
+from aiohttp.client import ClientSession
+
+if TYPE_CHECKING:
+    from .types.v1.trainer import ReadTrainer, CreateTrainer, EditTrainer
+    from .types.v1.update import ReadUpdate, CreateUpdate, EditUpdate
+    from .types.v1.user import ReadUser, CreateUser
+    from .types.v1.social_connection import ReadSocialConnection, CreateSocialConnection
+
+    T = TypeVar("T")
+    Response = Coroutine[Any, Any, T]
+    StrOrUUID = Union[str, UUID]
+
 
 from . import __version__
 from .exceptions import Forbidden, HTTPException, NotFound
-
-log: logging.Logger = logging.getLogger(__name__)
-
-# this translates the API v2 field names to API v1 field names
-# this is so we can program the rest of the bot as if we're using API v2
-UPDATE_KEYS_ENUM_OUT = {
-    "uuid": "uuid",
-    "trainer": "trainer",
-    "update_time": "update_time",
-    "submission_date": "submission_date",
-    "data_source": "data_source",
-    "total_xp": "total_xp",
-    "gymbadges_gold": "gymbadges_gold",
-    "pokedex_total_caught": "pokedex_caught",
-    "pokedex_total_seen": "pokedex_seen",
-    "pokedex_gen1": "badge_pokedex_entries",
-    "pokedex_gen2": "badge_pokedex_entries_gen2",
-    "pokedex_gen3": "badge_pokedex_entries_gen3",
-    "pokedex_gen4": "badge_pokedex_entries_gen4",
-    "pokedex_gen5": "badge_pokedex_entries_gen5",
-    "pokedex_gen6": "badge_pokedex_entries_gen6",
-    "pokedex_gen7": "badge_pokedex_entries_gen7",
-    "pokedex_gen8": "badge_pokedex_entries_gen8",
-    "travel_km": "badge_travel_km",
-    "capture_total": "badge_capture_total",
-    "evolved_total": "badge_evolved_total",
-    "hatched_total": "badge_hatched_total",
-    "pokestops_visited": "badge_pokestops_visited",
-    "unique_pokestops": "badge_unique_pokestops",
-    "big_magikarp": "badge_big_magikarp",
-    "battle_attack_won": "badge_battle_attack_won",
-    "battle_training_won": "badge_battle_training_won",
-    "small_rattata": "badge_small_rattata",
-    "pikachu": "badge_pikachu",
-    "unown": "badge_unown",
-    "raid_battle_won": "badge_raid_battle_won",
-    "legendary_battle_won": "badge_legendary_battle_won",
-    "berries_fed": "badge_berries_fed",
-    "hours_defended": "badge_hours_defended",
-    "challenge_quests": "badge_challenge_quests",
-    "max_level_friends": "badge_max_level_friends",
-    "trading": "badge_trading",
-    "trading_distance": "badge_trading_distance",
-    "great_league": "badge_great_league",
-    "ultra_league": "badge_ultra_league",
-    "master_league": "badge_master_league",
-    "photobomb": "badge_photobomb",
-    "pokemon_purified": "badge_pokemon_purified",
-    "rocket_grunts_defeated": "badge_rocket_grunts_defeated",
-    "rocket_giovanni_defeated": "badge_rocket_giovanni_defeated",
-    "buddy_best": "badge_buddy_best",
-    "seven_day_streaks": "badge_7_day_streaks",
-    "unique_raid_bosses_defeated": "badge_unique_raid_bosses_defeated",
-    "raids_with_friends": "badge_raids_with_friends",
-    "pokemon_caught_at_your_lures": "badge_pokemon_caught_at_your_lures",
-    "wayfarer": "badge_wayfarer",
-    "total_mega_evos": "badge_total_mega_evos",
-    "unique_mega_evos": "badge_unique_mega_evos",
-    "type_normal": "badge_type_normal",
-    "type_fighting": "badge_type_fighting",
-    "type_flying": "badge_type_flying",
-    "type_poison": "badge_type_poison",
-    "type_ground": "badge_type_ground",
-    "type_rock": "badge_type_rock",
-    "type_bug": "badge_type_bug",
-    "type_ghost": "badge_type_ghost",
-    "type_steel": "badge_type_steel",
-    "type_fire": "badge_type_fire",
-    "type_water": "badge_type_water",
-    "type_grass": "badge_type_grass",
-    "type_electric": "badge_type_electric",
-    "type_psychic": "badge_type_psychic",
-    "type_ice": "badge_type_ice",
-    "type_dragon": "badge_type_dragon",
-    "type_dark": "badge_type_dark",
-    "type_fairy": "badge_type_fairy",
-    "battle_hub_stats_wins": "battle_hub_stats_wins",
-    "battle_hub_stats_battles": "battle_hub_stats_battles",
-    "battle_hub_stats_stardust": "battle_hub_stats_stardust",
-    "battle_hub_stats_streak": "battle_hub_stats_streak",
-}
-UPDATE_KEYS_ENUM_IN = {v: k for k, v in UPDATE_KEYS_ENUM_OUT.items() if v is not None}
-UPDATE_KEYS_READ_ONLY = ("uuid", "trainer", "submission_date")
-
-TRAINER_KEYS_ENUM_OUT = {
-    "old_id": "id",
-    "id": "owner",
-    "nickname": "username",
-    "start_date": "start_date",
-    "faction": "faction",
-    "trainer_code": "trainer_code",
-    "is_banned": "currently_cheats",
-    "is_verified": "verified",
-    "last_modified": "last_modified",
-    "is_visible": "statistics",
-}
-TRAINER_KEYS_ENUM_IN = {
-    "id": "old_id",
-    "owner": "id",
-    "username": "nickname",
-    "start_date": "start_date",
-    "faction": "faction",
-    "trainer_code": "trainer_code",
-    "currently_cheats": "is_banned",
-    "last_modified": "last_modified",
-    "update_set": "updates",
-    "verified": "is_verified",
-    "statistics": "is_visible",
-}
-TRAINER_KEYS_READ_ONLY = ("id", "owner", "username", "currently_cheats")
-
-
-async def json_or_text(response: aiohttp.web.Response) -> Union[Dict, str]:
-    text = await response.text(encoding="utf-8")
-    if response.headers.get("content-type") == "application/json":
-        return json.loads(text)
-    return text
-
-
-class Route:
-    BASE = "https://trainerdex.app/api/v1"
-
-    def __init__(self, method: str, path: str, **parameters) -> None:
-        self.path = path
-        self.method = method
-        url = self.BASE + self.path
-        if parameters:
-            self.url = url.format(
-                **{k: _uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()}
-            )
-        else:
-            self.url = url
 
 
 class HTTPClient:
     """Represents an HTTP client sending HTTP requests to the TrainerDex API."""
 
-    SUCCESS_LOG = "{method} {url} has received {text}"
-    REQUEST_LOG = "{method} {url} with {json} has returned {status}"
+    HOST: ClassVar[str] = os.environ.get("TRAINERDEX_HOST", "https://trainerdex.app/")
 
     def __init__(self, token: str = None, loop=None) -> None:
-        self.loop = asyncio.get_event_loop() if loop is None else loop
-        self.session = aiohttp.ClientSession()
-        self.token = token
+        self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
+        self.token: str = token
 
         user_agent = (
             "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
             "Python/{1[0]}.{1[1]} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
+        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp_version)
 
-    async def request(self, route: Route, **kwargs) -> Union[Dict, str]:
-        method = route.method
-        url = route.url
+    def __enter__(self) -> None:
+        raise TypeError("Use async with instead")
 
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        # __exit__ should exist in pair with __enter__ but never executed
+        pass
+
+    def __aenter__(self) -> "HTTPClient":
+        self._session = self._create_session()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        await self._session.close()
+
+    def _create_session(self) -> ClientSession:
+        return ClientSession(base_url=self.HOST, headers=self.headers)
+
+    @property
+    def headers(self) -> Dict:
         headers = {
             "User-Agent": self.user_agent,
         }
 
         if self.token is not None:
-            headers["Authorization"] = "Token " + self.token
+            headers["Authorization"] = f"Token {self.token}"
 
-        if "json" in kwargs:
-            headers["Content-Type"] = "application/json"
-            kwargs["data"] = json.dumps(kwargs.pop("json"), ensure_ascii=True)
+        return headers
 
-        kwargs["headers"] = headers
+    @property
+    def session(self) -> ClientSession:
+        maybe_session: Union[ClientSession, None] = getattr(self, "_session", None)
+        if isinstance(maybe_session, ClientSession) and not maybe_session.closed:
+            return maybe_session
+        else:
+            raise RuntimeError("Session is not open. Please use an async with context manager.")
 
-        for tries in range(5):
+    async def request(self, method: str, path: StrOrURL, **kwargs) -> Any:
+        async with self.session.request(method, path, **kwargs) as response:
             try:
-                async with self.session.request(method, url, **kwargs) as r:
-                    log.info(
-                        "{0} {1} with {2} has returned {3}".format(
-                            method, url, kwargs.get("data"), r.status
-                        )
-                    )
+                data = await response.json()
+            except ContentTypeError:
+                data = await response.text()
+            except Exception:
+                data = None
 
-                    data = await json_or_text(r)
+            if response.ok:
+                return data
+            elif response.status in {401, 403, 423}:
+                raise Forbidden(response, data)
+            elif response.status == 404:
+                raise NotFound(response, data)
+            else:
+                raise HTTPException(response, data)
 
-                    # SUCCESS: Return data
-                    if 300 > r.status >= 200:
-                        log.debug("{0} {1} has received {2}".format(method, url, data))
-                        return data
+    def _v1_get_updates(self, trainer_id: int, post_uuid: StrOrUUID) -> Response[ReadUpdate]:
+        return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/{post_uuid}/")
 
-                    # Error, retry
-                    if r.status in {500, 502}:
-                        await asyncio.sleep(1 + tries * 2)
-                        continue
+    def _v1_get_updates_for_trainer(self, trainer_id: int) -> Response[List[ReadUpdate]]:
+        return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/")
 
-                    # Error, don't retry
-                    if r.status in {401, 403, 423}:
-                        raise Forbidden(r, data)
-                    elif r.status == 404:
-                        raise NotFound(r, data)
-                    else:
-                        raise HTTPException(r, data)
+    def _v1_create_update(self, trainer_id: int, payload: CreateUpdate) -> Response[ReadUpdate]:
+        return self.request("POST", f"/api/v1/trainers/{trainer_id}/updates/", json=payload)
 
-            # This is handling exceptions from the request
-            except OSError as e:
-                # Connection reset by peer
-                if tries < 4 and e.errno in (54, 10054):
-                    continue
-                raise
-
-        # We've run out of retries, raise.
-        raise HTTPException(r, data)
-
-    # Update management
-
-    def get_update(self, trainer_id: int, update_uuid: Union[str, UUID]) -> Dict:
-        r = Route(
-            "GET",
-            "/trainers/{trainer_id}/updates/{update_uuid}/",
-            trainer_id=trainer_id,
-            update_uuid=update_uuid,
-        )
-
-        return self.request(r)
-
-    def get_updates_for_trainer(self, trainer_id: int) -> Dict:
-        r = Route(
-            "GET",
-            "/trainers/{trainer_id}/updates/",
-            trainer_id=trainer_id,
-        )
-
-        return self.request(r)
-
-    def create_update(self, trainer_id: int, kwargs) -> Dict:
-        r = Route("POST", "/trainers/{trainer_id}/updates/", trainer_id=trainer_id)
-
-        payload = {
-            UPDATE_KEYS_ENUM_OUT.get(k): v
-            for k, v in kwargs.items()
-            if (UPDATE_KEYS_ENUM_OUT.get(k) is not None) and (k != "uuid")
-        }
-
-        for k, v in payload.items():
-            if isinstance(v, Decimal):
-                payload[k] = str(v)
-            elif isinstance(v, (datetime.date, datetime.datetime)):
-                payload[k] = v.isoformat()
-
-        return self.request(r, json=payload)
-
-    def edit_update(self, trainer_id: int, update_uuid: Union[str, UUID], **kwargs) -> Dict:
-        r = Route(
-            "PATCH",
-            "/trainers/{trainer_id}/updates/{update_uuid}/",
-            trainer_id=trainer_id,
-            update_uuid=update_uuid,
-        )
-
-        payload = {
-            UPDATE_KEYS_ENUM_OUT.get(k): v
-            for k, v in kwargs.items()
-            if (UPDATE_KEYS_ENUM_OUT.get(k) is not None)
-            and (UPDATE_KEYS_ENUM_OUT.get(k) not in UPDATE_KEYS_READ_ONLY)
-        }
+    def _v1_edit_update(
+        self, trainer_id: int, update_uuid: StrOrUUID, payload: EditUpdate
+    ) -> Response[ReadUpdate]:
         payload["trainer"] = trainer_id
+        return self.request(
+            "PATCH", f"/api/v1/trainers/{trainer_id}/updates/{update_uuid}/", json=payload
+        )
 
-        for k, v in payload.items():
-            if isinstance(v, Decimal):
-                payload[k] = str(v)
-            elif isinstance(v, (datetime.date, datetime.datetime)):
-                payload[k] = v.isoformat()
+    def _v1_get_trainer(self, trainer_id: int) -> Response[ReadTrainer]:
+        return self.request("GET", f"/api/v1/trainers/{trainer_id}/")
 
-        return self.request(r, json=payload)
+    def _v1_get_trainers(
+        self, *, t: Literal[0, 1, 2, 3] = None, q: str = None
+    ) -> Response[List[ReadTrainer]]:
+        params = {}
+        if t is not None:
+            params["t"] = t
+        if q is not None:
+            params["q"] = q
 
-    # Trainer management
+        return self.request("GET", "/api/v1/trainers/", params=params)
 
-    def get_trainer(self, trainer_id: int) -> Dict:
-        r = Route("GET", "/trainers/{trainer_id}/", trainer_id=trainer_id)
+    def _v1_create_trainer(self, payload: CreateTrainer) -> Response[ReadTrainer]:
+        return self.request("POST", "/api/v1/trainers/", json=payload)
 
-        return self.request(r)
+    def _v1_edit_trainer(self, trainer_id: int, payload: EditTrainer) -> Response[ReadTrainer]:
+        return self.request("PATCH", f"/api/v1/trainers/{trainer_id}/", json=payload)
 
-    def get_trainers(self, **kwargs) -> List[Dict]:
-        r = Route("GET", "/trainers/")
+    def _v1_get_user(self, user_id: int) -> Response[ReadUser]:
+        return self.request("GET", f"/api/v1/users/{user_id}/")
 
-        return self.request(r, params=kwargs)
+    def _v1_get_users(self) -> Response[List[ReadUser]]:
+        return self.request("GET", "/api/v1/users/")
 
-    def create_trainer(self, **kwargs) -> Dict:
-        r = Route("POST", "/trainers/")
+    def _v1_create_user(self, payload: CreateUser) -> Response[ReadUser]:
+        return self.request("POST", "/api/v1/users/", json=payload)
 
-        payload = {
-            TRAINER_KEYS_ENUM_OUT.get(k): v
-            for k, v in kwargs.items()
-            if (TRAINER_KEYS_ENUM_OUT.get(k) is not None)
-            and (TRAINER_KEYS_ENUM_OUT.get(k) != "id")
-        }
-
-        for k, v in payload.items():
-            if isinstance(v, Decimal):
-                payload[k] = str(v)
-            elif isinstance(v, (datetime.date, datetime.datetime)):
-                payload[k] = v.isoformat()
-
-        return self.request(r, json=payload)
-
-    def edit_trainer(self, trainer_id: int, **kwargs) -> Dict:
-        r = Route("PATCH", "/trainers/{trainer_id}/", trainer_id=trainer_id)
-
-        payload = {
-            TRAINER_KEYS_ENUM_OUT.get(k): v
-            for k, v in kwargs.items()
-            if (TRAINER_KEYS_ENUM_OUT.get(k) is not None)
-            and (TRAINER_KEYS_ENUM_OUT.get(k) not in TRAINER_KEYS_READ_ONLY)
-        }
-
-        for k, v in payload.items():
-            if isinstance(v, Decimal):
-                payload[k] = str(v)
-            elif isinstance(v, (datetime.date, datetime.datetime)):
-                payload[k] = v.isoformat()
-
-        return self.request(r, json=payload)
-
-    def get_user(self, user_id: int) -> Dict:
-        r = Route("GET", "/users/{user_id}/", user_id=user_id)
-
-        return self.request(r)
-
-    def get_users(self) -> List[Dict]:
-        r = Route("GET", "/users/")
-
-        return self.request(r)
-
-    def create_user(self, username: str, first_name: Optional[str] = None) -> Dict:
-        r = Route("POST", "/users/")
-
-        payload = {"username": username}
-
-        if first_name:
-            payload["first_name"] = first_name
-
-        return self.request(r, json=payload)
-
-    def edit_user(self, user_id, username: str, first_name: Optional[str] = None) -> Dict:
-        r = Route("PATCH", "/users/{user_id}/", user_id=user_id)
-
-        payload = {"username": username}
-
-        if first_name:
-            payload["first_name"] = first_name
-
-        return self.request(r, json=payload)
-
-    def get_social_connections(self, provider: str, uid: Union[str, Iterable[str]]) -> List[Dict]:
-        r = Route("GET", "/users/social/")
-
-        params = {"provider": provider}
-        if isinstance(uid, str):
-            uid = (uid,)
-        params["uid"] = ",".join(uid)
-
-        return self.request(r, params=params)
-
-    def create_social_connection(
-        self, user: int, provider: str, uid: str, extra_data: Optional[Dict] = None
-    ) -> Dict:
-        r = Route("PUT", "/users/social/")
-
-        payload = {"user": user, "provider": provider, "uid": uid}
-
-        if extra_data:
-            payload["extra_data"] = extra_data
-
-        return self.request(r, json=payload)
-
-    # Leaderboard requests
-
-    def get_leaderboard(
+    def _v1_get_social_connections(
         self,
-        stat: str = None,
+        uid: Union[str, Iterable[str]],
+        provider: Literal["discord"] = "discord",
+    ) -> Response[List[ReadSocialConnection]]:
+        if isinstance(uid, str):
+            uid = [uid]
+        else:
+            uid = list(uid)
+
+        return self.request(
+            "GET",
+            "/api/v1/users/social/",
+            params={
+                "uid": ",".join(uid),
+                "provider": provider,
+            },
+        )
+
+    def _v1_create_social_connection(
+        self, payload: CreateSocialConnection
+    ) -> Response[ReadSocialConnection]:
+        return self.request("POST", "/api/v1/users/social/", json=payload)
+
+    def _v1_get_leaderboard(
+        self,
+        stat: str = "total_xp",
         guild_id: Optional[int] = None,
         community: Optional[str] = None,
         country: Optional[str] = None,
-    ) -> Dict:
-        endpoint = "/leaderboard/"
-
+    ) -> Response[Dict]:
         if guild_id:
-            endpoint += "discord/{}/".format(guild_id)
+            endpoint = f"/api/v1/leaderboard/discord/{guild_id}/"
         elif community:
-            endpoint += "community/{}/".format(community)
+            endpoint = f"/api/v1/leaderboard/community/{community}/"
         elif country:
-            endpoint += "country/{}/".format(country)
+            endpoint = f"/api/v1/leaderboard/country/{country}/"
         else:
-            endpoint += "v1.1/"
+            endpoint = "/api/v1/leaderboard/v1.1/"
 
         if stat:
-            endpoint += "{stat}/".format(stat=stat)
+            endpoint += f"{stat}/"
 
-        r = Route("GET", endpoint)
-        return self.request(r)
+        return self.request("GET", endpoint)

@@ -1,18 +1,18 @@
 import json
 from typing import Dict, Union
 
-from . import abc
+from .base import BaseClass
 from .trainer import Trainer
-from .utils import con
+from .utils import convert
 
 
-class SocialConnection(abc.BaseClass):
+class SocialConnection(BaseClass):
     def _update(self, data: Dict[str, Union[str, int]]) -> None:
         self._user_id = data.get("user")
         self._user = None
         self.provider = data.get("provider")
         self.uid = data.get("uid")
-        self.extra_data = con(json.loads, data.get("extra_data"))
+        self.extra_data = convert(json.loads, data.get("extra_data"))
         self._trainer_id = data.get("trainer")
         self._trainer = None
 
@@ -28,8 +28,8 @@ class SocialConnection(abc.BaseClass):
 
         from .user import User
 
-        data = await self.http.get_user(self._user_id)
-        self._user = User(data=data, conn=self.http)
+        data = await self.client.get_user(self._user_id)
+        self._user = User(data=data, client=self.client)
 
         return self._user
 
@@ -37,13 +37,13 @@ class SocialConnection(abc.BaseClass):
         if self._trainer:
             return self._trainer
 
-        data = await self.http.get_trainer(self._trainer_id)
-        self._trainer = Trainer(data=data, conn=self.http)
+        data = await self.client.get_trainer(self._trainer_id)
+        self._trainer = Trainer(data=data, conn=self.client)
 
         return self._trainer
 
     async def refresh_from_api(self) -> None:
-        data = await self.http.get_social_connections(self.provider, self.uid)
+        data = await self.client.get_social_connections(self.provider, self.uid)
         self._update(data[0])
 
     def get_discord_user(self, client):

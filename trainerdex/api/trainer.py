@@ -1,93 +1,95 @@
 import datetime
 import re
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING, Dict, List, Optional
+from uuid import UUID as _UUID
 
 from dateutil.parser import parse
 
-from . import abc
+from .base import BaseClass
 from .faction import Faction
-from .http import TRAINER_KEYS_ENUM_IN, HTTPClient
-from .update import Level, Update
-from .utils import con
+from .update import Update
+from .utils import convert
+from .types.v1.update import CreateUpdate, Update as StatsPayload
 
-odt = con(parse)
+if TYPE_CHECKING:
+    from .types.v1.trainer import ReadTrainer
+
+parse_dt = convert(parse)
+UUID = convert(_UUID)
 
 
-class Trainer(abc.BaseClass):
-    def __init__(self, conn: HTTPClient, data: Dict[str, Union[str, int]]) -> None:
-        super().__init__(conn, data)
+class Trainer(BaseClass):
+    def _update(self, data: ReadTrainer) -> None:
+        self.id = data["id"]
+        self.uuid = UUID(data["uuid"])
+        self.created_at = parse_dt(data["created_at"])
+        self.updated_at = parse_dt(data["updated_at"])
+        self.last_modified = parse_dt(data["last_modified"])
+        self.username = data["username"]
+        self.user_id = data["owner"]
+        self.start_date = None
+        if data["start_date"]:
+            start_datetime = parse_dt(data["start_date"])
+            if start_datetime is not None:
+                self.start_date = start_datetime.date()
 
-    def _update(self, data: Dict[str, Union[str, int]]) -> None:
-        data = {
-            TRAINER_KEYS_ENUM_IN.get(k): v
-            for k, v in data.items()
-            if (TRAINER_KEYS_ENUM_IN.get(k) is not None)
-        }
-        self.id = int(data.get("id"))
-        self.username = data.get("nickname")
-        self.old_id = int(data.get("old_id"))
-        self.last_modified = odt(data.get("last_modified"))
-        self.nickname = data.get("nickname")
-        self.start_date = odt(data.get("start_date")).date() if data.get("start_date") else None
-        self.faction = data.get("faction", 0)
-        self.trainer_code = data.get("trainer_code")
-        self.is_banned = data.get("is_banned", False)
-        self.is_verified = data.get("is_verified")
-        self.is_visible = data.get("is_visible")
-        self._updates = dict()
-        self._user = data.get("_user")
+        self.faction = data["faction"]
+        self.trainer_code = data["trainer_code"]
+        self.last_cheated = parse_dt(data["last_cheated"])
+        self.daily_goal = data["daily_goal"]
+        self.total_goal = data["total_goal"]
+        self.verified = data["verified"]
+        self.statistics = data["statistics"]
+        self.prefered = data["prefered"]
+        self._updates = []
+        self._user = None
 
-    def __eq__(self, o) -> bool:
-        return self.old_id == o.old_id
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Trainer):
+            return self.uuid == other.uuid
+        else:
+            raise TypeError("Cannot compare Trainer to non-Trainer")
 
     def __hash__(self):
-        return hash(self.id)
+        return hash(self.uuid)
 
     @property
     def team(self) -> Faction:
         return Faction(self.faction)
 
     async def fetch_updates(self) -> None:
-        trainer_id = self.old_id
-        data = await self.http.get_updates_for_trainer(trainer_id)
+        data = await self.client._v1_get_updates_for_trainer(self.id)
         if data:
-            self._updates = {x.get("uuid"): Update(self.http, x) for x in data}
-            return list(self._updates.values())
+            self._updates = [Update(x) for x in data]
 
     @property
     def updates(self) -> List[Update]:
-        return list(self._updates.values())
+        return self._updates.copy()
 
-    def get_latest_update_for_stat(self, stat) -> Update:
-        subset = [x for x in self.updates if getattr(x, stat, None) is not None]
-        return max(subset, key=lambda x: x.update_time)
+    async def get_latest_update(self) -> Update:
+        if not self.updates:
+            await self.fetch_updates()
 
-    def get_latest_update(self) -> Update:
         return max(self.updates, key=lambda x: x.update_time)
 
-    @property
-    def level(self) -> Level:
-        update = self.get_latest_update_for_stat("total_xp")
-        if update:
-            return update.level
+    async def get_level(self) -> int:
+        if not self.updates:
+            await self.fetch_updates()
 
-    async def user(self):
-        if self._user:
-            return self._user
+        subset = [update for update in self.updates if update.trainer_level]
+        return max(subset, key=lambda x: x.update_time).trainer_level
 
-        # have to import User late to prevent circular imports
-        from .user import User
-
-        data = await self.http.get_user(self.id)
-        self._user = User(data=data, conn=self.http)
+    async def get_user(self):
+        if self._user is None:
+            self._user = await self.client.get_user(self.user_id)
 
         return self._user
 
     async def refresh_from_api(self) -> None:
-        data = await self.http.get_trainer(self.old_id)
+        data = await self.client.get_trainer(self.old_id)
         self._update(data)
 
-    async def edit(self, **options) -> None:
+    async def edit(self, **payload) -> None:
         """|coro|
 
         Edits the current trainer
@@ -115,26 +117,25 @@ class Trainer(abc.BaseClass):
             Editing your profile failed.
         """
 
-        if isinstance(options.get("start_date"), Faction):
-            options["start_date"] = options["start_date"].isoformat()
+        if isinstance(payload.get("start_date"), Faction):
+            payload["start_date"] = payload["start_date"].isoformat()
 
-        if isinstance(options.get("faction"), Faction):
-            options["faction"] = options["faction"].id
+        if isinstance(payload.get("faction"), Faction):
+            payload["faction"] = payload["faction"].id
 
-        if options.get("trainer_code"):
-            options["trainer_code"] = re.sub(
-                r"\s+", "", str(options["trainer_code"]), flags=re.UNICODE
+        if payload.get("trainer_code"):
+            payload["trainer_code"] = re.sub(
+                r"\s+", "", str(payload["trainer_code"]), flags=re.UNICODE
             )
 
-        new_data = await self.http.edit_trainer(self.old_id, **options)
+        new_data = await self.client._v1_edit_trainer(self.id, payload)
         self._update(new_data)
 
     async def post(
         self,
         data_source: str,
-        stats: Dict,
-        update_time: datetime.datetime = None,
-        submission_date: datetime.datetime = None,
+        stats: StatsPayload,
+        update_time: Optional[datetime.datetime] = None,
     ) -> Update:
         """|coro|
 
@@ -143,15 +144,14 @@ class Trainer(abc.BaseClass):
         .. note::
             This will refresh the Trainer instance too
         """
-        trainer_id = self.old_id
+        payload = CreateUpdate(
+            trainer=self.id,
+            data_source=data_source,
+            **stats,
+        )
+        if update_time is not None:
+            payload["update_time"] = update_time.isoformat()
 
-        options = {"trainer": trainer_id, "data_source": data_source}
-        if update_time:
-            options["update_time"] = update_time
-        if submission_date:
-            options["submission_date"] = submission_date
-
-        data = await self.http.create_update(trainer_id, {**options, **stats})
-        result = Update(data=data, conn=self.http)
-        await self.refresh_from_api()
+        data = await self.client._v1_create_update(self.id, payload)
+        result = Update(data)
         return result
