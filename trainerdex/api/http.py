@@ -121,8 +121,8 @@ class HTTPClient:
             else:
                 raise HTTPException(response, data)
 
-    def _v1_get_updates(self, trainer_id: int, post_uuid: StrOrUUID) -> Response[ReadUpdate]:
-        return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/{post_uuid}/")
+    def _v1_get_update(self, trainer_id: int, uuid: StrOrUUID) -> Response[ReadUpdate]:
+        return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/{uuid}/")
 
     def _v1_get_updates_for_trainer(self, trainer_id: int) -> Response[List[ReadUpdate]]:
         return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/")

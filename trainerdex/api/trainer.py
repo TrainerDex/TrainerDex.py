@@ -61,7 +61,7 @@ class Trainer(BaseClass):
     async def fetch_updates(self) -> None:
         data = await self.client._v1_get_updates_for_trainer(self.id)
         if data:
-            self._updates = [Update(x) for x in data]
+            self._updates = [Update(self.client, update) for update in data]
 
     @property
     def updates(self) -> List[Update]:
@@ -154,5 +154,5 @@ class Trainer(BaseClass):
             payload["update_time"] = update_time.isoformat()
 
         data = await self.client._v1_create_update(self.id, payload)
-        result = Update(data)
+        result = Update(self.client, data)
         return result
