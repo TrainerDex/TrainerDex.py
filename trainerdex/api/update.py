@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from decimal import Decimal
+from decimal import Decimal as _Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID as _UUID
 
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 parse_dt = convert(parse)
 UUID = convert(_UUID)
+Decimal = convert(_Decimal)
 
 
 class Update(BaseClass):
@@ -28,7 +29,7 @@ class Update(BaseClass):
         self.pokedex_seen = data["pokedex_seen"]
         self.gymbadges_gold = data["gymbadges_gold"]
         self.gym_gold = data["gym_gold"]
-        self.travel_km = data["travel_km"]
+        self.travel_km = Decimal(data["travel_km"])
         self.pokedex_entries = data["pokedex_entries"]
         self.capture_total = data["capture_total"]
         self.evolved_total = data["evolved_total"]
