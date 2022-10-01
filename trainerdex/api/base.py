@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from .client import Client
+    from trainerdex.api.client import Client
 
 
 class BaseClass:

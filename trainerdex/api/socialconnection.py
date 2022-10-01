@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Union
 
-from .base import BaseClass
-from .trainer import Trainer
-from .utils import convert
+from trainerdex.api.base import BaseClass
+from trainerdex.api.trainer import Trainer
+from trainerdex.api.utils import convert
 
 
 class SocialConnection(BaseClass):
@@ -30,13 +30,13 @@ class SocialConnection(BaseClass):
     async def get_user(self):
         if not self._user:
             self._user = await self.client.get_user(self._user_id)
-        
+
         return self._user
 
     async def get_trainer(self) -> Trainer:
         if not self._trainer:
             self._trainer = await self.client.get_trainer(self._trainer_id)
-            
+
         return self._trainer
 
     async def refresh_from_api(self) -> None:

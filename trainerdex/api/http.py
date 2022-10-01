@@ -18,27 +18,29 @@ from typing import (
     TypeVar,
     Union,
 )
-from typing_extensions import Self
 from uuid import UUID
 
 from aiohttp import ContentTypeError
 from aiohttp import __version__ as aiohttp_version
 from aiohttp.client import ClientSession
 from aiohttp.typedefs import StrOrURL
+from typing_extensions import Self
+
+from trainerdex.api import __version__
+from trainerdex.api.exceptions import Forbidden, HTTPException, NotFound
 
 if TYPE_CHECKING:
-    from .types.v1.social_connection import CreateSocialConnection, ReadSocialConnection
-    from .types.v1.trainer import CreateTrainer, EditTrainer, ReadTrainer
-    from .types.v1.update import CreateUpdate, EditUpdate, ReadUpdate
-    from .types.v1.user import CreateUser, ReadUser
+    from trainerdex.api.types.v1.social_connection import (
+        CreateSocialConnection,
+        ReadSocialConnection,
+    )
+    from trainerdex.api.types.v1.trainer import CreateTrainer, EditTrainer, ReadTrainer
+    from trainerdex.api.types.v1.update import CreateUpdate, EditUpdate, ReadUpdate
+    from trainerdex.api.types.v1.user import CreateUser, ReadUser
 
     T = TypeVar("T")
     Response = Coroutine[Any, Any, T]
     StrOrUUID = Union[str, UUID]
-
-
-from . import __version__
-from .exceptions import Forbidden, HTTPException, NotFound
 
 
 class HTTPClient:

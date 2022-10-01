@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Dict, Optional
 
-from .base import BaseClass
-from .socialconnection import SocialConnection
-from .trainer import Trainer
-from .types.v1.social_connection import CreateSocialConnection
-from .utils import HasID
+from trainerdex.api.base import BaseClass
+from trainerdex.api.socialconnection import SocialConnection
+from trainerdex.api.trainer import Trainer
+from trainerdex.api.types.v1.social_connection import CreateSocialConnection
+from trainerdex.api.utils import HasID
 
 if TYPE_CHECKING:
-    from .types.v1.user import ReadUser
+    from trainerdex.api.types.v1.user import ReadUser
 
 
 class User(BaseClass):
