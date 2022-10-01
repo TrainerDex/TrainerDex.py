@@ -5,10 +5,10 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
 from dateutil.parser import parse
 
-from .base import BaseClass
-from .faction import Faction
-from .trainer import Trainer
-from .utils import convert, maybe_coroutine
+from trainerdex.api.base import BaseClass
+from trainerdex.api.faction import Faction
+from trainerdex.api.trainer import Trainer
+from trainerdex.api.utils import convert, maybe_coroutine
 
 
 class LeaderboardEntry(BaseClass):

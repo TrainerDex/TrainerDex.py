@@ -7,11 +7,11 @@ from uuid import UUID as _UUID
 
 from dateutil.parser import parse
 
-from .base import BaseClass
-from .utils import convert
+from trainerdex.api.base import BaseClass
+from trainerdex.api.utils import convert
 
 if TYPE_CHECKING:
-    from .types.v1.update import ReadUpdate
+    from trainerdex.api.types.v1.update import ReadUpdate
 
 parse_dt = convert(parse)
 UUID = convert(_UUID)

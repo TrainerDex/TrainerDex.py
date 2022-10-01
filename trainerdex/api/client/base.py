@@ -3,24 +3,24 @@ from __future__ import annotations
 import datetime
 from typing import Iterable, List, Optional, Union
 
-from .exceptions import NotFound
-from .faction import Faction
-from .http import HTTPClient
-from .leaderboard import (
+from trainerdex.api.exceptions import NotFound
+from trainerdex.api.faction import Faction
+from trainerdex.api.http import APIV1Mixin
+from trainerdex.api.leaderboard import (
     CommunityLeaderboard,
     CountryLeaderboard,
     GuildLeaderboard,
     Leaderboard,
 )
-from .socialconnection import SocialConnection
-from .trainer import Trainer
-from .types.v1.trainer import CreateTrainer
-from .types.v1.user import CreateUser
-from .user import User
-from .utils import HasID
+from trainerdex.api.socialconnection import SocialConnection
+from trainerdex.api.trainer import Trainer
+from trainerdex.api.types.v1.trainer import CreateTrainer
+from trainerdex.api.types.v1.user import CreateUser
+from trainerdex.api.user import User
+from trainerdex.api.utils import HasID
 
 
-class Client(HTTPClient):
+class BaseClient(APIV1Mixin):
     async def get_trainer(self, trainer_id: int) -> Trainer:
         data = await self._v1_get_trainer(trainer_id)
         trainer = Trainer(client=self, data=data)

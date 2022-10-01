@@ -7,15 +7,15 @@ from uuid import UUID as _UUID
 
 from dateutil.parser import parse
 
-from .base import BaseClass
-from .faction import Faction
-from .types.v1.update import CreateUpdate
-from .types.v1.update import Update as StatsPayload
-from .update import Update
-from .utils import convert
+from trainerdex.api.base import BaseClass
+from trainerdex.api.faction import Faction
+from trainerdex.api.types.v1.update import CreateUpdate
+from trainerdex.api.types.v1.update import Update as StatsPayload
+from trainerdex.api.update import Update
+from trainerdex.api.utils import convert
 
 if TYPE_CHECKING:
-    from .types.v1.trainer import ReadTrainer
+    from trainerdex.api.types.v1.trainer import ReadTrainer
 
 parse_dt = convert(parse)
 UUID = convert(_UUID)

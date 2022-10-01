@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Literal, Optional, TypedDict
 
-from .update import PartialUpdate
+from trainerdex.api.types.v1.update import PartialUpdate
 
 
 class Trainer(TypedDict):
