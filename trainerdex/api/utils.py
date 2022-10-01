@@ -2,9 +2,16 @@ from __future__ import annotations
 
 from functools import wraps
 from inspect import isawaitable
-from typing import Any, Callable, ParamSpec, TypeVar, Union, overload
-
-from typing_extensions import Protocol, runtime_checkable
+from typing import (
+    Any,
+    Callable,
+    ParamSpec,
+    Protocol,
+    TypeVar,
+    Union,
+    overload,
+    runtime_checkable,
+)
 
 P = ParamSpec("P")
 T = TypeVar("T")
