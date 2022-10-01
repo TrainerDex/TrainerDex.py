@@ -1,9 +1,9 @@
 from __future__ import annotations
-from abc import abstractclassmethod
 
 import asyncio
 import os
 import sys
+from abc import abstractclassmethod
 from types import MappingProxyType, TracebackType
 from typing import (
     TYPE_CHECKING,
@@ -61,7 +61,6 @@ class BaseHTTPClient:
             base_url=self.HOST,
             headers=self.headers,
             loop=self.loop,
-            
         )
 
     @property
@@ -91,13 +90,13 @@ class BaseHTTPClient:
                 raise HTTPException(response, data)
 
     @abstractclassmethod
-    async def authenticate(self, **credentials) -> Self:
+    def authenticate(self, **credentials) -> Union[Self, Coroutine[Any, Any, Self]]:
         """Authenticate with the TrainerDex API.
 
         Takes in credentials and modifies the headers on the client to include the authentication token.
 
-        returns self for chaining.
-
+        Returns self for chaining.
+        May be a coroutine.
         """
         return self
 

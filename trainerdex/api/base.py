@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from trainerdex.api.client import Client
+    from trainerdex.api.client import BaseClient
 
 
 class BaseClass:
     uuid: UUID
 
-    def __init__(self, client: Client, data: Any) -> None:
+    def __init__(self, client: BaseClient, data: Any) -> None:
         self.client = client
         self._update(data)
 

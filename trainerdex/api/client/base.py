@@ -20,7 +20,7 @@ from trainerdex.api.user import User
 from trainerdex.api.utils import HasID
 
 
-class Client(APIV1Mixin):
+class BaseClient(APIV1Mixin):
     async def get_trainer(self, trainer_id: int) -> Trainer:
         data = await self._v1_get_trainer(trainer_id)
         trainer = Trainer(client=self, data=data)
