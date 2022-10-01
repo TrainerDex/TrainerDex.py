@@ -52,10 +52,10 @@ class HTTPClient:
 
         user_agent = (
             "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
-            "Python/{1[0]}.{1[1]} "
+            "Python/{1} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(__version__, sys.version_info, aiohttp_version)
+        self.user_agent = user_agent.format(__version__, sys.version, aiohttp_version)
 
     def __enter__(self) -> None:
         raise TypeError("Use async with instead")
