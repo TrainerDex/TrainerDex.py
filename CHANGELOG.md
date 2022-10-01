@@ -15,12 +15,12 @@ Whilst the interface is mostly the same, I plan to be adding features in upcomin
 - `trainerdex.api.leaderboard.Aggregations` class
 - `trainerdex.api.leaderboard.CommunityLeaderboard` class
 - `trainerdex.api.leaderboard.CountryLeaderboard` class
-- Completely rewritten http module!
+- Completely rewritten HTTP module!
 - Auth framework
 - Better type annotations
 
 ### Changed
-- Moved entire library from `trianerdex` to `trainerdex.api` to allow other libraries to share the `trainerdex` namespace in future.
+- Moved the entire library from `trainerdex` to `trainerdex.api` to allow other libraries to share the `trainerdex` namespace in future.
 - Removed dependency on Discord.py
 - Fixed Typo in UserAgent
 - Changed domain to `trainerdex.app`
