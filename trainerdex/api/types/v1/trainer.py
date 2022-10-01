@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Literal, Optional, TypedDict
+from typing import List, Optional, TypedDict
 
 from trainerdex.api.types.v1.update import PartialUpdate
 
@@ -31,7 +31,6 @@ class ReadTrainer(Trainer):
     owner: int
     username: str
     update_set: List[PartialUpdate]
-    prefered: Literal[True]
 
 
 class EditTrainer(Trainer):
