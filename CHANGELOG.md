@@ -4,20 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project mostly adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). It didn't adhere to SemVer in the 1.x and 2.x range. Anything between 3.0.0 and 3.5.0 was never released.
 
 ## [Unreleased]
+
+## [4.0.0] - 2022-10-01
+
+Refactored the library to support alternative forms of authentication (OAuth soon!)
+Whilst the interface is mostly the same, I plan to be adding features in upcoming minor releases.
+
 ### Added
-- Add aggregations to `trainerdex.leaderboard.BaseLeaderboard` and it's children
-- `trainerdex.leaderboard.Aggregations` class
-- `trainerdex.leaderboard.CommunityLeaderboard` class
-- `trainerdex.leaderboard.CountryLeaderboard` class
+- Add aggregations to `trainerdex.api.leaderboard.BaseLeaderboard` and it's children
+- `trainerdex.api.leaderboard.Aggregations` class
+- `trainerdex.api.leaderboard.CommunityLeaderboard` class
+- `trainerdex.api.leaderboard.CountryLeaderboard` class
+- Completely rewritten http module!
+- Auth framework
+- Better type annotations
 
 ### Changed
+- Moved entire library from `trianerdex` to `trainerdex.api` to allow other libraries to share the `trainerdex` namespace in future.
 - Removed dependency on Discord.py
 - Fixed Typo in UserAgent
 - Changed domain to `trainerdex.app`
-- `Trainer.fetch_updates` makes a seperate API call to get updates, now returning full data
+- Removed several unnecessary API calls
 
 ### Removed
 - Removed PartialUpdate class
+- Dropped support for Python 3.7
 
 ## [3.6.2] - 2020-10-07
 ### Changed
@@ -300,7 +311,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [`trainerdex.Requests.addUserAccount`](https://github.com/TrainerDex/TrainerDex.py/blob/1.0/TrainerDex.py#L544) -> `int`
 - [`trainerdex.Requests.patchUserAccount`](https://github.com/TrainerDex/TrainerDex.py/blob/1.0/TrainerDex.py#L561) -> `int`
 
-[Unreleased]: https://github.com/TrainerDex/TrainerDex.py/compare/3.6.2...HEAD
+[Unreleased]: https://github.com/TrainerDex/TrainerDex.py/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/TrainerDex/TrainerDex.py/compare/3.6.2...4.0.0
 [3.6.2]: https://github.com/TrainerDex/TrainerDex.py/compare/3.6.1...3.6.2
 [3.6.1]: https://github.com/TrainerDex/TrainerDex.py/compare/3.5.0...3.6.1
 [3.5.0]: https://github.com/TrainerDex/TrainerDex.py/compare/2.1.3...3.5.0
