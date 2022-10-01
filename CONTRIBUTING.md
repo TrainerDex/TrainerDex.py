@@ -7,7 +7,7 @@ Use the command `black --help` to see how to use this tool. The full style guide
 
 
 ## Environments
-We will be using [poetry](https://github.com/python-poetry/poetry) to manage dependencies, once I start working on this again. 
+We will be using [poetry](https://github.com/python-poetry/poetry) to manage dependencies, once I start working on this again.
 
 
 ## Commit Messages
