@@ -109,6 +109,7 @@ class Client(HTTPClient):
         elif country is not None:
             cls = CountryLeaderboard
         else:
+            guild_id = None
             cls = Leaderboard
 
         data = await self._v1_get_leaderboard(
