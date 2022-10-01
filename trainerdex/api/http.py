@@ -18,7 +18,7 @@ from typing import (
     TypeVar,
     Union,
 )
-from urllib.request import Request
+from typing_extensions import Self
 from uuid import UUID
 
 from aiohttp import ContentTypeError
@@ -69,7 +69,7 @@ class HTTPClient:
         # __exit__ should exist in pair with __enter__ but never executed
         pass
 
-    def __aenter__(self) -> "HTTPClient":
+    async def __aenter__(self) -> Self:
         self._session = self._create_session()
         return self
 
