@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, Iterable, List, Literal, Optional, Union
 from uuid import UUID
 
+from trainerdex.api.http.auth.decorators import requires_authentication
 from trainerdex.api.http.base import BaseHTTPClient
 
 if TYPE_CHECKING:
@@ -27,9 +28,11 @@ class APIV1Mixin(BaseHTTPClient):
     def _v1_get_updates_for_trainer(self, trainer_id: int) -> Response[List[ReadUpdate]]:
         return self.request("GET", f"/api/v1/trainers/{trainer_id}/updates/")
 
+    @requires_authentication
     def _v1_create_update(self, trainer_id: int, payload: CreateUpdate) -> Response[ReadUpdate]:
         return self.request("POST", f"/api/v1/trainers/{trainer_id}/updates/", json=payload)
 
+    @requires_authentication
     def _v1_edit_update(
         self, trainer_id: int, update_uuid: StrOrUUID, payload: EditUpdate
     ) -> Response[ReadUpdate]:
@@ -52,9 +55,11 @@ class APIV1Mixin(BaseHTTPClient):
 
         return self.request("GET", "/api/v1/trainers/", params=params)
 
+    @requires_authentication
     def _v1_create_trainer(self, payload: CreateTrainer) -> Response[ReadTrainer]:
         return self.request("POST", "/api/v1/trainers/", json=payload)
 
+    @requires_authentication
     def _v1_edit_trainer(self, trainer_id: int, payload: EditTrainer) -> Response[ReadTrainer]:
         return self.request("PATCH", f"/api/v1/trainers/{trainer_id}/", json=payload)
 
@@ -64,9 +69,11 @@ class APIV1Mixin(BaseHTTPClient):
     def _v1_get_users(self) -> Response[List[ReadUser]]:
         return self.request("GET", "/api/v1/users/")
 
+    @requires_authentication
     def _v1_create_user(self, payload: CreateUser) -> Response[ReadUser]:
         return self.request("POST", "/api/v1/users/", json=payload)
 
+    @requires_authentication
     def _v1_get_social_connections(
         self,
         uid: Union[str, Iterable[str]],
@@ -86,6 +93,7 @@ class APIV1Mixin(BaseHTTPClient):
             },
         )
 
+    @requires_authentication
     def _v1_create_social_connection(
         self, payload: CreateSocialConnection
     ) -> Response[ReadSocialConnection]:

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from functools import wraps
 
+from functools import wraps
 from inspect import isawaitable
 from typing import Any, Callable, ParamSpec, TypeVar, Union, overload
 
@@ -27,7 +27,7 @@ def convert(func, *args, **kwargs):
     Returns the function if no addictional args or kwargs are supplied, else runs the function
     """
 
-    @wraps(func)  
+    @wraps(func)
     def wrapper(*args, **kwargs) -> Union[Any, None]:
         """This is very hacky!
 

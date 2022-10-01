@@ -42,6 +42,7 @@ class BaseHTTPClient:
         self._headers: Dict[str, str] = {
             "User-Agent": self.user_agent,
         }
+        self._authenticated: bool = False
 
     @property
     def user_agent(self) -> str:
@@ -51,6 +52,10 @@ class BaseHTTPClient:
             "aiohttp/{2}"
         )
         return user_agent.format(__version__, sys.version, aiohttp_version)
+
+    @property
+    def authenticated(self) -> bool:
+        return self._authenticated
 
     @property
     def headers(self) -> MappingProxyType[str, str]:
@@ -98,6 +103,7 @@ class BaseHTTPClient:
         Returns self for chaining.
         May be a coroutine.
         """
+        self._authenticated = True
         return self
 
     def __enter__(self) -> NoReturn:
