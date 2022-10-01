@@ -21,6 +21,9 @@ class LeaderboardEntry(BaseClass):
         self.value = data["value"]
         self.update_time = convert(parse, data.get("last_updated"))
 
+    def refresh_from_api(self) -> None:
+        ...
+
     @property
     def faction(self) -> Union[Faction, None]:
         if self.faction_id:
@@ -66,6 +69,9 @@ class BaseLeaderboard(BaseClass):
         self.stat: str = data.get("stat")
         self._aggregations: Dict = data.get("aggregations", {})
         self.aggregations = Aggregations(self._aggregations)
+
+    def refresh_from_api(self) -> None:
+        ...
 
     def __aiter__(self):
         return self
