@@ -86,7 +86,7 @@ class Client(HTTPClient):
     async def get_social_connections(
         self, provider: str, uid: Union[str, Iterable[str]]
     ) -> List[SocialConnection]:
-        data = await self._v1_get_social_connections(provider, uid)
+        data = await self._v1_get_social_connections(provider=provider, uid=uid)
         return [SocialConnection(client=self, data=x) for x in data]
 
     async def get_leaderboard(
