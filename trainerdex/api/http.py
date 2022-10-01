@@ -69,7 +69,7 @@ class HTTPClient:
         # __exit__ should exist in pair with __enter__ but never executed
         pass
 
-    def __aenter__(self) -> Self:
+    async def __aenter__(self) -> Self:
         self._session = self._create_session()
         return self
 
