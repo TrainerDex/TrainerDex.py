@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Literal, Optional, TypedDict
 
 from .update import PartialUpdate
