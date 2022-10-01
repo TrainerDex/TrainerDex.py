@@ -90,7 +90,7 @@ class BaseHTTPClient:
         if isinstance(maybe_session, ClientSession) and not maybe_session.closed:
             return maybe_session
         else:
-            raise RuntimeError("Session is not open. Please use an async with context manager.")
+            raise RuntimeError("Session is not open. Please use an async context manager.")
 
     async def request(self, method: str, path: StrOrURL, **kwargs) -> Any:
         async with self.session.request(method, path, **kwargs) as response:
