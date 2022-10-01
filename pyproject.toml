@@ -19,7 +19,7 @@
 
 [tool.poetry]
 name = "TrainerDex"
-version = "4.0.0a4"
+version = "4.0.0a5"
 description = "An API to interact with TrainerDex - a online database of Pokemon Go trainers"
 authors = ["Jay Turner <jay@trainerdex.app>"]
 license = "GPL-3.0"
