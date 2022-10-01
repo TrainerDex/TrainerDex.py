@@ -43,7 +43,6 @@ class Trainer(BaseClass):
         self.total_goal = data["total_goal"]
         self.verified = data["verified"]
         self.statistics = data["statistics"]
-        self.prefered = data["prefered"]
         self._updates = []
         self._user = None
 
