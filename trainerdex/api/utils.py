@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from inspect import isawaitable
 from typing import Any, Callable, ParamSpec, TypeVar, Union, overload
 
