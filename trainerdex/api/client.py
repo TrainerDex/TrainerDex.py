@@ -5,7 +5,7 @@ from typing import Iterable, List, Optional, Union
 
 from trainerdex.api.exceptions import NotFound
 from trainerdex.api.faction import Faction
-from trainerdex.api.http import HTTPClient
+from trainerdex.api.http import APIV1Mixin
 from trainerdex.api.leaderboard import (
     CommunityLeaderboard,
     CountryLeaderboard,
@@ -20,7 +20,7 @@ from trainerdex.api.user import User
 from trainerdex.api.utils import HasID
 
 
-class Client(HTTPClient):
+class Client(APIV1Mixin):
     async def get_trainer(self, trainer_id: int) -> Trainer:
         data = await self._v1_get_trainer(trainer_id)
         trainer = Trainer(client=self, data=data)
