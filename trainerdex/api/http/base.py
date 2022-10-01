@@ -1,15 +1,17 @@
 from __future__ import annotations
+from abc import abstractclassmethod
 
 import asyncio
 import os
 import sys
-from types import TracebackType
+from types import MappingProxyType, TracebackType
 from typing import (
     TYPE_CHECKING,
     Any,
     ClassVar,
     Coroutine,
     Dict,
+    NoReturn,
     Optional,
     Type,
     TypeVar,
@@ -35,54 +37,32 @@ class BaseHTTPClient:
 
     HOST: ClassVar[str] = os.environ.get("TRAINERDEX_HOST", "https://trainerdex.app/")
 
-    def __init__(self, token: str = None, loop=None) -> None:
+    def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
-        self.token: str = token
+        self._headers: Dict[str, str] = {
+            "User-Agent": self.user_agent,
+        }
 
+    @property
+    def user_agent(self) -> str:
         user_agent = (
             "TrainerDex.py (https://github.com/TrainerDex/TrainerDex.py {0}) "
             "Python/{1} "
             "aiohttp/{2}"
         )
-        self.user_agent = user_agent.format(__version__, sys.version, aiohttp_version)
-
-    def __enter__(self) -> None:
-        raise TypeError("Use async with instead")
-
-    def __exit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        # __exit__ should exist in pair with __enter__ but never executed
-        pass
-
-    async def __aenter__(self) -> Self:
-        self._session = self._create_session()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        await self._session.close()
-
-    def _create_session(self) -> ClientSession:
-        return ClientSession(base_url=self.HOST, headers=self.headers)
+        return user_agent.format(__version__, sys.version, aiohttp_version)
 
     @property
-    def headers(self) -> Dict:
-        headers = {
-            "User-Agent": self.user_agent,
-        }
+    def headers(self) -> MappingProxyType[str, str]:
+        return MappingProxyType(self._headers)
 
-        if self.token is not None:
-            headers["Authorization"] = f"Token {self.token}"
-
-        return headers
+    def _create_session(self) -> ClientSession:
+        return ClientSession(
+            base_url=self.HOST,
+            headers=self.headers,
+            loop=self.loop,
+            
+        )
 
     @property
     def session(self) -> ClientSession:
@@ -109,3 +89,38 @@ class BaseHTTPClient:
                 raise NotFound(response, data)
             else:
                 raise HTTPException(response, data)
+
+    @abstractclassmethod
+    async def authenticate(self, **credentials) -> Self:
+        """Authenticate with the TrainerDex API.
+
+        Takes in credentials and modifies the headers on the client to include the authentication token.
+
+        returns self for chaining.
+
+        """
+        return self
+
+    def __enter__(self) -> NoReturn:
+        raise TypeError("Use async with instead")
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        # __exit__ should exist in pair with __enter__ but never executed
+        pass
+
+    async def __aenter__(self) -> Self:
+        self._session = self._create_session()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        await self._session.close()
