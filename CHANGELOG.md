@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.1] - 2022-10-19
+
+### Fixed
+- Changed the HTTP method of the create_social_account call, as it only takes GET and PUT on the server, but we we're using POST.
+
 ## [4.0.0] - 2022-10-01
 
 Refactored the library to support alternative forms of authentication (OAuth soon!)
