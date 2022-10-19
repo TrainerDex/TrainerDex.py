@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 from uuid import UUID as _UUID
 
 from dateutil.parser import parse
@@ -59,17 +59,23 @@ class Trainer(BaseClass):
     def updates(self) -> List[Update]:
         return self._updates.copy()
 
-    async def get_latest_update(self) -> Update:
+    async def get_latest_update(self) -> Union[Update, None]:
         if not self.updates:
             await self.fetch_updates()
+            
+        if not self.updates: # still
+            return None
 
         return max(self.updates, key=lambda x: x.update_time)
 
-    async def get_level(self) -> int:
+    async def get_level(self) -> Union[int, None]:
         if not self.updates:
             await self.fetch_updates()
 
         subset = [update for update in self.updates if update.trainer_level]
+        if not subset:
+            return None
+
         return max(subset, key=lambda x: x.update_time).trainer_level
 
     async def get_user(self):
