@@ -36,7 +36,7 @@ class User(BaseClass):
             user=self.id,
             provider=provider,
             uid=uid,
-            extra_data=extra_data,
+            extra_data=extra_data or {},
         )
         data = await self.client._v1_create_social_connection(payload)
         return SocialConnection(data=data, client=self.client)
