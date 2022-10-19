@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.2] - 2022-10-19
+
+### Fixed
+
+- Provide a default for extra_data on add_social_connection
+
 ## [4.0.1] - 2022-10-19
 
 ### Fixed
@@ -316,7 +322,9 @@ Whilst the interface is mostly the same, I plan to be adding features in upcomin
 - [`trainerdex.Requests.addUserAccount`](https://github.com/TrainerDex/TrainerDex.py/blob/1.0/TrainerDex.py#L544) -> `int`
 - [`trainerdex.Requests.patchUserAccount`](https://github.com/TrainerDex/TrainerDex.py/blob/1.0/TrainerDex.py#L561) -> `int`
 
-[Unreleased]: https://github.com/TrainerDex/TrainerDex.py/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/TrainerDex/TrainerDex.py/compare/4.0.2...HEAD
+[4.0.2]: https://github.com/TrainerDex/TrainerDex.py/compare/4.0.1...4.0.2
+[4.0.1]: https://github.com/TrainerDex/TrainerDex.py/compare/4.0.0...4.0.1
 [4.0.0]: https://github.com/TrainerDex/TrainerDex.py/compare/3.6.2...4.0.0
 [3.6.2]: https://github.com/TrainerDex/TrainerDex.py/compare/3.6.1...3.6.2
 [3.6.1]: https://github.com/TrainerDex/TrainerDex.py/compare/3.5.0...3.6.1

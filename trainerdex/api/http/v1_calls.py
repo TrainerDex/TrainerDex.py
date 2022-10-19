@@ -97,6 +97,7 @@ class APIV1Mixin(BaseHTTPClient):
     def _v1_create_social_connection(
         self, payload: CreateSocialConnection
     ) -> Response[ReadSocialConnection]:
+        payload["extra_data"] = payload["extra_data"] or {}
         return self.request("PUT", "/api/v1/users/social/", json=payload)
 
     def _v1_get_leaderboard(
