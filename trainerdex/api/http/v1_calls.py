@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Dict, Iterable, List, Literal, Optional, Union
 from uuid import UUID
 
@@ -97,7 +98,7 @@ class APIV1Mixin(BaseHTTPClient):
     def _v1_create_social_connection(
         self, payload: CreateSocialConnection
     ) -> Response[ReadSocialConnection]:
-        payload["extra_data"] = payload["extra_data"] or {}
+        payload["extra_data"] = json.dumps(payload["extra_data"] or {})
         return self.request("PUT", "/api/v1/users/social/", json=payload)
 
     def _v1_get_leaderboard(
