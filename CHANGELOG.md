@@ -5,11 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.3] - 2022-10-24
+
+### Fixed
+
+- Cast extra_data to str via json.dumps() on _v1_create_social_connection
+
 ## [4.0.2] - 2022-10-19
 
 ### Fixed
 
-- Provide a default for extra_data on add_social_connection
+- Provide a default for extra_data on _v1_create_social_connection and add_social_connection
 
 ## [4.0.1] - 2022-10-19
 
