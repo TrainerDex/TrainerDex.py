@@ -1,10 +1,10 @@
 [tool.black]
-    line-length = 99
-    target-version = ['py310']
+line-length = 99
+target-version = ['py310']
 
 [tool.poetry]
 name = "TrainerDex"
-version = "4.0.3"
+version = "4.1.0"
 description = "An API to interact with TrainerDex - a online database of Pokemon Go trainers"
 authors = ["Jay Turner <jay@trainerdex.app>"]
 license = "GPL-3.0"
@@ -16,8 +16,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -25,10 +23,10 @@ homepage = "https://trainerdex.app/"
 repository = "https://github.com/TrainerDex/TrainerDex.py"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 aiohttp = "^3.6.0"
 python-dateutil = "^2.8.1"
-typing-extensions = "^4.3.0"
+typing-extensions = ">=4.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
