@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Bump typing-extentions to >=4.0.1
 - Drop support for Python 3.8 and 3.9
+- Add support for Python 3.11
 
 ## [4.0.3] - 2022-10-24
 
