@@ -62,8 +62,8 @@ class Trainer(BaseClass):
     async def get_latest_update(self) -> Union[Update, None]:
         if not self.updates:
             await self.fetch_updates()
-            
-        if not self.updates: # still
+
+        if not self.updates:  # still
             return None
 
         return max(self.updates, key=lambda x: x.update_time)
