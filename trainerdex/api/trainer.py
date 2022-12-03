@@ -7,7 +7,7 @@ from uuid import UUID as _UUID
 
 from dateutil.parser import parse
 
-from trainerdex.api.base import BaseClass
+from trainerdex.api.base import BaseClass, UUIDMixin
 from trainerdex.api.faction import Faction
 from trainerdex.api.types.v1.update import CreateUpdate
 from trainerdex.api.types.v1.update import Update as StatsPayload
@@ -21,7 +21,7 @@ parse_dt = convert(parse)
 UUID = convert(_UUID)
 
 
-class Trainer(BaseClass):
+class Trainer(BaseClass, UUIDMixin):
     def _update(self, data: ReadTrainer) -> None:
         self.id = data["id"]
         self.uuid = UUID(data["uuid"])

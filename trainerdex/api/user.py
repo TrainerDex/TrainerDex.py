@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Dict, Optional
 
-from trainerdex.api.base import BaseClass
+from trainerdex.api.base import BaseClass, UUIDMixin
 from trainerdex.api.socialconnection import SocialConnection
 from trainerdex.api.trainer import Trainer
 from trainerdex.api.types.v1.social_connection import CreateSocialConnection
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from trainerdex.api.types.v1.user import ReadUser
 
 
-class User(BaseClass):
+class User(BaseClass, UUIDMixin):
     def _update(self, data: ReadUser) -> None:
         self.id = data["id"]
         self.uuid = data["uuid"]

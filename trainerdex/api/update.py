@@ -7,7 +7,7 @@ from uuid import UUID as _UUID
 
 from dateutil.parser import parse
 
-from trainerdex.api.base import BaseClass
+from trainerdex.api.base import BaseClass, UUIDMixin
 from trainerdex.api.utils import convert
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ UUID = convert(_UUID)
 Decimal = convert(_Decimal)
 
 
-class Update(BaseClass):
+class Update(BaseClass, UUIDMixin):
     def _update(self, data: ReadUpdate) -> None:
         self.uuid = UUID(data["uuid"])
         self.trainer_id = data["trainer"]

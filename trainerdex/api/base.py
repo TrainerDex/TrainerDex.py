@@ -8,12 +8,8 @@ if TYPE_CHECKING:
     from trainerdex.api.client import BaseClient
 
 
-class BaseClass:
+class UUIDMixin:
     uuid: UUID
-
-    def __init__(self, client: BaseClient, data: Any) -> None:
-        self.client = client
-        self._update(data)
 
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
@@ -23,6 +19,12 @@ class BaseClass:
 
     def __hash__(self):
         return hash(self.uuid)
+
+
+class BaseClass:
+    def __init__(self, client: BaseClient, data: Any) -> None:
+        self.client = client
+        self._update(data)
 
     @abstractmethod
     def _update(self, data: Any) -> None:
