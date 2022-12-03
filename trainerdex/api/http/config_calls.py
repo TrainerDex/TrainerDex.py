@@ -20,3 +20,14 @@ class ConfigMixin(BaseHTTPClient):
     @requires_authentication
     def get_config(self, guild_id: int) -> Response[ReadDiscordConfig]:
         return self.request("GET", f"/api/discord/preferences/{guild_id}/")
+
+    @requires_authentication
+    def delete_config(self, guild_id: int) -> Response[None]:
+        return self.request("DELETE", f"/api/discord/preferences/{guild_id}/")
+
+    @requires_authentication
+    def post_config(self, guild_id: int, data: dict) -> Response[ReadDiscordConfig]:
+        return self.request("POST", "/api/discord/preferences/", json=data)
+
+    def patch_config(self, guild_id: int, data: dict) -> Response[ReadDiscordConfig]:
+        return self.request("PATCH", f"/api/discord/preferences/{guild_id}/", json=data)
