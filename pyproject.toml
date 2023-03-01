@@ -30,7 +30,7 @@ python-dateutil = "^2.8.1"
 typing-extensions = ">=4.0.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = ">=22.8,<24.0"
 isort = "^5.10.1"
 flake8 = "^5.0.4"
 pre-commit = "^2.20.0"
